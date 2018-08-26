@@ -1,0 +1,21 @@
+.cell {
+    width: 100%;
+    text-align: center;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    height: 28px;
+}
+
+.is-selected {
+    background: red;
+    color: white;
+    text-align: center;
+}
+
+.is-unavailable {
+    background: darkslategrey;
+    color: white;
+    text-align: center;
+}

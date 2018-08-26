@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { HallComponent } from './HallBrowser/hall/hall.component';
 
 @Component({
   selector: 'app-root',

@@ -1,0 +1,18 @@
+
+<div class = "cell" [ngClass]="{'is-selected': status.isSelected,
+                                'is-unavailable': status.isSoled || 
+                                                  status.isReserved || 
+                                                  status.inReserving}"
+     (click)='OnClick()'>
+     
+  <i  [ngClass]="{'fa': !status.isFree, 
+                 'fa-clock-o': status.inReserving, 
+                 'fa-male': status.isReserved,
+                 'fa-street-view': status.isSoled,
+                 'fa-angle-down': status.isSelected,
+                 'is-selected': status.isSelected
+                }"
+                 >{{ chairID }}
+  </i>
+</div>  
+
