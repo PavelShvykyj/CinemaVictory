@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HallComponent } from '../HallBrowser/hall/hall.component';
+import { HallComponent } from './hall/hall.component';
 import { AngularFontAwesomeModule } from 'angular-font-awesome';
 import { HallChairComponent } from './hall-chair/hall-chair.component';
 

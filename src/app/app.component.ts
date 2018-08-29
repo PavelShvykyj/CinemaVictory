@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { HallComponent } from './HallBrowser/hall/hall.component';
+import { LogginComponent } from './logg-in/loggin/loggin.component'
 
 @Component({
   selector: 'app-root',

@@ -11,7 +11,7 @@ export class HallComponent implements OnInit {
   
   @ViewChildren(HallChairComponent)
   private chairList : QueryList<HallChairComponent>;
-  private mouseStatusCoverByRow : IdataObject = 
+  mouseStatusCoverByRow : IdataObject = 
   { 1: false,
     2: false,
     3: false,
