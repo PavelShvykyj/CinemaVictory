@@ -1,8 +1,10 @@
+
+
 export interface ILoggInData {
-    login : string;
+    userName : string;
     password : string;
 }
 
 export interface IbackEnd {
-    LoggInByPass(LoggInData : ILoggInData): string;
+    LoggInByPass(LoggInData : ILoggInData): Promise<string>;
 }

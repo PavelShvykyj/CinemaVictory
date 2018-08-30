@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { IbackEnd, ILoggInData } from '../iback-end'
-import { HttpHeaders, HttpClient, HttpHandler } from '@angular/common/http';
+import { HttpHeaders, HttpClient } from '@angular/common/http';
 /// <reference types="crypto-js" />
 import * as CryptoJS from 'crypto-js';
 
@@ -42,28 +42,23 @@ export class RequestManagerService implements IbackEnd {
     console.log('utf8 = ' + decrypted.toString(CryptoJS.enc.Utf8));
   }
 
-  LoggInByPass(userData : ILoggInData) : string  {
+  LoggInByPass(userData : ILoggInData) : Promise<string>  {
 
-    this.TestCrypt();
+    //this.TestCrypt();
 
     let headers = new HttpHeaders().append('Authorization','none').append('Content-Type','text/json')
     let connection = this.BASE_URL+"/account/login";
-    let PostData = {
-      userName: userData.login, 
-      password: userData.password 
-    };
-
+    console.log(userData);
     
-
-     let httpResoult = "";
-     this.http.post(connection,
-                          PostData,
+     return this.http.post(connection,
+                          userData,
                           {headers:headers,
                           withCredentials:false,
                           reportProgress:true,
-                          responseType:'text'}).toPromise().then(resoult => {httpResoult = resoult; return httpResoult})
-
-    return httpResoult;
+                          responseType:'text'})
+                      .toPromise()
+                      .then(res => {console.log(res); return res})
+                      .catch(res => {console.log(res); return res}); // конвертируем response в строку. Дешифруем?
   }
 
 }

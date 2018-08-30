@@ -15,7 +15,7 @@ export class RequestRouterService {
     return this.backends[0];
   } 
 
-  RoutLoggInByPass(userdata : ILoggInData) : string {
+  RoutLoggInByPass(userdata : ILoggInData) : Promise<string> {
     let backEnd = this.SelectBackEnd();
     return backEnd.LoggInByPass(userdata);
 

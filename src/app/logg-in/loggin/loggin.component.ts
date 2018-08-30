@@ -3,10 +3,17 @@ import {RequestRouterService}  from '../../back-end-router/request-router.servic
 import { ILoggInData } from '../../iback-end'
 
 
-class userData implements ILoggInData
+class UserData implements ILoggInData
 {
-  login: "380662828954";
-  password : "Di4vF67KBw2T";
+ 
+  userName: string;
+  password : string;
+  
+  constructor(login: string,  password : string)   {
+    this.userName = login;
+    this.password = password;     
+  }  
+  
 }
 
 @Component({
@@ -15,7 +22,7 @@ class userData implements ILoggInData
   styleUrls: ['./loggin.component.css']
 })
 export class LogginComponent implements OnInit {
-  loginResoult : string = "";
+  
 
   constructor(private apiServis : RequestRouterService) { }
 
@@ -24,14 +31,10 @@ export class LogginComponent implements OnInit {
 
   TestLoggIn() {
     
-    let logData = new userData();
-    logData.password = "Di4vF67KBw2T";
-    logData.login    = "380662828954";
-
-
-    this.loginResoult = this.apiServis.RoutLoggInByPass(logData);
-
-
+    this.apiServis.RoutLoggInByPass(new UserData("380662828954","Di4vF67KBw2T"))
+        .then(
+          resoult => {console.log(resoult)}
+        );
   }
 
 }
