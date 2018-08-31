@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { IbackEnd, ILoggInData } from '../iback-end'
+import { IbackEnd, ILoggInData, IResponseData } from '../iback-end'
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 /// <reference types="crypto-js" />
 import * as CryptoJS from 'crypto-js';
@@ -7,7 +7,7 @@ import * as CryptoJS from 'crypto-js';
 @Injectable()
 export class RequestManagerService implements IbackEnd {
 
-  BASE_URL = "http://dev.kino-peremoga.com.ua/api/1.0";
+  BASE_URL = "https://kino-peremoga.com.ua/api/1.0";
   
   
   constructor(private http : HttpClient) { 
@@ -42,23 +42,42 @@ export class RequestManagerService implements IbackEnd {
     console.log('utf8 = ' + decrypted.toString(CryptoJS.enc.Utf8));
   }
 
-  LoggInByPass(userData : ILoggInData) : Promise<string>  {
+  LoggInByPass(userData : ILoggInData) : Promise<IResponseData>  {
 
     //this.TestCrypt();
 
     let headers = new HttpHeaders().append('Authorization','none').append('Content-Type','text/json')
     let connection = this.BASE_URL+"/account/login";
-    console.log(userData);
+    
     
      return this.http.post(connection,
                           userData,
                           {headers:headers,
+                          observe: 'body',
                           withCredentials:false,
                           reportProgress:true,
                           responseType:'text'})
                       .toPromise()
-                      .then(res => {console.log(res); return res})
-                      .catch(res => {console.log(res); return res}); // конвертируем response в строку. Дешифруем?
+                      .then(response => { let objResponse = JSON.parse(response);
+                            let resoult : IResponseData = {
+                            status : '200',
+                            statusText : 'Ok',
+                            token : objResponse.jwtToken,
+                            expired : objResponse.expiryMinutes}
+                            return resoult;
+                    
+                       })
+                      .catch(error => {
+                        let resoult : IResponseData = 
+                        {
+                        status : error.status,
+                        statusText : error.statusText,
+                        token : 'badToken',
+                        expired : 0
+                        }
+                        return resoult;
+
+                      }); // конвертируем response в строку. Дешифруем?
   }
 
 }

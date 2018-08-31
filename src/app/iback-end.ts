@@ -5,6 +5,14 @@ export interface ILoggInData {
     password : string;
 }
 
+export interface IResponseData {
+    status : string;
+    statusText : string;
+    token : string;
+    expired : number;
+}
+
+
 export interface IbackEnd {
-    LoggInByPass(LoggInData : ILoggInData): Promise<string>;
+    LoggInByPass(LoggInData : ILoggInData): Promise<IResponseData>;
 }

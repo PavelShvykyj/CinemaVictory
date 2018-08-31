@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { RequestManagerService } from '../back-end-web/request-manager.service';
-import { IbackEnd, ILoggInData } from '../iback-end'
+import { IbackEnd, ILoggInData, IResponseData } from '../iback-end'
 
 @Injectable()
 export class RequestRouterService {
@@ -15,7 +15,7 @@ export class RequestRouterService {
     return this.backends[0];
   } 
 
-  RoutLoggInByPass(userdata : ILoggInData) : Promise<string> {
+  RoutLoggInByPass(userdata : ILoggInData) : Promise<IResponseData> {
     let backEnd = this.SelectBackEnd();
     return backEnd.LoggInByPass(userdata);
 
