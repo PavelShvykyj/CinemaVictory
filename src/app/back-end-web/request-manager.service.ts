@@ -64,6 +64,7 @@ export class RequestManagerService implements IbackEnd {
                             statusText : 'Ok',
                             token : objResponse.jwtToken,
                             expired : objResponse.expiryMinutes}
+                            sessionStorage.setItem('token',resoult.token)
                             return resoult;
                     
                        })
@@ -75,6 +76,7 @@ export class RequestManagerService implements IbackEnd {
                         token : 'badToken',
                         expired : 0
                         }
+                        sessionStorage.removeItem('token');
                         return resoult;
 
                       }); // конвертируем response в строку. Дешифруем?

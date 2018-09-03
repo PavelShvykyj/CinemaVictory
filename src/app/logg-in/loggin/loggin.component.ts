@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import {RequestRouterService}  from '../../back-end-router/request-router.service'
 import { ILoggInData } from '../../iback-end'
+import {FormBuilder,FormControl,FormGroup,  Validators } from '@angular/forms'
+
 
 
 class UserData implements ILoggInData
@@ -23,17 +25,54 @@ class UserData implements ILoggInData
 })
 export class LogginComponent implements OnInit {
   
+  form : FormGroup = new FormGroup({
+    'login' : new FormControl("",Validators.required),
+    'password' : new FormControl("",Validators.required)
+  }); 
 
-  constructor(private apiServis : RequestRouterService) { }
+  @Output()loggOn = new EventEmitter(); 
+
+  constructor(private apiServis : RequestRouterService, fb : FormBuilder) { }
 
   ngOnInit() {
+  }
+
+  get login() {
+    return this.form.get('login')
+  }
+
+  get password() {
+    return this.form.get('password')
+  }
+  
+  Loggin(){
+    this.apiServis.RoutLoggInByPass(new UserData(this.form.value.login,this.form.value.password))
+        .then(
+          resoult => {
+            if (resoult.status != "200" )
+            {              
+              this.form.setErrors({errorMessage : "Ошибка авторизации: "+resoult.status+" "+resoult.statusText}); 
+            }
+            else
+            {
+              let eventDta = {userData : new UserData(this.form.value.login,this.form.value.password),
+                              timer : +resoult.expired};
+
+              this.loggOn.emit(eventDta);
+            }  
+
+          }
+        )
+        .catch(
+          resoult => {this.form.setErrors({errorMessage : resoult.status+" "+resoult.statusText})}
+        );
   }
 
   TestLoggIn() {
     
     this.apiServis.RoutLoggInByPass(new UserData("380662828954","Di4vF67KBw2T"))
         .then(
-          resoult => {console.log(resoult)}
+          resoult => {this.form.setErrors({errorMessage : resoult.status+" "+resoult.statusText})}
         );
   }
 
