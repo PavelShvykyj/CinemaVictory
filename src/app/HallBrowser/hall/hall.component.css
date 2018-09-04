@@ -22,23 +22,22 @@
         border-color: #750881;
     }
 
-    
     /* глобальная сетка F8F8FF caccd1*/
     .container-main {
         background-color: #F8F8FF;
     }
 
     #HallCol {
-        margin-top: 10px;        
+        margin-top: 5px;        
     }    
     
     #FooterCol {
-        margin-top: 10px;
-        padding-top: 10px;
+        margin-top: 5px;
+        padding-top: 5px;
     }
 
     #MainMenuCol {
-        margin-top: 20px;
+        margin-top: 2px;
         padding-top: 10px;
         padding-bottom: 10px;
         background-color: #481147;         

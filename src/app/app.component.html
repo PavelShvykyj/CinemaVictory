@@ -1,6 +1,28 @@
 
-<app-loggin (loggOn) = "loggOnTrigger($event)"> 
-</app-loggin>
+<!--<app-loggin (loggOn) = "loggOnTrigger($event)"></app-loggin> 
+событие использовалось для запуска обновления токена -перенесли в сервис-->
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+            <nav class="navbar-nav navbar-expand-sm navbar-dark bg-dark">
+                <a class="navbar-brand" href="#">Web site</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                    <div class="navbar-nav">
+                        <a class="nav-item nav-link" href="#">Login <span class="sr-only">(current)</span></a>
+                        <a class="nav-item nav-link" href="#">Logout</a>
+                        <a class="nav-item nav-link" href="#">Hall</a>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<app-loggin></app-loggin>
 <!--<hall></hall>-->
 
 

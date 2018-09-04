@@ -30,7 +30,7 @@ export class LogginComponent implements OnInit {
     'password' : new FormControl("",Validators.required)
   }); 
 
-  @Output()loggOn = new EventEmitter(); 
+  //@Output()loggOn = new EventEmitter(); 
 
   constructor(private apiServis : RequestRouterService, fb : FormBuilder) { }
 
@@ -55,10 +55,10 @@ export class LogginComponent implements OnInit {
             }
             else
             {
-              let eventDta = {userData : new UserData(this.form.value.login,this.form.value.password),
-                              timer : +resoult.expired};
+              //let eventDta = {userData : new UserData(this.form.value.login,this.form.value.password),
+              //                timer : +resoult.expired};
 
-              this.loggOn.emit(eventDta);
+              //this.loggOn.emit(eventDta);
             }  
 
           }

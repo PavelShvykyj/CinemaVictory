@@ -11,34 +11,8 @@ import { ILoggInData } from './iback-end'
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
- 
-  userData : ILoggInData;
-  refreshLoginTimer : number;
 
+  // зависимость нужна обязательно для оповещений
   constructor(private apiServis : RequestRouterService){}
-
-  RefreshToken() {
-    console.log(this.userData);
-    setTimeout(() => {
-      this.apiServis.RoutLoggInByPass(this.userData)
-                  .then(resoult => {
-                    this.RefreshToken(); // rekursive     
-                  })
-                  .catch(resoult => {
-                    // redirect to login : somthing wrong 
-                  })
-    }, this.refreshLoginTimer);
-  }
-
-
-  loggOnTrigger(eventData) {
-    console.log(eventData)
-    this.userData = eventData.userData;
-    this.refreshLoginTimer = eventData.timer*60*1000;
-    this.RefreshToken()
-  }
-
-
-
 
 }

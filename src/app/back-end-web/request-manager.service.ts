@@ -9,7 +9,25 @@ export class RequestManagerService implements IbackEnd {
 
   BASE_URL = "https://kino-peremoga.com.ua/api/1.0";
   
-  
+  private _userData : ILoggInData;
+  private _refreshLoginTimer : number;
+
+  RefreshToken() {
+    setTimeout(() => {
+              this.LoggInByPass(this._userData)
+                  .then(resoult => {
+                    console.log('RefreshToken resoult',resoult)
+                    this.RefreshToken(); // rekursive     
+                  })
+                  .catch(resoult => {
+                    console.log('RefreshToken error',resoult)
+                    //  somthing wrong что то не так при обновлении токена что будем делать пока не ясно
+                    //  токен почищен в  LoggInByPass данные пользователя в свойствах пока не чистим вдруг захотим переденуть
+                  })
+    }, this._refreshLoginTimer);
+  }
+
+
   constructor(private http : HttpClient) { 
     
 
@@ -45,7 +63,7 @@ export class RequestManagerService implements IbackEnd {
   LoggInByPass(userData : ILoggInData) : Promise<IResponseData>  {
 
     //this.TestCrypt();
-
+    sessionStorage.removeItem('token');
     let headers = new HttpHeaders().append('Authorization','none').append('Content-Type','text/json')
     let connection = this.BASE_URL+"/account/login";
     
@@ -65,6 +83,10 @@ export class RequestManagerService implements IbackEnd {
                             token : objResponse.jwtToken,
                             expired : objResponse.expiryMinutes}
                             sessionStorage.setItem('token',resoult.token)
+                            this._userData = userData;
+                            this._refreshLoginTimer = +objResponse.expiryMinutes*60*10004
+                            this.RefreshToken();
+                            
                             return resoult;
                     
                        })
@@ -76,7 +98,7 @@ export class RequestManagerService implements IbackEnd {
                         token : 'badToken',
                         expired : 0
                         }
-                        sessionStorage.removeItem('token');
+                        
                         return resoult;
 
                       }); // конвертируем response в строку. Дешифруем?

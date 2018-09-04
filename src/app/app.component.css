@@ -1,0 +1,18 @@
+.col {
+    border: 1px solid #F8F8FF;
+    padding-left: 0px;
+    padding-right: 0px;   
+}
+
+.navbar-nav li a {
+    line-height: 10px;
+    height: 10px;
+    min-height: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+    font: 70%;
+}
+
+.navbar-brand {
+    padding-left : 15px
+}
