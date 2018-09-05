@@ -1,11 +1,9 @@
 .col {
-    border: 1px solid #F8F8FF;
     padding-left: 0px;
     padding-right: 0px;   
 }
 
-.navbar-nav li a {
-    line-height: 10px;
+.navbar-nav li a span{
     height: 10px;
     min-height: 0px;
     padding-left: 0px;
@@ -15,4 +13,37 @@
 
 .navbar-brand {
     padding-left : 15px
+}
+
+.indicator-col {
+    height: 6px;
+    margin: 0px;
+    padding: 0px
+}
+
+.indicator-row {
+    margin-top: 0px;
+    margin-bottom: 0px;
+    padding-top: 0px; 
+    padding-bottom: 0px;
+}
+
+.indicator-danger {
+    background-color: red;
+}
+
+.indicator-good {
+    background-color: ForestGreen;
+}
+
+.indicator-warning {
+    background-color: Gold;
+}
+
+#loggDataText {
+    margin-right: 20px;
+    color: white;
+    padding-left: 4px; 
+    padding-right: 4px;
+
 }

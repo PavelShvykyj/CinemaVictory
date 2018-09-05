@@ -9,7 +9,7 @@
     </div> -->                    
     <div class="row justify-content-md-center greed-row-extend">
         <div class="col-sm-6">
-            <form [formGroup] = 'form' (ngSubmit)="Loggin()">
+            <form [formGroup] = 'form' >
                 <div *ngIf="form.errors" class="alert alert-danger">
                     {{ form.errors.errorMessage }}                    
                 </div>
@@ -48,7 +48,23 @@
                                
                     <small id="loginHelp" class="form-text text-muted">Никому не сообщайте Ваши логин и пароль.</small>
                 </div>
-                <button [disabled]="form.invalid" type="submit" class="btn btn-dark">Зайти</button>
+                <div class="row justify-content-between">
+                    <div class="col-4">
+                        <button #btnWEB
+                         value="WEB"
+                         (click) = 'Loggin(btnWEB)'
+                         [disabled]="form.invalid"
+                         type="submit"
+                         class="btn btn-dark full-widht">Зайти c WEB</button>
+                    </div>
+                    <div class="col-4">
+                        <button #btn1C 
+                        value="1C"  
+                        (click) = 'Loggin(btn1C)'  
+                        type="submit" 
+                        class="btn btn-dark full-widht">Зайти c 1C</button>
+                    </div>        
+                </div>        
             </form>
         </div>
     </div>        

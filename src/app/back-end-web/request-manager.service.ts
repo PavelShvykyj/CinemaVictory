@@ -11,6 +11,7 @@ export class RequestManagerService implements IbackEnd {
   
   private _userData : ILoggInData;
   private _refreshLoginTimer : number;
+  private _token : string; 
 
   RefreshToken() {
     setTimeout(() => {
@@ -60,10 +61,16 @@ export class RequestManagerService implements IbackEnd {
     console.log('utf8 = ' + decrypted.toString(CryptoJS.enc.Utf8));
   }
 
+  getUserData() : ILoggInData {
+    return {userName : "Atlantica", password : "" }
+  }
+
+
   LoggInByPass(userData : ILoggInData) : Promise<IResponseData>  {
 
     //this.TestCrypt();
-    sessionStorage.removeItem('token');
+    //sessionStorage.removeItem('token');
+    this._token = "";
     let headers = new HttpHeaders().append('Authorization','none').append('Content-Type','text/json')
     let connection = this.BASE_URL+"/account/login";
     
@@ -82,7 +89,8 @@ export class RequestManagerService implements IbackEnd {
                             statusText : 'Ok',
                             token : objResponse.jwtToken,
                             expired : objResponse.expiryMinutes}
-                            sessionStorage.setItem('token',resoult.token)
+                            this._token = resoult.token;
+                            //sessionStorage.setItem('token',resoult.token)
                             this._userData = userData;
                             this._refreshLoginTimer = +objResponse.expiryMinutes*60*10004
                             this.RefreshToken();

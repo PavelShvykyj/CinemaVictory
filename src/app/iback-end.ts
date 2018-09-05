@@ -15,4 +15,5 @@ export interface IResponseData {
 
 export interface IbackEnd {
     LoggInByPass(LoggInData : ILoggInData): Promise<IResponseData>;
+    getUserData() : ILoggInData;
 }

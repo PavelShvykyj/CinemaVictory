@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, ElementRef } from '@angular/core';
 import {RequestRouterService}  from '../../back-end-router/request-router.service'
 import { ILoggInData } from '../../iback-end'
 import {FormBuilder,FormControl,FormGroup,  Validators } from '@angular/forms'
@@ -45,7 +45,10 @@ export class LogginComponent implements OnInit {
     return this.form.get('password')
   }
   
-  Loggin(){
+  Loggin(element ){
+  
+    if (element.value == 'WEB') 
+    {
     this.apiServis.RoutLoggInByPass(new UserData(this.form.value.login,this.form.value.password))
         .then(
           resoult => {
@@ -53,20 +56,32 @@ export class LogginComponent implements OnInit {
             {              
               this.form.setErrors({errorMessage : "Ошибка авторизации: "+resoult.status+" "+resoult.statusText}); 
             }
-            else
-            {
-              //let eventDta = {userData : new UserData(this.form.value.login,this.form.value.password),
-              //                timer : +resoult.expired};
-
-              //this.loggOn.emit(eventDta);
-            }  
-
           }
         )
         .catch(
           resoult => {this.form.setErrors({errorMessage : resoult.status+" "+resoult.statusText})}
         );
+      }
+      else if(element.value == '1C')
+      {
+        this.login.setValue("");
+        this.password.setValue("");
+        this.apiServis.RoutLoggInByLocal(new UserData("",""))
+                      .then(
+                        resoult => {
+                          if (resoult.status != "200" )
+                          {              
+                            this.form.setErrors({errorMessage : "Ошибка авторизации: "+resoult.status+" "+resoult.statusText}); 
+                          }
+                        }
+                      )
+                      .catch(
+                        resoult => {this.form.setErrors({errorMessage : resoult.status+" "+resoult.statusText})}
+                      );
+      }  
   }
+
+  
 
   TestLoggIn() {
     
