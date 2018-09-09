@@ -129,8 +129,8 @@ export class RequestManagerService implements IbackEnd {
 
   InjectMoviesDataIntoSessionData(sessonData) : Promise<IGetSessionResponseViewModel> 
   {
-
-    return 
+ 
+    return // смотри Prommice.All()
   }
 
   SessionsGetByDate(selectedDate : Date) : Promise<IGetSessionResponseViewModel> | null {
