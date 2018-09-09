@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { RequestManagerService as webManagerServise } from '../back-end-web/request-manager.service';
 import { RequestManagerService as localManagerServise } from '../back-end-local/request-manager.service';
 
-import { IbackEnd, ILoggInData, IResponseData } from '../iback-end'
+import { IbackEnd, ILoggInData, IResponseData, IGetSessionResponseViewModel } from '../iback-end'
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 
@@ -38,8 +38,7 @@ export class RequestRouterService {
   } 
 
   RoutLoggInByPass(userdata : ILoggInData) : Promise<IResponseData> {
-    
-    
+   
     // логинимся по данным веб т.е.
     // получаем данные логг и заходим с ними авоматом для 1С логин всегда успешен ибо мы уже зашли
     // в случае когда заходим от 1С порядок зеркальный 
@@ -78,9 +77,12 @@ export class RequestRouterService {
                               this.emitLoginName(WebUserData.userName);
                             }
                             return resoult});
-
-
   }
 
+
+  RoutSessionsGetByDate(selectedDate : Date) : Promise<IGetSessionResponseViewModel> | null {
+
+    return
+  }
 
 }

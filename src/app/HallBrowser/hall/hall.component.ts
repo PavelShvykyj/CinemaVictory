@@ -1,6 +1,8 @@
 import { Component, OnInit, ViewChildren, QueryList } from '@angular/core';
 import { HallChairComponent } from '../hall-chair/hall-chair.component';
+
 import { IdataObject } from '../idata-object'
+import * as _ from 'underscore';
 
 @Component({
   selector: 'hall',
@@ -72,4 +74,12 @@ export class HallComponent implements OnInit {
     this.MarkSelectedChairAsSold();
   }
   
+  FunkBtnUnderscoreTest() {
+    alert(_.now());
+  }
+
+  OnSessionDataChange(sessionData) {
+    console.log(sessionData);
+  }
+
 }

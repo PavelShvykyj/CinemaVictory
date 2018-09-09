@@ -2,14 +2,7 @@
 <div  class="container-fluid container-main">
   <div class="row"> <!-- гланое меню  -->
     <div class="col" id="MainMenuCol">
-      <div class="input-group">
-        <div class="input-group-prepend">
-          <span class="input-group-text input-group-text-main-menu" >Дата Фильм Сеанс</span>
-        </div>
-        <input type="date" class="form-control input-main-menu" placeholder="Дата сеанса">
-        <input type="text" class="form-control input-main-menu" placeholder="Фильм">
-        <input type="text" class="form-control input-main-menu" placeholder="Сеанс">
-      </div>    
+        <movie-selector (sessionDataChange) = "OnSessionDataChange($event)"></movie-selector>
     </div>
   </div>
   <div class="row"> <!-- основная область  -->
@@ -17,7 +10,7 @@
       <!-- кнопки функционального меню  -->
       <div class="btn-group-vertical btn-block" role="group" aria-label="Function Menu">
         <button type="button" class="btn btn-secondary btn-funk-menu" (click) = "FunkBtnTest()">Продать</button>
-        <button type="button" class="btn btn-secondary btn-funk-menu">Действие 1</button>
+        <button type="button" class="btn btn-secondary btn-funk-menu" (click) = "FunkBtnUnderscoreTest()">underscore test</button>
         <button type="button" class="btn btn-secondary btn-funk-menu">Действие 1</button>
         <button type="button" class="btn btn-secondary btn-funk-menu">Действие 1</button>
         <button type="button" class="btn btn-secondary btn-funk-menu">Действие 1</button>

@@ -1,7 +1,7 @@
 import { Component, OnInit, Output, EventEmitter, ElementRef } from '@angular/core';
-import {RequestRouterService}  from '../../back-end-router/request-router.service'
-import { ILoggInData } from '../../iback-end'
-import {FormBuilder,FormControl,FormGroup,  Validators } from '@angular/forms'
+import {RequestRouterService}  from '../../back-end-router/request-router.service';
+import { ILoggInData } from '../../iback-end';
+import {FormBuilder,FormControl,FormGroup,  Validators } from '@angular/forms';
 
 
 
