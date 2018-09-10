@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { RequestManagerService as webManagerServise } from '../back-end-web/request-manager.service';
 import { RequestManagerService as localManagerServise } from '../back-end-local/request-manager.service';
 
-import { IbackEnd, ILoggInData, IResponseData, IGetSessionResponseViewModel } from '../iback-end'
+import { IbackEnd, ILoggInData, IResponseData, ISessionData } from '../iback-end'
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 
@@ -80,9 +80,9 @@ export class RequestRouterService {
   }
 
 
-  RoutSessionsGetByDate(selectedDate : Date) : Promise<IGetSessionResponseViewModel> | null {
+  RoutSessionsGetByDate(selectedDate : string) : Promise<ISessionData> | null {
 
-    return
+    return this.webServise.SessionsInfoGetByDate(selectedDate);
   }
 
 }

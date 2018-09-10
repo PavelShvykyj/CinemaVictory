@@ -53,10 +53,15 @@ export interface IGetSessionResponseViewModel {
     movies: Array<IGetMovieResponseViewModel> 
 }
 
+export interface ISessionData {
+    sessionInfo : Array<IGetSessionResponseViewModel>;
+    movieInfo : Array<IGetMovieResponseViewModel>;
+}
+
 export interface IbackEnd {
     LoggInByPass(LoggInData : ILoggInData): Promise<IResponseData>;
     getUserData() : ILoggInData;
-    SessionsGetByDate(selectedDate : Date) : Promise<IGetSessionResponseViewModel> | null;
+    SessionsInfoGetByDate(selectedDate : string) : Promise<ISessionData> | null;
     
 
 }

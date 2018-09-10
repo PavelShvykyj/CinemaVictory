@@ -79,7 +79,7 @@ export class HallComponent implements OnInit {
   }
 
   OnSessionDataChange(sessionData) {
-    console.log(sessionData);
+    //console.log(sessionData);
   }
 
 }

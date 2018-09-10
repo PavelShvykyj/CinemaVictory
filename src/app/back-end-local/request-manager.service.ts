@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { IbackEnd, ILoggInData, IResponseData, IGetSessionResponseViewModel } from '../iback-end'
+import { IbackEnd, ILoggInData, IResponseData, ISessionData } from '../iback-end'
 
 @Injectable()
 export class RequestManagerService implements IbackEnd {
@@ -18,7 +18,7 @@ export class RequestManagerService implements IbackEnd {
     return 
   }
 
-  SessionsGetByDate(selectedDate : Date) : Promise<IGetSessionResponseViewModel> | null {
+  SessionsInfoGetByDate(selectedDate : string) : Promise<ISessionData> | null  | null {
 
     return null;
   }

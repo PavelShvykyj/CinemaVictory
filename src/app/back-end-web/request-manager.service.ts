@@ -1,16 +1,17 @@
 import { Injectable } from '@angular/core';
-import { IbackEnd, ILoggInData, IResponseData, IGetSessionResponseViewModel } from '../iback-end'
+import { IbackEnd, ILoggInData, IResponseData, IGetSessionResponseViewModel, ISessionData } from '../iback-end'
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 /// <reference types="crypto-js" />
 import * as CryptoJS from 'crypto-js';
 import * as _ from 'underscore';
-import { promise } from 'protractor';
+
 
 @Injectable()
 export class RequestManagerService implements IbackEnd {
 
   BASE_URL = "https://kino-peremoga.com.ua/api/1.0";
   HALL_ID  = 1;
+  PACKAGE_MOVIES_SIZE = 20;
 
   private _userData : ILoggInData;
   private _refreshLoginTimer : number;
@@ -127,19 +128,28 @@ export class RequestManagerService implements IbackEnd {
 
   } 
 
-  InjectMoviesDataIntoSessionData(sessonData) : Promise<IGetSessionResponseViewModel> 
-  {
- 
-    return // смотри Prommice.All()
+  GetPakegMoviesById(){
+    let headers = new HttpHeaders().append('Authorization','Bearer '+this._token).append('Content-Type','text/json')
+    let connection = this.BASE_URL+"/movies/getall/0/"+this.PACKAGE_MOVIES_SIZE.toString();  
+    return this.http.get(connection,
+                        {headers:headers,
+                        observe: 'body',
+                        withCredentials:false,
+                        reportProgress:true,
+                        responseType:'text'})
+                     .toPromise()
+                     .then(reoult =>{return JSON.stringify({movieInfo : JSON.parse(reoult)})});   
   }
 
-  SessionsGetByDate(selectedDate : Date) : Promise<IGetSessionResponseViewModel> | null {
+
+
+  SessionsGetByDate(selectedDate : string) : Promise<string>  {
     let headers = new HttpHeaders().append('Authorization','Bearer '+this._token).append('Content-Type','text/json')
     let connection = this.BASE_URL+"/sessions/getbydate";
    
     let postBody = {
       idHall: this.HALL_ID,
-      starts: selectedDate.toDateString()
+      starts: selectedDate
       }
       
 
@@ -150,10 +160,24 @@ export class RequestManagerService implements IbackEnd {
                   withCredentials:false,
                   reportProgress:true,
                   responseType:'text'})
-              .toPromise()
-              .then(resoult => {this.InjectMoviesDataIntoSessionData(resoult)})
-              .catch(resoult => {return null})      
+                  .toPromise()
+                  .then(reoult =>{return JSON.stringify({sessionInfo : JSON.parse(reoult)})});
+      
   }
 
+  SessionsInfoGetByDate(selectedDate : string)  {
+    let promiseCollection : Array<any> = [];
+    promiseCollection.push(this.SessionsGetByDate(selectedDate));
+    promiseCollection.push(this.GetPakegMoviesById());
+    return Promise.all(promiseCollection).then(resoult => {
+                                          let par_1 = JSON.parse(resoult[0]);
+                                          let par_2 = JSON.parse(resoult[1]);
+                                          Object.assign(par_1,par_2);      
+                                          return par_1})
+                                         .catch(error => {return null})   
+                                         
+    
+    
+  }
 
 }

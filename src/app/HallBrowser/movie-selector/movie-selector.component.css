@@ -4,3 +4,25 @@
         color: #fce995;
         border: 0px; 
     }
+
+    .option {
+        margin: 5px;
+        border: 1px solid transparent;
+    } 
+    
+    .option-header {
+        background-color: gray;
+        color: #fce995;
+        font-weight: bold;
+
+    }
+
+    .option-item {
+        background-color: #481147;
+        color: #fce995;
+    }
+
+    .option-item:hover {
+        background-color: darkgray;
+        color: aliceblue;
+    }

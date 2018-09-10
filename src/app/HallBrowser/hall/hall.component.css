@@ -135,44 +135,40 @@
     }
     
     .table-hall-column-color3:hover {
-        background-color: #98FB98;          
-        
+        background-color: #98FB98;              
     }
 
-.table-hall-column-color4 {
-    background-color: #23a345;          
-    
-}
+    .table-hall-column-color4 {
+        background-color: #23a345;             
+    }
 
-.table-hall-column-color4:hover {
-    background-color: #008000;          
-    
-}
-    
-    
-.table-hall-column-empty {
-    background-color: #F8F8FF;          
-    
-}
+    .table-hall-column-color4:hover {
+        background-color: #008000;              
+    }
+        
+        
+    .table-hall-column-empty {
+        background-color: #F8F8FF;             
+    }
 
-.table-hall-legend {
-    width: 100%;
-    margin-top: 15px;
-    text-align: center;
-    display: block;    
-}
+    .table-hall-legend {
+        width: 100%;
+        margin-top: 15px;
+        text-align: center;
+        display: block;    
+    }
 
-.table-hall-legend-icon {
-    text-align: center;
-    margin-left: 10px;
-    margin-right: 10px;
-    color: #b1b1b1;
-}
-    
-.table-hall-legend-text {
-    text-align: center;
-    font-size: 20px;
-    margin-left: 10px;
-    margin-right: 10px;
-    display: inline;
-}
+    .table-hall-legend-icon {
+        text-align: center;
+        margin-left: 10px;
+        margin-right: 10px;
+        color: #b1b1b1;
+    }
+        
+    .table-hall-legend-text {
+        text-align: center;
+        font-size: 20px;
+        margin-left: 10px;
+        margin-right: 10px;
+        display: inline;
+    }
