@@ -1,0 +1,23 @@
+<div  class="container-fluid">
+  <div  class="row"> 
+    <div *ngIf="movieInfo" class="col" >
+      
+      <h4 class="movie-header"> {{movieInfo.title}} </h4>
+      <p>Формат :
+          <span class="movie-format">{{movieInfo.format}}</span> 
+      </p>
+      
+      <p>Продолжительность :
+        <span class="movie-duration" >{{movieInfo.duration}}</span>
+      </p>
+      
+      <p>Стиль :</p>
+      <span class="movie-genre">{{movieInfo.genre}}</span>
+
+
+    </div> 
+    <div *ngIf="!movieInfo" class="col" >
+      Не выбран фильм.
+    </div>
+  </div>
+</div>

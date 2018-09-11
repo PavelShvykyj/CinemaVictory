@@ -3,6 +3,7 @@ import { HallChairComponent } from '../hall-chair/hall-chair.component';
 
 import { IdataObject } from '../idata-object'
 import * as _ from 'underscore';
+import { ISessionData } from '../../iback-end';
 
 @Component({
   selector: 'hall',
@@ -14,7 +15,8 @@ export class HallComponent implements OnInit {
   @ViewChildren(HallChairComponent)
   private chairList : QueryList<HallChairComponent>;
   mouseStatusCoverByRow : IdataObject = 
-  { 1: false,
+  {
+    1: false,
     2: false,
     3: false,
     4: false,
@@ -33,7 +35,15 @@ export class HallComponent implements OnInit {
     17: false,
     18: false,
     19: false,
-  }
+  };
+
+  sessionData : IdataObject =  
+  {
+    'currentDate' : null, 
+    'currentMovie' : null,
+    'currentSession' : null
+  };
+
 
   constructor() { 
   }
@@ -70,7 +80,6 @@ export class HallComponent implements OnInit {
   }
 
   FunkBtnTest() {
-
     this.MarkSelectedChairAsSold();
   }
   
@@ -79,7 +88,7 @@ export class HallComponent implements OnInit {
   }
 
   OnSessionDataChange(sessionData) {
-    //console.log(sessionData);
+    this.sessionData = sessionData; 
   }
 
 }

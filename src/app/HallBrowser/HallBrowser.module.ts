@@ -4,7 +4,9 @@ import { HallComponent } from './hall/hall.component';
 import { AngularFontAwesomeModule } from 'angular-font-awesome';
 import { HallChairComponent } from './hall-chair/hall-chair.component';
 import { MovieSelectorComponent } from './movie-selector/movie-selector.component';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms'
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MovieComponent } from './movie/movie.component';
+import { MoviePriceComponent } from './movie-price/movie-price.component'
 
 @NgModule({
   imports: [
@@ -13,7 +15,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms'
     FormsModule, 
     ReactiveFormsModule
   ],
-  declarations: [HallComponent, HallChairComponent, MovieSelectorComponent],
+  declarations: [HallComponent, HallChairComponent, MovieSelectorComponent, MovieComponent, MoviePriceComponent],
   exports: [HallComponent]
 })
 export class HallBrowserModule { }

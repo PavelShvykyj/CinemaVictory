@@ -546,9 +546,9 @@
     </div>
   
     <!-- легенда - цвета - цены инфо о фильме  -->
-    <div class="col align-self-center justify-content-center"  id="FilmLegend">
-      <div> Информация о  фильме: цены по типам рядов, описание  филма и т.п.</div>
-      <div> Информация о  выбранных билетах цены и сумма</div>
+    <div class="col align-self-top justify-content-top"  id="FilmLegend">
+      <movie *ngIf="sessionData.currentMovie" [movieInfo] = "sessionData.currentMovie"></movie>
+      <div>    </div>
     </div>
   </div>
   

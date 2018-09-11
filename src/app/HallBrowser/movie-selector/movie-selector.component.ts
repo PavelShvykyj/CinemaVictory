@@ -2,6 +2,12 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import * as _ from 'underscore';
 import {RequestRouterService}  from '../../back-end-router/request-router.service';
 import { ISessionData, IGetMovieResponseViewModel, IGetSessionResponseViewModel } from '../../iback-end';
+import { IdataObject } from '../idata-object';
+
+const ONE_DAY = 24*60*60*1000;
+
+
+
 
 
 @Component({
@@ -12,6 +18,8 @@ import { ISessionData, IGetMovieResponseViewModel, IGetSessionResponseViewModel 
 export class MovieSelectorComponent implements OnInit {
 
   currentDate : Date;
+  currentDays : Array<IdataObject> = [];
+  
   currentMovie : IGetMovieResponseViewModel ;
   currentSession : IGetSessionResponseViewModel;
   currentMovies : Array<any> = [];
@@ -20,17 +28,35 @@ export class MovieSelectorComponent implements OnInit {
   @Output() sessionDataChange = new EventEmitter();
 
   constructor(private apiServis : RequestRouterService) { }
-  ngOnInit() {}
+  ngOnInit() {
+    let dayFormat = {
+      month: 'long',
+      day: 'numeric',
+      weekday: 'long',
+    };
+    
+    let itemDay = new Date();
+    
+    for (let index = 0; index <= 6; index++) {
+      itemDay.setDate(itemDay.getDate() + 1);
+      
+      this.currentDays.push({id : +itemDay, 
+                             title : itemDay.toLocaleString("ru",dayFormat)
+                            });
+    };
+  }
 
-  OnChangeDate(){
+  OnChangeDate(value){
     // clear parametrs first 
+    this.currentDate = new Date(+value);
     this.currentMovie = null;
     this.currentSession = null;
     this.sessionData = null;
     this.currentMovies = [];
     this.currentSessions = [];
-    
-    this.apiServis.RoutSessionsGetByDate(this.currentDate.toLocaleString())
+    console.log(this.currentDate.toDateString());
+
+    this.apiServis.RoutSessionsGetByDate(this.currentDate.toDateString())
                   .then(resoult => {
                     this.sessionData = resoult;
                     this.SessionDataParse();
