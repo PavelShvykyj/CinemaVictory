@@ -10,21 +10,23 @@
            placeholder="Дата сеанса" >-->
     
     <div class="input-group-prepend">
-         <button   class="btn btn-outline-secondary" type="button" (click) = 'dateshow()' >D</button>
+         <button class="btn btn-outline-secondary bg-light text-dark" type="button" (click) = 'DatePickerChange()' >
+                <i *ngIf= "!pickerHidden" class="fa fa-calendar " aria-hidden="true"></i>
+                <i *ngIf= "pickerHidden" class="fa fa-angle-double-right" aria-hidden="true"></i>
+         </button>
     </div>       
     
     <input 
-           type="text"
-           id="datepicker"
-           class="form-control input-main-menu"
-           placeholder="test"
-           [hidden] = 'isHidden'
+           type="button"
+           id="inputGroupPickDay"
+           class="form-control option-header"
+           [hidden] = 'pickerHidden'
            >
 
 
-    <select #day (change)='OnChangeDate(day.value)' class="custom-select option-header" id="inputGroupSelectDay">
+    <select [hidden] = '!pickerHidden' #day (change)='OnChangeDate(day.value)' class="custom-select option-header" id="inputGroupSelectDay">
             <option class="option option-header" option  [value]="currentDays[0].id" >Выбрать день  </option>
-            <option class="option option-item" *ngFor="let day of currentDays" [value]="day.id">{{day.title}}</option>
+            <option class="option option-item" *ngFor="let day of currentDays" [id]="day.id" [value]="day.id">{{day.title}}</option>
             <!--<option value="2">Two</option>
             <option value="3">Three</option>-->
     </select>       
