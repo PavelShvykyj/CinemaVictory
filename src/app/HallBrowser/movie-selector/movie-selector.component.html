@@ -9,6 +9,19 @@
            class="form-control input-main-menu option-header"
            placeholder="Дата сеанса" >-->
     
+    <div class="input-group-prepend">
+         <button   class="btn btn-outline-secondary" type="button" (click) = 'dateshow()' >D</button>
+    </div>       
+    
+    <input 
+           type="text"
+           id="datepicker"
+           class="form-control input-main-menu"
+           placeholder="test"
+           [hidden] = 'isHidden'
+           >
+
+
     <select #day (change)='OnChangeDate(day.value)' class="custom-select option-header" id="inputGroupSelectDay">
             <option class="option option-header" option  [value]="currentDays[0].id" >Выбрать день  </option>
             <option class="option option-item" *ngFor="let day of currentDays" [value]="day.id">{{day.title}}</option>
@@ -40,10 +53,5 @@
                
 
            
-    <!--<input [(ngModel)]="currentSession" 
-           type="text"
-           name='selectedSession'
-           class="form-control input-main-menu"
-           placeholder="Сеанс">-->
 </div>    
 

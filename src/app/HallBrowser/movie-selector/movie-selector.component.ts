@@ -1,8 +1,11 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, AfterViewInit, Output, EventEmitter } from '@angular/core';
 import * as _ from 'underscore';
 import {RequestRouterService}  from '../../back-end-router/request-router.service';
 import { ISessionData, IGetMovieResponseViewModel, IGetSessionResponseViewModel } from '../../iback-end';
 import { IdataObject } from '../idata-object';
+import * as $ from 'jquery'; 
+import 'jquery-ui/ui/widgets/datepicker.js';
+
 
 const ONE_DAY = 24*60*60*1000;
 
@@ -15,7 +18,7 @@ const ONE_DAY = 24*60*60*1000;
   templateUrl: './movie-selector.component.html',
   styleUrls: ['./movie-selector.component.css']
 })
-export class MovieSelectorComponent implements OnInit {
+export class MovieSelectorComponent implements OnInit, AfterViewInit {
 
   currentDate : Date;
   currentDays : Array<IdataObject> = [];
@@ -26,6 +29,7 @@ export class MovieSelectorComponent implements OnInit {
   currentSessions : Array<any> = [];
   sessionData : ISessionData;
   @Output() sessionDataChange = new EventEmitter();
+  isHidden : boolean = true;
 
   constructor(private apiServis : RequestRouterService) { }
   ngOnInit() {
@@ -45,6 +49,14 @@ export class MovieSelectorComponent implements OnInit {
                             });
     };
   }
+
+  ngAfterViewInit(){
+    
+    //($("#datepicker") as any).datepicker();
+     this.isHidden = true;
+     
+  }
+
 
   OnChangeDate(value){
     // clear parametrs first 
@@ -101,4 +113,22 @@ export class MovieSelectorComponent implements OnInit {
       this.currentMovies.push(found)                
     });
   }
+
+  dateshow(){
+    this.isHidden = false;
+    setTimeout(()=>{($("#datepicker") as any)
+                    .datepicker(
+                      {onSelect : (value, el) =>
+                        {
+                        ($("#datepicker") as any).datepicker("hide"); 
+                        this.isHidden = true; 
+                        console.log(value)
+                        },
+                      controlType: "select"
+                     }
+                     )
+                     .datepicker("show");},100);
+     
+  }
+
 }
