@@ -7,13 +7,13 @@
           <span class="movie-format">{{movieInfo.format}}</span> 
       </p>
       
-      <p>Время :
+      <p *ngIf="movieInfo.duration">Время :
         <span class="movie-duration" >{{movieInfo.duration}}</span>
       </p>
-      
-      <p>Стиль :</p>
-      <span class="movie-genre">{{movieInfo.genre}}</span>
-
+     
+      <p>
+      <span *ngIf="movieInfo.genre" class="movie-genre">{{movieInfo.genre}}</span>
+      </p>  
 
     </div> 
     <div *ngIf="!movieInfo" class="col" >

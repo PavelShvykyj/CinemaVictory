@@ -548,7 +548,7 @@
     <!-- легенда - цвета - цены инфо о фильме  -->
     <div class="col align-self-top justify-content-top"  id="FilmLegend">
       <movie *ngIf="sessionData.currentMovie" [movieInfo] = "sessionData.currentMovie"></movie>
-      <div>    </div>
+      <movie-price *ngIf="sessionData.currentSession" [hallInfo]="hallInfo" [sessionInfo]="sessionData.currentSession" > </movie-price>
     </div>
   </div>
   

@@ -1,3 +1,17 @@
-<p>
-  movie-price works!
-</p>
+<div class="container-fluid">
+  <div class="row"> 
+    <div  class="col " >
+      <div class="col-header"></div>
+      <h5 > Цены на билеты : </h5>
+      <div   *ngFor="let category of priseList.lists">
+        <h6>{{ category.categorySeatName }} </h6>
+        <p *ngFor="let ticket of category.categoryTickets">
+          <span class="categoryTicketName"> {{ticket.categoryTicketName}} </span>
+          <span > {{ticket.categoryTicketPrice}} грн. </span>
+        </p>  
+      </div> 
+    </div> 
+  </div> 
+</div>
+
+

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { IbackEnd, ILoggInData, IResponseData, IGetSessionResponseViewModel, ISessionData } from '../iback-end'
+import { IbackEnd, ILoggInData, IResponseData, IGetSessionResponseViewModel, ISessionData, IHallInfo } from '../iback-end'
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 /// <reference types="crypto-js" />
 import * as CryptoJS from 'crypto-js';
@@ -141,6 +141,55 @@ export class RequestManagerService implements IbackEnd {
                      .then(reoult =>{return JSON.stringify({movieInfo : JSON.parse(reoult)})});   
   }
 
+  GetCategoryTickets(){
+    // /ticketcategories/getall
+    let headers = new HttpHeaders().append('Authorization','Bearer '+this._token).append('Content-Type','text/json')
+    let connection = this.BASE_URL+"/ticketcategories/getall";  
+    return this.http.get(connection,
+                        {headers:headers,
+                        observe: 'body',
+                        withCredentials:false,
+                        reportProgress:true,
+                        responseType:'text'})
+                     .toPromise()
+                     .then(reoult =>{return JSON.stringify({categoryTicketsInfo : JSON.parse(reoult)})});   
+
+
+  }
+
+  GetCategorySeats(){
+    // /ticketcategories/getall
+    let headers = new HttpHeaders().append('Authorization','Bearer '+this._token).append('Content-Type','text/json')
+    let connection = this.BASE_URL+"/seatcategories/getall";  
+    return this.http.get(connection,
+                        {headers:headers,
+                        observe: 'body',
+                        withCredentials:false,
+                        reportProgress:true,
+                        responseType:'text'})
+                     .toPromise()
+                     .then(reoult =>{return JSON.stringify({categorySeatsInfo : JSON.parse(reoult)})});   
+
+
+  }
+
+  
+
+  GetChairsCateoryInfo(){
+    // /ticketcategories/getall
+    let headers = new HttpHeaders().append('Authorization','Bearer '+this._token).append('Content-Type','text/json')
+    let connection = this.BASE_URL+"/hall/get/"+this.HALL_ID;  
+    return this.http.get(connection,
+                        {headers:headers,
+                        observe: 'body',
+                        withCredentials:false,
+                        reportProgress:true,
+                        responseType:'text'})
+                     .toPromise()
+                     .then(reoult =>{return JSON.stringify({ChairsCateoryInfo : JSON.parse(reoult)})});   
+
+
+  }
 
 
   SessionsGetByDate(selectedDate : string) : Promise<string>  {
@@ -165,19 +214,46 @@ export class RequestManagerService implements IbackEnd {
       
   }
 
+
+  
+
+
   SessionsInfoGetByDate(selectedDate : string)  {
     let promiseCollection : Array<any> = [];
     promiseCollection.push(this.SessionsGetByDate(selectedDate));
     promiseCollection.push(this.GetPakegMoviesById());
+ 
     return Promise.all(promiseCollection).then(resoult => {
                                           let par_1 = JSON.parse(resoult[0]);
-                                          let par_2 = JSON.parse(resoult[1]);
-                                          Object.assign(par_1,par_2);      
+                                          for (let i = 1; i <= resoult.length-1; i++) {
+                                                let par = JSON.parse(resoult[i]);
+                                                Object.assign(par_1,par);     
+                                              }
+                                          console.log(par_1);  
                                           return par_1})
                                          .catch(error => {return null})   
                                          
     
     
+  }
+
+  GetHallInfo(){
+    let promiseCollection : Array<any> = [];
+    promiseCollection.push(this.GetCategorySeats());
+    promiseCollection.push(this.GetCategoryTickets());
+    promiseCollection.push(this.GetChairsCateoryInfo());
+
+    return Promise.all(promiseCollection).then(resoult => {
+                                          let par_1 = JSON.parse(resoult[0]);
+                                          for (let i = 1; i <= resoult.length-1; i++) {
+                                                let par = JSON.parse(resoult[i]);
+                                                Object.assign(par_1,par);     
+                                              }
+                                          console.log(par_1);  
+                                          return par_1})
+                                         .catch(error => {return null})   
+
+
   }
 
 }

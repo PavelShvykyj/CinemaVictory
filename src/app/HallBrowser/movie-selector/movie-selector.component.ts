@@ -30,8 +30,8 @@ export class MovieSelectorComponent implements OnInit, AfterViewInit {
   sessionData : ISessionData;
   @Output() sessionDataChange = new EventEmitter();
   pickerHidden : boolean = true;
-  elDatePicker;
-  elDateList ;  
+  $DatePicker;
+  $DateList ;  
 
   constructor(private apiServis : RequestRouterService) { }
   ngOnInit() {
@@ -42,7 +42,10 @@ export class MovieSelectorComponent implements OnInit, AfterViewInit {
     };
     
     let itemDay = new Date();
-    
+    this.currentDays.push({id : +itemDay, 
+      title : itemDay.toLocaleString("ru",dayFormat)
+     });
+
     for (let index = 0; index <= 6; index++) {
       itemDay.setDate(itemDay.getDate() + 1);
       
@@ -56,10 +59,10 @@ export class MovieSelectorComponent implements OnInit, AfterViewInit {
     
     //($("#datepicker") as any).datepicker();
      //this.pickerHidden = true;
-     this.elDatePicker = ($("#inputGroupPickDay") as any);
-     this.elDateList   = ($("#inputGroupSelectDay") as any);
+     this.$DatePicker = ($("#inputGroupPickDay") as any);
+     this.$DateList   = ($("#inputGroupSelectDay") as any);
      
-     this.elDatePicker.datepicker(
+     this.$DatePicker.datepicker(
        {onSelect : (value, el)=> this.OnSelectDatePicker(value, el),
         minDate: 0,
         dateFormat: "yy.mm.dd",
@@ -77,7 +80,7 @@ export class MovieSelectorComponent implements OnInit, AfterViewInit {
     this.sessionData = null;
     this.currentMovies = [];
     this.currentSessions = [];
-    console.log(this.currentDate.toDateString());
+    
 
     this.apiServis.RoutSessionsGetByDate(this.currentDate.toDateString())
                   .then(resoult => {
@@ -96,6 +99,7 @@ export class MovieSelectorComponent implements OnInit, AfterViewInit {
     this.currentSessions = [];
     this.currentMovie = _.find(this.currentMovies,element => {return element.id == id})
     this.currentSessions = _.filter(this.sessionData.sessionInfo, element => { return element.idMovie == id });
+    
     this.sessionDataChange.emit(
       {'currentDate' : this.currentDate, 
         'currentMovie' : this.currentMovie,
@@ -136,9 +140,9 @@ export class MovieSelectorComponent implements OnInit, AfterViewInit {
     {
       
       setTimeout(()=>{
-        this.elDatePicker.datepicker("show");
+        this.$DatePicker.datepicker("show");
          
-        this.elDatePicker.val(new Date().toLocaleString("ru", {  year: 'numeric',
+        this.$DatePicker.val(new Date().toLocaleString("ru", {  year: 'numeric',
         month: 'numeric',
         day: 'numeric'}))
         },100);
@@ -146,7 +150,7 @@ export class MovieSelectorComponent implements OnInit, AfterViewInit {
     else
     {
       
-      this.elDatePicker.datepicker("hide"); 
+      this.$DatePicker.datepicker("hide"); 
       $('select option[value='+this.currentDays[0].id+']').prop('selected', true);
       
     }

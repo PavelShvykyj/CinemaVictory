@@ -1,9 +1,9 @@
 import { Component, OnInit, ViewChildren, QueryList } from '@angular/core';
 import { HallChairComponent } from '../hall-chair/hall-chair.component';
-
+import { RequestRouterService } from '../../back-end-router/request-router.service';
 import { IdataObject } from '../idata-object'
 import * as _ from 'underscore';
-import { ISessionData } from '../../iback-end';
+import { ISessionData, IHallInfo } from '../../iback-end';
 
 @Component({
   selector: 'hall',
@@ -44,11 +44,13 @@ export class HallComponent implements OnInit {
     'currentSession' : null
   };
 
+  hallInfo : IHallInfo; 
 
-  constructor() { 
+  constructor(private apiServis : RequestRouterService) { 
   }
 
   ngOnInit() {
+    this.UpdateHallInfo();
   }
   
 
@@ -87,8 +89,18 @@ export class HallComponent implements OnInit {
     alert(_.now());
   }
 
+  UpdateHallInfo()  {
+     this.apiServis.RoutGetHallInfo().then(resoult => {this.hallInfo = resoult})
+                                     .catch(error => (this.hallInfo = null)) 
+  }
+
   OnSessionDataChange(sessionData) {
-    this.sessionData = sessionData; 
+    
+    if (!this.hallInfo) 
+      {
+        this.UpdateHallInfo();
+      } 
+    this.sessionData = sessionData;   
   }
 
 }
