@@ -1,21 +1,65 @@
 import { Injectable } from '@angular/core';
 import { IbackEnd, ILoggInData, IResponseData, IGetSessionResponseViewModel, ISessionData, IHallInfo } from '../iback-end'
+import { IdataObject } from '../HallBrowser/idata-object';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 /// <reference types="crypto-js" />
 import * as CryptoJS from 'crypto-js';
 import * as _ from 'underscore';
-
+import { HubConnection, HubConnectionBuilder } from '@aspnet/signalr'
+import { Observable } from 'rxjs/Observable';
+import { Subject } from 'rxjs/Subject';
 
 @Injectable()
 export class RequestManagerService implements IbackEnd {
 
   BASE_URL = "https://kino-peremoga.com.ua/api/1.0";
   HALL_ID  = 1;
-  PACKAGE_MOVIES_SIZE = 20;
+  PACKAGE_MOVIES_SIZE = 50;
+  CRYPTO_KEY = 'xm5POGDda6o1SiZMfuNSvXbV8r0+uyBF7BMdAYh+f5Q=';
+  CRYPTO_IV  = 'TweTnUNAAL8VMtvtMNj0Vg==';
 
   private _userData : ILoggInData;
   private _refreshLoginTimer : number;
   private _token : string; 
+  private _hubHallConnection : HubConnection;
+  private _changeHallState = new Subject<IdataObject>();
+  changeHallState$ : Observable<IdataObject> = this._changeHallState.asObservable(); 
+
+
+  constructor(private http : HttpClient) { 
+    this._hubHallConnection = new HubConnectionBuilder().withUrl('https://kino-peremoga.com.ua/hallHub').build();   
+  }
+
+  HubbHallStateParse(encryptedIdSesion : string, SessionData) {
+    
+    let encryptedId = encryptedIdSesion.replace('~~','');
+    let idSesion = this.Decrypt(encryptedId);
+    let hubSessionInfo = {id : idSesion, sessionData : SessionData};
+    console.log('web servise call next');
+    this._changeHallState.next(hubSessionInfo);
+    
+  }
+
+  StartHubbHallConnection(){
+    
+    this._hubHallConnection.start().catch(error => {console.log('start error',error)});
+    
+  }
+
+  StopHubbHallConnection(){
+    this._hubHallConnection.stop().catch(error => {console.log(error)});
+  }
+
+  OnHubbHallConnection(){
+    this._hubHallConnection.on("ReceiveHallState",(idSession, hallstate) =>{
+                                                    this.HubbHallStateParse(idSession, hallstate)}
+     ) 
+
+  }
+
+  OfHubbHallConnection(){
+    this._hubHallConnection.off("ReceiveHallState");
+  }
 
   RefreshToken() {
     setTimeout(() => {
@@ -32,10 +76,15 @@ export class RequestManagerService implements IbackEnd {
     }, this._refreshLoginTimer);
   }
 
-
-  constructor(private http : HttpClient) { 
-    
-
+  Decrypt(encryptedData) : string {
+    let key = CryptoJS.enc.Base64.parse(this.CRYPTO_KEY);
+    let iv = CryptoJS.enc.Base64.parse(this.CRYPTO_IV);
+    let decrypted = CryptoJS.AES.decrypt(encryptedData, key, {
+      iv: iv,
+      mode: CryptoJS.mode.CBC});
+  
+    let  decryptedData = decrypted.toString(CryptoJS.enc.Utf8);
+    return decryptedData;
   }
 
   TestCrypt()

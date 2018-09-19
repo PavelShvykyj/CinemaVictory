@@ -1,8 +1,15 @@
 import { Injectable } from '@angular/core';
 import { IbackEnd, ILoggInData, IResponseData, ISessionData, IHallInfo } from '../iback-end'
+import { Observable } from 'rxjs/Observable';
+import { IdataObject } from '../HallBrowser/idata-object';
+import { Subject } from 'rxjs/Subject';
 
 @Injectable()
 export class RequestManagerService implements IbackEnd {
+
+  private _changeHallState = new Subject<IdataObject>();
+  changeHallState$ : Observable<IdataObject> = this._changeHallState.asObservable(); 
+   
 
   constructor() { }
 
@@ -26,5 +33,23 @@ export class RequestManagerService implements IbackEnd {
   GetHallInfo() : Promise<IHallInfo> | null {
     return null;
   }
+
+  StartHubbHallConnection(){
+    
+  }
+
+  StopHubbHallConnection(){
+    
+  }
+
+  OnHubbHallConnection(){
+    
+
+  }
+
+  OfHubbHallConnection(){
+    
+  }
+
 
 }

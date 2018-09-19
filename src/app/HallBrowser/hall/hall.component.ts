@@ -1,16 +1,18 @@
-import { Component, OnInit, ViewChildren, QueryList } from '@angular/core';
+import { Component, OnInit,OnDestroy , ViewChildren, QueryList } from '@angular/core';
 import { HallChairComponent } from '../hall-chair/hall-chair.component';
 import { RequestRouterService } from '../../back-end-router/request-router.service';
 import { IdataObject } from '../idata-object'
 import * as _ from 'underscore';
 import { ISessionData, IHallInfo } from '../../iback-end';
+import { Observable } from 'rxjs/Observable';
+
 
 @Component({
   selector: 'hall',
   templateUrl: './hall.component.html',
   styleUrls: ['./hall.component.css'],
 })
-export class HallComponent implements OnInit {
+export class HallComponent implements OnInit, OnDestroy {
   
   @ViewChildren(HallChairComponent)
   private chairList : QueryList<HallChairComponent>;
@@ -45,14 +47,39 @@ export class HallComponent implements OnInit {
   };
 
   hallInfo : IHallInfo; 
+  hallState$ : Observable<IdataObject>;
+  hallStateSubscription;
+  hallStateLastSnapshot = [];
 
   constructor(private apiServis : RequestRouterService) { 
+    this.hallState$ = apiServis.changeHallState$;
+    this.hallStateSubscription = this.hallState$.subscribe(resoult => 
+      {
+        console.log('snapsot ',this.hallStateLastSnapshot);
+        console.log('difference ',_.difference(resoult.sessionData.hallState,this.hallStateLastSnapshot));
+        this.hallStateLastSnapshot = resoult.sessionData.hallState; 
+
+    
+    
+    
+      });
+  
   }
 
   ngOnInit() {
     this.UpdateHallInfo();
-  }
+    this.apiServis.RoutStartHubbHallConnection();
+    this.apiServis.RoutOnHubbHallConnection();
+ 
   
+  }
+ 
+  ngOnDestroy() {
+    this.hallStateSubscription.unsubscribe();
+    this.apiServis.RoutOfHubbHallConnection();
+    this.apiServis.RoutStopHubbHallConnection();
+     
+  }
 
   OnmouseoverHallColumn(row) {
     
@@ -86,7 +113,10 @@ export class HallComponent implements OnInit {
   }
   
   FunkBtnUnderscoreTest() {
-    alert(_.now());
+    let s : number = 16;
+    console.log(s.toString(2));
+    
+
   }
 
   UpdateHallInfo()  {

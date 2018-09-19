@@ -21,6 +21,7 @@
     "@angular/platform-browser": "^5.2.0",
     "@angular/platform-browser-dynamic": "^5.2.0",
     "@angular/router": "^5.2.0",
+    "@aspnet/signalr": "^1.0.2",
     "@types/crypto-js": "^3.1.43",
     "@types/jquery": "^3.3.6",
     "@types/underscore": "^1.8.9",

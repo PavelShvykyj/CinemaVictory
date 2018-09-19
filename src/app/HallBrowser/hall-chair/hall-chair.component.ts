@@ -9,6 +9,7 @@ export class ChairStatus implements IdataObject
   isReserved               = false; 
   isSoled                  = false; 
   isSelected               = false;
+  iniciator                = -1;
 }
 
 @Component({

@@ -5,12 +5,15 @@ import { RequestManagerService as localManagerServise } from '../back-end-local/
 import { IbackEnd, ILoggInData, IResponseData, ISessionData, IHallInfo } from '../iback-end'
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
+import 'rxjs/add/observable/merge';
+import { IdataObject } from '../HallBrowser/idata-object';
 
 @Injectable()
 export class RequestRouterService {
   private backends : Array<IbackEnd> = [];
   private emitChangeLoginName = new Subject<string>();
   private emitChangeBackEndName = new Subject<string>();
+  changeHallState$ : Observable<IdataObject>; 
   changeEmittedLoginName$ = this.emitChangeLoginName.asObservable();
   changeEmittedBackEndName$ = this.emitChangeBackEndName.asObservable();
 
@@ -18,7 +21,8 @@ export class RequestRouterService {
   constructor(private webServise : webManagerServise, private localServise : localManagerServise) { 
     this.backends.push(this.webServise);
     this.backends.push(this.localServise);
-
+    this.changeHallState$ = Observable.merge(this.webServise.changeHallState$ ,this.localServise.changeHallState$); 
+    
   }
 
   emitLoginName(change: string) {
@@ -29,11 +33,7 @@ export class RequestRouterService {
     this.emitChangeBackEndName.next(change);
   }
 
-
-
-
   SelectBackEnd() : IbackEnd {
-    
     return this.backends[0];
   } 
 
@@ -57,8 +57,6 @@ export class RequestRouterService {
                               this.emitLoginName(userdata.userName);
                             }
                             return resoult});
-
-
   }
 
 
@@ -87,6 +85,30 @@ export class RequestRouterService {
 
   RoutGetHallInfo() : Promise<IHallInfo> | null  {
     return this.webServise.GetHallInfo();
+  }
+
+  RoutStartHubbHallConnection(){
+    this.webServise.StartHubbHallConnection();
+    this.localServise.StartHubbHallConnection();
+  }
+
+  RoutStopHubbHallConnection(){
+    this.webServise.StopHubbHallConnection();
+    this.localServise.StopHubbHallConnection();
+  }
+
+  RoutOnHubbHallConnection(){
+    this.webServise.OnHubbHallConnection();
+    this.localServise.OnHubbHallConnection();
+  }
+
+  RoutOfHubbHallConnection(){
+    this.webServise.OfHubbHallConnection();
+    this.localServise.OfHubbHallConnection();
+  }
+
+  RoutDecrypt(encryptedData) : string {
+    return this.webServise.Decrypt(encryptedData);
   }
 
 
