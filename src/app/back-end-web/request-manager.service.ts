@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { IbackEnd, ILoggInData, IResponseData, IGetSessionResponseViewModel, ISessionData, IHallInfo } from '../iback-end'
+import { IbackEnd, ILoggInData,IChairStatus, IResponseData, IChairStateViewModelInternal,ISyncTicketsResponseViewModelInternal,  ISyncTicketsResponseViewModel, IGetSessionResponseViewModel, ISessionData, IHallInfo } from '../iback-end'
 import { IdataObject } from '../HallBrowser/idata-object';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 /// <reference types="crypto-js" />
@@ -17,6 +17,8 @@ export class RequestManagerService implements IbackEnd {
   PACKAGE_MOVIES_SIZE = 50;
   CRYPTO_KEY = 'xm5POGDda6o1SiZMfuNSvXbV8r0+uyBF7BMdAYh+f5Q=';
   CRYPTO_IV  = 'TweTnUNAAL8VMtvtMNj0Vg==';
+  CASH_DESK_ID = 1;
+
 
   private _userData : ILoggInData;
   private _refreshLoginTimer : number;
@@ -30,11 +32,55 @@ export class RequestManagerService implements IbackEnd {
     this._hubHallConnection = new HubConnectionBuilder().withUrl('https://kino-peremoga.com.ua/hallHub').build();   
   }
 
-  HubbHallStateParse(encryptedIdSesion : string, SessionData) {
+  ConvertTicketStatusToChairStatus(intStatus : number ) : IChairStatus {
+    //let binStatus = intStatus.toString(2);
+    // побитовое И + побитовый сдвиг 
+    // логика вычислений binStatus = 0000 0000 0000 0000 - 16бит 
+    // Біт 16-13:	Ініціатор: 0 - веб, 1-15 - номер каси. 
+    // Біт 12-5:	idTicketCategory - катагорія квитка (максімум 255 категорій)
+    // Біт 4-3:	завжди 0 (зарезервовано)
+    // Біт 2:	блокування: якщо 1 - початий процес продажу або бронювання (місце заблоковано)
+    // Біт 1:	операція: 1 - продажа, 0 - бронювання
+    let chairStatus : IChairStatus = {
+      iniciator : (intStatus & 0b1111000000000000) >> 12,
+      idTicketCategory : (intStatus & 0b0000111111110000) >> 4,
+      inReserving : (intStatus & 0b0000000000000010) == 2,
+      isSoled : (intStatus & 1) == 1,
+      isReserved : (intStatus & 1) != 1,
+      isFree : false,
+      isSelected : false,
+    }
+    return chairStatus
+  }
+
+ 
+
+  HubbHallStateParse(encryptedIdSesion : string, SessionData : ISyncTicketsResponseViewModel) {
     
-    let encryptedId = encryptedIdSesion.replace('~~','');
+    //let encryptedId = encryptedIdSesion.replace('~~','');
+    
+    //Replace('+', '-').Replace('=', '~').Replace('/', '|');
+    console.log(encryptedIdSesion);
+    let encryptedId = encryptedIdSesion.replace(new RegExp("~",'g'),"=");
+                                       //.replace(new RegExp("-",'g'),"+")
+                                       //.replace(new RegExp("|",'g'),"/");
     let idSesion = this.Decrypt(encryptedId);
-    let hubSessionInfo = {id : idSesion, sessionData : SessionData};
+  
+    let sessionDataInternal : ISyncTicketsResponseViewModelInternal = {
+      starts : SessionData.starts,
+      hallState : []
+    };
+  
+    SessionData.hallState.forEach(element => {
+      let chairState : IChairStateViewModelInternal = {
+      c : element.c,
+      p : element.p,
+      t : element.t,
+      s : this.ConvertTicketStatusToChairStatus(element.s)};
+      sessionDataInternal.hallState.push(chairState);
+    });
+    
+    let hubSessionInfo = {id : idSesion, sessionData : sessionDataInternal};
     console.log('web servise call next');
     this._changeHallState.next(hubSessionInfo);
     

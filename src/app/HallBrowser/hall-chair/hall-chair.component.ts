@@ -1,16 +1,9 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { IdataObject } from '../idata-object'
 import { AngularFontAwesomeComponent } from 'angular-font-awesome'
+import {IChairStatus}  from '../../iback-end'
 
-export class ChairStatus implements IdataObject
-{
-  isFree                   = true;
-  inReserving              = false;   
-  isReserved               = false; 
-  isSoled                  = false; 
-  isSelected               = false;
-  iniciator                = -1;
-}
+
 
 @Component({
   selector: 'hall-chair',
@@ -21,7 +14,7 @@ export class HallChairComponent implements OnInit {
   @Input() chairID : string
   @Input() uniqID : string
   @Input() rowID : string
-  @Input() status : IdataObject = new ChairStatus; 
+  @Input() status : IChairStatus = this.ChairStatusDefoult(); 
 
   constructor() { 
     this.uniqID = this.rowID+this.chairID;
@@ -46,5 +39,18 @@ export class HallChairComponent implements OnInit {
       this.status.isSelected = false;
     }
   }
+
+  ChairStatusDefoult() : IChairStatus
+  {
+   let status = { isFree     : true,
+    inReserving              : false,   
+    isReserved               : false, 
+    isSoled                  : false, 
+    isSelected               : false,
+    iniciator                : -1,
+    idTicketCategory         : 0};
+    return status
+  }
+  
 
 }

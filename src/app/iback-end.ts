@@ -92,6 +92,57 @@ export interface IHallInfo {
     chairsCateoryInfo :  Array<IGetHallResponseViewModel>;
 }
 
+export interface ISyncTicketsResponseViewModel
+{
+    starts: string,//"yyyy-MM-dd HH:mm:ss",
+    hallState:  Array<IChairStateViewModel>
+}
+
+export interface ISyncTicketsResponseViewModelInternal
+{
+    starts: string,//"yyyy-MM-dd HH:mm:ss",
+    hallState:  Array<IChairStateViewModelInternal>
+}
+
+
+export interface IChairViewModel
+{ 
+    r: number, 	// номер ряду
+    c: number 	// номер крісла
+}
+
+export interface IChairStatus
+{
+    isFree       : boolean,            
+    inReserving  : boolean,            
+    isReserved   : boolean,            
+    isSoled      : boolean,            
+    isSelected   : boolean,            
+    iniciator    : number,            
+    idTicketCategory : number            
+  }
+  
+
+export interface IChairStateViewModelInternal
+{
+    c: IChairViewModel,	// ряд, крісло
+    p: number,			// ціна
+    s: IChairStatus,	// статус
+    t: string			// зашифрований код квитка
+}
+
+
+export interface IChairStateViewModel
+{
+    c: IChairViewModel,	// ряд, крісло
+    p: number,			// ціна
+    s: number,			// статус
+    t: string			// зашифрований код квитка
+}
+
+
+
+
 export interface IbackEnd {
     LoggInByPass(LoggInData : ILoggInData): Promise<IResponseData>;
     getUserData() : ILoggInData;
