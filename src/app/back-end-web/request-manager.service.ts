@@ -1,5 +1,18 @@
 import { Injectable } from '@angular/core';
-import { IbackEnd, ILoggInData,IChairStatus, IResponseData, IChairStateViewModelInternal,ISyncTicketsResponseViewModelInternal,  ISyncTicketsResponseViewModel, IGetSessionResponseViewModel, ISessionData, IHallInfo } from '../iback-end'
+import {  IbackEnd, 
+          ILoggInData,
+          IChairStatus,
+          IChairsStatusInSessionInfo,
+          IResponseData,
+          IChairStateViewModelInternal,
+          ISyncTicketsResponseViewModelInternal,
+          ISyncTicketsResponseViewModel,
+          ISyncTicketsRequestViewModel,
+          IGetSessionResponseViewModel,
+          ISessionData,
+          IHallInfo } from '../iback-end'
+
+
 import { IdataObject } from '../HallBrowser/idata-object';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 /// <reference types="crypto-js" />
@@ -24,8 +37,8 @@ export class RequestManagerService implements IbackEnd {
   private _refreshLoginTimer : number;
   private _token : string; 
   private _hubHallConnection : HubConnection;
-  private _changeHallState = new Subject<IdataObject>();
-  changeHallState$ : Observable<IdataObject> = this._changeHallState.asObservable(); 
+  private _changeHallState = new Subject<IChairsStatusInSessionInfo>();
+  changeHallState$ : Observable<IChairsStatusInSessionInfo> = this._changeHallState.asObservable(); 
 
 
   constructor(private http : HttpClient) { 
@@ -53,24 +66,16 @@ export class RequestManagerService implements IbackEnd {
     return chairStatus
   }
 
- 
+ConvertChairStatusToTicketStatus(ChairStatus : IChairStatus) : number {
+  return 0
+}
 
-  HubbHallStateParse(encryptedIdSesion : string, SessionData : ISyncTicketsResponseViewModel) {
-    
-    //let encryptedId = encryptedIdSesion.replace('~~','');
-    
-    //Replace('+', '-').Replace('=', '~').Replace('/', '|');
-    console.log(encryptedIdSesion);
-    let encryptedId = encryptedIdSesion.replace(new RegExp("~",'g'),"=");
-                                       //.replace(new RegExp("-",'g'),"+")
-                                       //.replace(new RegExp("|",'g'),"/");
-    let idSesion = this.Decrypt(encryptedId);
   
+ ConvertSisionDataToSisionDataInternal (SessionData : IdataObject ) : ISyncTicketsResponseViewModelInternal {
     let sessionDataInternal : ISyncTicketsResponseViewModelInternal = {
       starts : SessionData.starts,
       hallState : []
     };
-  
     SessionData.hallState.forEach(element => {
       let chairState : IChairStateViewModelInternal = {
       c : element.c,
@@ -79,17 +84,24 @@ export class RequestManagerService implements IbackEnd {
       s : this.ConvertTicketStatusToChairStatus(element.s)};
       sessionDataInternal.hallState.push(chairState);
     });
-    
-    let hubSessionInfo = {id : idSesion, sessionData : sessionDataInternal};
-    console.log('web servise call next');
+    return sessionDataInternal;
+ }
+
+
+  HubbHallStateParse(encryptedIdSesion : string, SessionData : ISyncTicketsResponseViewModel) {
+       
+    let encryptedId = encryptedIdSesion.replace(RegExp("~",'g'),"=")
+                                       .replace(RegExp("-",'g'),"+")
+                                       .replace(RegExp(/\|/ ,'g'),"/");
+    let idSesion = this.Decrypt(encryptedId);
+    let sessionDataInternal : ISyncTicketsResponseViewModelInternal = this.ConvertSisionDataToSisionDataInternal(SessionData) 
+    let hubSessionInfo = {id : idSesion, chairsData : sessionDataInternal};
     this._changeHallState.next(hubSessionInfo);
     
   }
 
-  StartHubbHallConnection(){
-    
-    this._hubHallConnection.start().catch(error => {console.log('start error',error)});
-    
+  StartHubbHallConnection(){  
+    this._hubHallConnection.start().catch(error => {console.log('start error',error)});   
   }
 
   StopHubbHallConnection(){
@@ -100,7 +112,6 @@ export class RequestManagerService implements IbackEnd {
     this._hubHallConnection.on("ReceiveHallState",(idSession, hallstate) =>{
                                                     this.HubbHallStateParse(idSession, hallstate)}
      ) 
-
   }
 
   OfHubbHallConnection(){
@@ -268,8 +279,6 @@ export class RequestManagerService implements IbackEnd {
 
   }
 
-  
-
   GetChairsCateoryInfo(){
     // /ticketcategories/getall
     let headers = new HttpHeaders().append('Authorization','Bearer '+this._token).append('Content-Type','text/json')
@@ -286,6 +295,57 @@ export class RequestManagerService implements IbackEnd {
 
   }
 
+  SyncTickets(currentState :  ISyncTicketsRequestViewModel) : Promise<ISyncTicketsResponseViewModelInternal> | null
+  { 
+    let headers = new HttpHeaders().append('Authorization','Bearer '+this._token).append('Content-Type','text/json')
+    let connection = this.BASE_URL+"/tickets/sync";  
+    let postBody = {
+                    idHall: this.HALL_ID,
+                    starts: currentState.starts, 
+                    blockSeats: [],
+                    hallState: []
+                   };
+    
+ //   currentState.hallState.forEach(element => {
+ //    let hallStateElemrnt = {
+ //       c : element.c,
+ //       p : element.p,
+ //       s : this.ConvertChairStatusToTicketStatus(element.s),
+ //       t : element.t
+ //     };
+ //     postBody.hallState.push(hallStateElemrnt)  
+ //   });
+ //   
+ //   currentState.blockSeats.forEach(element => {
+ //     let hallStateElemrnt = {
+ //       c : element.c,
+ //       p : element.p,
+ //       s : this.ConvertChairStatusToTicketStatus(element.s),
+ //       t : element.t
+ //     };
+ //     postBody.blockSeats.push(hallStateElemrnt)  
+ //   });
+    
+
+    
+      
+    return this.http.post(connection,
+                  postBody,
+                  {
+                    headers:headers,
+                    observe: 'body',
+                    withCredentials:false,
+                    reportProgress:true,
+                    responseType:'json'
+                  })
+                  .toPromise()
+                  .then(response =>
+                    {
+                      let resoult : ISyncTicketsResponseViewModelInternal  =  this.ConvertSisionDataToSisionDataInternal(response);
+                      return resoult;
+                    });
+ 
+  }
 
   SessionsGetByDate(selectedDate : string) : Promise<string>  {
     let headers = new HttpHeaders().append('Authorization','Bearer '+this._token).append('Content-Type','text/json')
@@ -308,10 +368,6 @@ export class RequestManagerService implements IbackEnd {
                   .then(reoult =>{return JSON.stringify({sessionInfo : JSON.parse(reoult)})});
       
   }
-
-
-  
-
 
   SessionsInfoGetByDate(selectedDate : string)  {
     let promiseCollection : Array<any> = [];

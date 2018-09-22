@@ -2,7 +2,15 @@ import { Injectable } from '@angular/core';
 import { RequestManagerService as webManagerServise } from '../back-end-web/request-manager.service';
 import { RequestManagerService as localManagerServise } from '../back-end-local/request-manager.service';
 
-import { IbackEnd, ILoggInData, IResponseData, ISessionData, IHallInfo } from '../iback-end'
+import { IbackEnd,
+         ILoggInData,
+         IResponseData,
+         IChairsStatusInSessionInfo,
+         ISessionData,
+         ISyncTicketsRequestViewModel,
+         ISyncTicketsResponseViewModelInternal,
+         IHallInfo } from '../iback-end'
+
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 import 'rxjs/add/observable/merge';
@@ -13,7 +21,7 @@ export class RequestRouterService {
   private backends : Array<IbackEnd> = [];
   private emitChangeLoginName = new Subject<string>();
   private emitChangeBackEndName = new Subject<string>();
-  changeHallState$ : Observable<IdataObject>; 
+  changeHallState$ : Observable<IChairsStatusInSessionInfo>; 
   changeEmittedLoginName$ = this.emitChangeLoginName.asObservable();
   changeEmittedBackEndName$ = this.emitChangeBackEndName.asObservable();
 
@@ -111,5 +119,8 @@ export class RequestRouterService {
     return this.webServise.Decrypt(encryptedData);
   }
 
+  RoutSyncTickets(currentState :  ISyncTicketsRequestViewModel) : Promise<ISyncTicketsResponseViewModelInternal> | null {
+    return this.webServise.SyncTickets(currentState);
+  }
 
 }

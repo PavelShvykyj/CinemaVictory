@@ -7,12 +7,14 @@
      
   <i  [ngClass]="{'fa': !status.isFree, 
                  'fa-clock-o': status.inReserving, 
-                 'fa-male': status.isReserved,
-                 'fa-street-view': status.isSoled,
+                 'fa-male': status.isReserved && !status.inReserving,
+                 'fa-street-view': status.isSoled && !status.inReserving,
                  'fa-angle-down': status.isSelected,
                  'is-selected': status.isSelected
                 }"
-                 >{{ chairID }}
+                 >
   </i>
+  <i *ngIf="!(status.isSoled || status.isReserved || status.inReserving)">{{ chairID }}</i>
+
 </div>  
 

@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, OnChanges, Input,ChangeDetectionStrategy  } from '@angular/core';
 import { IdataObject } from '../idata-object'
 import { AngularFontAwesomeComponent } from 'angular-font-awesome'
 import {IChairStatus}  from '../../iback-end'
@@ -10,19 +10,24 @@ import {IChairStatus}  from '../../iback-end'
   templateUrl: './hall-chair.component.html',
   styleUrls: ['./hall-chair.component.css']
 })
-export class HallChairComponent implements OnInit {
-  @Input() chairID : string
+export class HallChairComponent implements OnInit, OnChanges {
+  @Input() chairID : number
   @Input() uniqID : string
-  @Input() rowID : string
-  @Input() status : IChairStatus = this.ChairStatusDefoult(); 
+  @Input() rowID : number
+  @Input() status : IChairStatus  
 
   constructor() { 
-    this.uniqID = this.rowID+this.chairID;
+    this.status = this.ChairStatusDefoult();
     
 
   }
 
   ngOnInit() {
+  }
+
+  ngOnChanges(){
+    
+
   }
 
   OnClick(){

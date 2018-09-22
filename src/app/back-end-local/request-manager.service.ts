@@ -1,5 +1,13 @@
 import { Injectable } from '@angular/core';
-import { IbackEnd, ILoggInData, IResponseData, ISessionData, IHallInfo } from '../iback-end'
+import { IbackEnd,
+         ISyncTicketsRequestViewModel,
+         ISyncTicketsResponseViewModelInternal,
+         ILoggInData,
+         IChairsStatusInSessionInfo,
+         IResponseData,
+         ISessionData,
+         IHallInfo } from '../iback-end'
+
 import { Observable } from 'rxjs/Observable';
 import { IdataObject } from '../HallBrowser/idata-object';
 import { Subject } from 'rxjs/Subject';
@@ -7,8 +15,8 @@ import { Subject } from 'rxjs/Subject';
 @Injectable()
 export class RequestManagerService implements IbackEnd {
 
-  private _changeHallState = new Subject<IdataObject>();
-  changeHallState$ : Observable<IdataObject> = this._changeHallState.asObservable(); 
+  private _changeHallState = new Subject<IChairsStatusInSessionInfo>();
+  changeHallState$ : Observable<IChairsStatusInSessionInfo> = this._changeHallState.asObservable(); 
    
 
   constructor() { }
@@ -51,5 +59,9 @@ export class RequestManagerService implements IbackEnd {
     
   }
 
+  SyncTickets(currentState :  ISyncTicketsRequestViewModel) : Promise<ISyncTicketsResponseViewModelInternal> | null
+  { 
+    return null
+  }
 
 }

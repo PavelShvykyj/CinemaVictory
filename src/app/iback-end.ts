@@ -1,5 +1,4 @@
 
-
 export interface ILoggInData {
     userName : string;
     password : string;
@@ -24,7 +23,6 @@ export interface IGetHallResponseViewModel
 	chairs : Array<IChairCategoryViewModel>;
 }
 
-
 export interface ISeatCategoryResponseViewModel 
 {
     id: number;
@@ -39,7 +37,6 @@ export interface ITicketCategoryResponseViewModel
     name: string;
     sortorder: number;
 }
-
 
 export interface ITicketCategoryPriceViewModel 
 {
@@ -71,7 +68,6 @@ export interface IGetMovieResponseViewModel
     sessionCount: number;
 }
 
-
 export interface IGetSessionResponseViewModel {
     id: number ; 
 	isVisible: boolean ;
@@ -86,6 +82,12 @@ export interface ISessionData {
     movieInfo : Array<IGetMovieResponseViewModel>;
 }
 
+export interface IChairsStatusInSessionInfo {
+    id : string,
+    chairsData : ISyncTicketsResponseViewModelInternal
+}
+
+
 export interface IHallInfo {
     categorySeatsInfo :  Array<ISeatCategoryResponseViewModel>;
     categoryTicketsInfo :  Array<ITicketCategoryResponseViewModel>;
@@ -96,12 +98,6 @@ export interface ISyncTicketsResponseViewModel
 {
     starts: string,//"yyyy-MM-dd HH:mm:ss",
     hallState:  Array<IChairStateViewModel>
-}
-
-export interface ISyncTicketsResponseViewModelInternal
-{
-    starts: string,//"yyyy-MM-dd HH:mm:ss",
-    hallState:  Array<IChairStateViewModelInternal>
 }
 
 
@@ -120,8 +116,7 @@ export interface IChairStatus
     isSelected   : boolean,            
     iniciator    : number,            
     idTicketCategory : number            
-  }
-  
+}
 
 export interface IChairStateViewModelInternal
 {
@@ -131,7 +126,6 @@ export interface IChairStateViewModelInternal
     t: string			// зашифрований код квитка
 }
 
-
 export interface IChairStateViewModel
 {
     c: IChairViewModel,	// ряд, крісло
@@ -140,7 +134,19 @@ export interface IChairStateViewModel
     t: string			// зашифрований код квитка
 }
 
+export interface ISyncTicketsRequestViewModel
+{
+    idHall: number,
+    starts: string, //"yyyy-MM-dd HH:mm:ss",		
+    blockSeats: Array<IChairStateViewModelInternal>,
+    hallState: Array<IChairStateViewModelInternal>
+}
 
+export interface ISyncTicketsResponseViewModelInternal
+{
+    starts: string,//"yyyy-MM-dd HH:mm:ss",
+    hallState:  Array<IChairStateViewModelInternal>
+}
 
 
 export interface IbackEnd {
@@ -148,5 +154,6 @@ export interface IbackEnd {
     getUserData() : ILoggInData;
     SessionsInfoGetByDate(selectedDate : string) : Promise<ISessionData> | null;
     GetHallInfo() : Promise<IHallInfo> | null;
+    SyncTickets(currentState :  ISyncTicketsRequestViewModel) : Promise<ISyncTicketsResponseViewModelInternal> | null;
 
 }

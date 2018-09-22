@@ -1,9 +1,12 @@
-import { Component, OnInit,OnDestroy , ViewChildren, QueryList } from '@angular/core';
+import { Component, OnInit,OnDestroy , ViewChildren, QueryList, ChangeDetectorRef } from '@angular/core';
 import { HallChairComponent } from '../hall-chair/hall-chair.component';
 import { RequestRouterService } from '../../back-end-router/request-router.service';
 import { IdataObject } from '../idata-object'
 import * as _ from 'underscore';
-import { ISessionData, IHallInfo } from '../../iback-end';
+import { ISessionData,
+         ISyncTicketsRequestViewModel,
+         IChairsStatusInSessionInfo,
+         IHallInfo } from '../../iback-end';
 import { Observable } from 'rxjs/Observable';
 
 
@@ -47,50 +50,54 @@ export class HallComponent implements OnInit, OnDestroy {
   };
 
   hallInfo : IHallInfo; 
-  hallState$ : Observable<IdataObject>;
+  hallState$ : Observable<IChairsStatusInSessionInfo>;
   hallStateSubscription;
   hallStateLastSnapshot = [];
+  
 
-  constructor(private apiServis : RequestRouterService) { 
+  constructor(private apiServis : RequestRouterService, private changeDetector : ChangeDetectorRef) { 
     this.hallState$ = apiServis.changeHallState$;
     this.hallStateSubscription = this.hallState$.subscribe(resoult => 
       {
-        console.log('snapsot ',this.hallStateLastSnapshot);
-        console.log('difference ',_.difference(resoult.sessionData.hallState,this.hallStateLastSnapshot));
-        this.hallStateLastSnapshot = resoult.sessionData.hallState; 
+        
+        if (resoult.id == this.sessionData.currentSession.id)
+        {
+            resoult.chairsData.hallState.forEach(element =>
+            {
+              let foundChair = this.chairList.find(function(chair) 
+              {
+                return chair.rowID == element.c.r && chair.chairID == element.c.c;
+              });
 
-    
-    
-    
-      });
-  
+              foundChair.status = element.s;
+              changeDetector.detectChanges(); // не хочет обновить картинку автоматически хотя в 
+                                              // свойства в дочерних обновлены а этот метод передергивает 
+                                              // и себя и дочерние на предмет проверить изменения (является методом componentRef)
+            });
+            this.hallStateLastSnapshot = resoult.chairsData.hallState; 
+         }
+      }); 
   }
 
   ngOnInit() {
     this.UpdateHallInfo();
     this.apiServis.RoutStartHubbHallConnection();
     this.apiServis.RoutOnHubbHallConnection();
- 
-  
   }
  
   ngOnDestroy() {
     this.hallStateSubscription.unsubscribe();
     this.apiServis.RoutOfHubbHallConnection();
-    this.apiServis.RoutStopHubbHallConnection();
-     
+    this.apiServis.RoutStopHubbHallConnection();     
   }
 
-  OnmouseoverHallColumn(row) {
-    
+  OnmouseoverHallColumn(row) {  
     this.mouseStatusCoverByRow[row] = true
   }
 
-  OnmouseoutHallColumn(row){
-    
+  OnmouseoutHallColumn(row){  
     this.mouseStatusCoverByRow[row] = false
   }
-
 
   MarkSelectedChairAsSold() {
     let foundChair = this.chairList.find(function(chair) {
@@ -115,8 +122,11 @@ export class HallComponent implements OnInit, OnDestroy {
   FunkBtnUnderscoreTest() {
     //let s : number = 16;
     //console.log(s.toString(2));
-    let s = "123~~";
-    let s1 = s.replace(new RegExp("~",'g'),"");
+    
+    let s = "123|||||--~~";
+    let s1 = s.replace(new RegExp("~",'g'),"=")
+              .replace(RegExp(/\|/ ,'g'),"/")  
+              .replace(new RegExp("-",'g'),"+"); 
     console.log(s1);
 
 
@@ -127,13 +137,58 @@ export class HallComponent implements OnInit, OnDestroy {
                                      .catch(error => (this.hallInfo = null)) 
   }
 
+  UpdateHallState() {
+    let response : ISyncTicketsRequestViewModel = {
+      idHall: -1, // сервис подменит на нужный
+      starts: this.sessionData.currentSession.starts, //"yyyy-MM-dd HH:mm:ss",		
+      blockSeats: [],
+      hallState: []
+       };
+    this.apiServis.RoutSyncTickets(response).then(resoult => {
+
+      resoult.hallState.forEach(element =>
+        {
+          let foundChair = this.chairList.find(function(chair) 
+          {
+            return chair.rowID == element.c.r && chair.chairID == element.c.c;
+          });
+
+          foundChair.status = element.s;
+          this.changeDetector.detectChanges(); // не хочет обновить картинку автоматически хотя в 
+                                          // свойства в дочерних обновлены а этот метод передергивает 
+                                          // и себя и дочерние на предмет проверить изменения (является методом componentRef)
+        });
+        this.hallStateLastSnapshot = resoult.hallState; 
+
+    } )
+  }
+ 
+ 
+  ClearHallState() {
+    this.chairList.forEach(element  => 
+      { 
+        element.status = element.ChairStatusDefoult();
+        this.changeDetector.detectChanges();
+      });
+  }
+
   OnSessionDataChange(sessionData) {
-    
+    this.sessionData = sessionData;
+
     if (!this.hallInfo) 
       {
         this.UpdateHallInfo();
       } 
-    this.sessionData = sessionData;   
+      
+    if (sessionData.currentSession)
+    {
+      this.ClearHallState();
+      this.UpdateHallState();
+    }
+    else
+    {
+      this.ClearHallState();
+    }
   }
 
 }
