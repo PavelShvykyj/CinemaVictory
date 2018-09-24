@@ -39,8 +39,6 @@ export class MoviePriceComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log('вызвали прайс');
     this.UdatePriseList();
-    console.log(this.priseList.lists);
   }
 }

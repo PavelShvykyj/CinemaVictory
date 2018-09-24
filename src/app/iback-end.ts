@@ -20,7 +20,7 @@ export interface IChairCategoryViewModel {
 export interface IGetHallResponseViewModel
 {
     idHall : number;
-	chairs : Array<IChairCategoryViewModel>;
+	chairs : Array<IChairCategoryViewModel> ;
 }
 
 export interface ISeatCategoryResponseViewModel 
@@ -72,7 +72,7 @@ export interface IGetSessionResponseViewModel {
     id: number ; 
 	isVisible: boolean ;
 	idHall: number ; 
-	starts: Date ;
+	starts: string ;
 	idMovie: number ;
     prices: Array<ISessionPriceViewModel>
 }
@@ -83,7 +83,7 @@ export interface ISessionData {
 }
 
 export interface IChairsStatusInSessionInfo {
-    id : string,
+    id : number,
     chairsData : ISyncTicketsResponseViewModelInternal
 }
 
@@ -91,7 +91,7 @@ export interface IChairsStatusInSessionInfo {
 export interface IHallInfo {
     categorySeatsInfo :  Array<ISeatCategoryResponseViewModel>;
     categoryTicketsInfo :  Array<ITicketCategoryResponseViewModel>;
-    chairsCateoryInfo :  Array<IGetHallResponseViewModel>;
+    chairsCateoryInfo :   IGetHallResponseViewModel;
 }
 
 export interface ISyncTicketsResponseViewModel
@@ -146,6 +146,14 @@ export interface ISyncTicketsResponseViewModelInternal
 {
     starts: string,//"yyyy-MM-dd HH:mm:ss",
     hallState:  Array<IChairStateViewModelInternal>
+}
+
+export interface ICurrentSessionInfo{
+    currentDate : string, 
+    currentMovie : IGetMovieResponseViewModel,
+    currentSession : IGetSessionResponseViewModel
+
+
 }
 
 

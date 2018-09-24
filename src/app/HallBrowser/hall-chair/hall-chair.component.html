@@ -1,20 +1,20 @@
 
-<div class = "cell" [ngClass]="{'is-selected': status.isSelected,
-                                'is-unavailable': status.isSoled || 
-                                                  status.isReserved || 
-                                                  status.inReserving}"
+<div class = "cell" [ngClass]="{'is-selected': chairStateInternal.s.isSelected,
+                                'is-unavailable': chairStateInternal.s.isSoled || 
+                                chairStateInternal.s.isReserved || 
+                                chairStateInternal.s.inReserving}"
      (click)='OnClick()'>
      
-  <i  [ngClass]="{'fa': !status.isFree, 
-                 'fa-clock-o': status.inReserving, 
-                 'fa-male': status.isReserved && !status.inReserving,
-                 'fa-street-view': status.isSoled && !status.inReserving,
-                 'fa-angle-down': status.isSelected,
-                 'is-selected': status.isSelected
+  <i  [ngClass]="{'fa': !chairStateInternal.s.isFree, 
+                 'fa-clock-o': chairStateInternal.s.inReserving, 
+                 'fa-male': chairStateInternal.s.isReserved && !chairStateInternal.s.inReserving,
+                 'fa-street-view': chairStateInternal.s.isSoled && !chairStateInternal.s.inReserving,
+                 'fa-angle-down': chairStateInternal.s.isSelected,
+                 'is-selected': chairStateInternal.s.isSelected
                 }"
                  >
   </i>
-  <i *ngIf="!(status.isSoled || status.isReserved || status.inReserving)">{{ chairID }}</i>
+  <i *ngIf="!(chairStateInternal.s.isSoled || chairStateInternal.s.isReserved || chairStateInternal.s.inReserving)">{{ chairID }}</i>
 
 </div>  
 

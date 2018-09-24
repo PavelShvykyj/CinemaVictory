@@ -4,6 +4,7 @@ import {  IbackEnd,
           IChairStatus,
           IChairsStatusInSessionInfo,
           IResponseData,
+          IChairStateViewModel,
           IChairStateViewModelInternal,
           ISyncTicketsResponseViewModelInternal,
           ISyncTicketsResponseViewModel,
@@ -70,19 +71,34 @@ ConvertChairStatusToTicketStatus(ChairStatus : IChairStatus) : number {
   return 0
 }
 
-  
+ConvertSisionDataInternalToSisionData (SessionData : IdataObject ) : ISyncTicketsResponseViewModel {
+  let sessionData : ISyncTicketsResponseViewModel = {
+    starts : SessionData.starts,
+    hallState : []
+  };
+  SessionData.hallState.forEach(element => {
+    let chairState : IChairStateViewModel = {
+    c : element.c,
+    p : element.p,
+    t : element.t,
+    s : this.ConvertChairStatusToTicketStatus(element.s)};
+    sessionData.hallState.push(chairState);
+  });
+  return sessionData;
+} 
+
  ConvertSisionDataToSisionDataInternal (SessionData : IdataObject ) : ISyncTicketsResponseViewModelInternal {
     let sessionDataInternal : ISyncTicketsResponseViewModelInternal = {
       starts : SessionData.starts,
       hallState : []
     };
     SessionData.hallState.forEach(element => {
-      let chairState : IChairStateViewModelInternal = {
+      let chairStateInternal : IChairStateViewModelInternal = {
       c : element.c,
       p : element.p,
       t : element.t,
       s : this.ConvertTicketStatusToChairStatus(element.s)};
-      sessionDataInternal.hallState.push(chairState);
+      sessionDataInternal.hallState.push(chairStateInternal);
     });
     return sessionDataInternal;
  }
@@ -95,7 +111,7 @@ ConvertChairStatusToTicketStatus(ChairStatus : IChairStatus) : number {
                                        .replace(RegExp(/\|/ ,'g'),"/");
     let idSesion = this.Decrypt(encryptedId);
     let sessionDataInternal : ISyncTicketsResponseViewModelInternal = this.ConvertSisionDataToSisionDataInternal(SessionData) 
-    let hubSessionInfo = {id : idSesion, chairsData : sessionDataInternal};
+    let hubSessionInfo = {id : parseInt(idSesion) , chairsData : sessionDataInternal};
     this._changeHallState.next(hubSessionInfo);
     
   }
@@ -290,7 +306,7 @@ ConvertChairStatusToTicketStatus(ChairStatus : IChairStatus) : number {
                         reportProgress:true,
                         responseType:'text'})
                      .toPromise()
-                     .then(reoult =>{return JSON.stringify({ChairsCateoryInfo : JSON.parse(reoult)})});   
+                     .then(reoult =>{return JSON.stringify({chairsCateoryInfo : JSON.parse(reoult)})});   
 
 
   }
@@ -305,29 +321,14 @@ ConvertChairStatusToTicketStatus(ChairStatus : IChairStatus) : number {
                     blockSeats: [],
                     hallState: []
                    };
-    
- //   currentState.hallState.forEach(element => {
- //    let hallStateElemrnt = {
- //       c : element.c,
- //       p : element.p,
- //       s : this.ConvertChairStatusToTicketStatus(element.s),
- //       t : element.t
- //     };
- //     postBody.hallState.push(hallStateElemrnt)  
- //   });
- //   
- //   currentState.blockSeats.forEach(element => {
- //     let hallStateElemrnt = {
- //       c : element.c,
- //       p : element.p,
- //       s : this.ConvertChairStatusToTicketStatus(element.s),
- //       t : element.t
- //     };
- //     postBody.blockSeats.push(hallStateElemrnt)  
- //   });
-    
 
+    currentState.hallState.forEach(element => {
+      postBody.hallState.push(this.ConvertSisionDataInternalToSisionData(element));  
+    });
     
+    currentState.blockSeats.forEach(element => {
+      postBody.blockSeats.push(this.ConvertSisionDataInternalToSisionData(element));  
+    });
       
     return this.http.post(connection,
                   postBody,
@@ -341,10 +342,11 @@ ConvertChairStatusToTicketStatus(ChairStatus : IChairStatus) : number {
                   .toPromise()
                   .then(response =>
                     {
+                      console.log(response);
                       let resoult : ISyncTicketsResponseViewModelInternal  =  this.ConvertSisionDataToSisionDataInternal(response);
                       return resoult;
-                    });
- 
+                    })
+                  .catch(error => {return null});
   }
 
   SessionsGetByDate(selectedDate : string) : Promise<string>  {

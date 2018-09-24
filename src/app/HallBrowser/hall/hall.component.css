@@ -172,3 +172,7 @@
         margin-right: 10px;
         display: inline;
     }
+
+    .separate {
+        border-top: 2px solid red
+    }

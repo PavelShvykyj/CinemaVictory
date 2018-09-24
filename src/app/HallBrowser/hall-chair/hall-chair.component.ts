@@ -1,7 +1,7 @@
-import { Component, OnInit, OnChanges, Input,ChangeDetectionStrategy  } from '@angular/core';
+import { Component, OnInit, OnChanges, Input, Output ,EventEmitter ,ChangeDetectionStrategy  } from '@angular/core';
 import { IdataObject } from '../idata-object'
 import { AngularFontAwesomeComponent } from 'angular-font-awesome'
-import {IChairStatus}  from '../../iback-end'
+import {IChairStatus,IChairStateViewModelInternal}  from '../../iback-end'
 
 
 
@@ -12,36 +12,42 @@ import {IChairStatus}  from '../../iback-end'
 })
 export class HallChairComponent implements OnInit, OnChanges {
   @Input() chairID : number
-  @Input() uniqID : string
   @Input() rowID : number
-  @Input() status : IChairStatus  
+  @Input() chairStateInternal : IChairStateViewModelInternal
+  @Output() chairSelectStatusChange = new EventEmitter();
 
   constructor() { 
-    this.status = this.ChairStatusDefoult();
-    
-
+   
   }
 
   ngOnInit() {
+    this.chairStateInternal = {
+      s : this.ChairStatusDefoult(),
+      t : "",
+      p : 0,
+      c : {
+            r : +this.rowID,
+            c : +this.chairID
+          } 
+    }    
   }
 
-  ngOnChanges(){
-    
-
-  }
+  ngOnChanges(){}
 
   OnClick(){
     
-    if (this.status.isFree)
+    if (this.chairStateInternal.s.isFree)
     {
-      this.status.isFree = false;
-      this.status.isSelected = true;
+      this.chairStateInternal.s.isFree = false;
+      this.chairStateInternal.s.isSelected = true;
+      this.chairSelectStatusChange.emit(this.chairStateInternal);
       
     }
-    else if (this.status.isSelected)
+    else if (this.chairStateInternal.s.isSelected)
     {
-      this.status.isFree = true;
-      this.status.isSelected = false;
+      this.chairStateInternal.s.isFree = true;
+      this.chairStateInternal.s.isSelected = false;
+      this.chairSelectStatusChange.emit(this.chairStateInternal);
     }
   }
 
