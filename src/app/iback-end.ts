@@ -123,7 +123,8 @@ export interface IChairStateViewModelInternal
     c: IChairViewModel,	// ряд, крісло
     p: number,			// ціна
     s: IChairStatus,	// статус
-    t: string			// зашифрований код квитка
+    t: string,			// зашифрований код квитка
+    prices? : Array<ITicketCategoryPriceViewModel>
 }
 
 export interface IChairStateViewModel
@@ -152,8 +153,6 @@ export interface ICurrentSessionInfo{
     currentDate : string, 
     currentMovie : IGetMovieResponseViewModel,
     currentSession : IGetSessionResponseViewModel
-
-
 }
 
 

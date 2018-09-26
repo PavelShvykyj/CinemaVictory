@@ -15,4 +15,9 @@
 
 .categoryTicketPrice {
     font-weight: 600;
+    color: brown;
+}
+
+.separate {
+    border-top: 2px solid red
 }

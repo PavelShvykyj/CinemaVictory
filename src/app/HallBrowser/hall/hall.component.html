@@ -547,20 +547,51 @@
     </div>
   
     <!-- легенда - цвета - цены инфо о фильме  -->
-    <div class="col align-self-top justify-content-top"  id="FilmLegend">
-      <movie *ngIf="sessionData.currentMovie" [movieInfo] = "sessionData.currentMovie"></movie>
-      <movie-price *ngIf="sessionData.currentSession" [hallInfo]="hallInfo" [sessionInfo]="sessionData.currentSession" > </movie-price>
-      <div *ngIf="chairsInWork.length != 0" class="separate">
-        <h5> Выбранные места : </h5>  
-        <p *ngFor="let chairInWork of chairsInWork">
-            <span>ряд {{chairInWork.c.r}}</span>
-            <span>место {{chairInWork.c.c}}</span>
-            <span>цена {{chairInWork.p}}грн. </span>
-        </p>    
-      </div>  
-    
+    <div class="col align-self-start justify-content-center px-3" id="LegendMovieCol">
+        <div class="row"> 
+            <div class="col align-self-start justify-content-center px-0">
+                <movie  *ngIf="sessionData.currentMovie" [movieInfo] = "sessionData.currentMovie"></movie>
+            </div>    
+        </div>    
+
+        <div class="row"> 
+            <div class="col align-self-start justify-content-center px-0">
+                <movie-price *ngIf="sessionData.currentSession" [hallInfo]="hallInfo" [sessionInfo]="sessionData.currentSession" > </movie-price>
+            </div>    
+        </div>    
+      
+        <div class="row"> 
+            <div class="col align-self-start justify-content-center px-0">
+                <div *ngIf="chairsInWork.length != 0"  class="card mt-2">
+                    <div class="card-header py-2 text-white bg-danger">
+                        Ваші квитки :
+                    </div>      
+                    <ul class="list-group list-group-flush">
+                        <li  *ngFor="let chairInWork of chairsInWork" class="list-group-item border border-danger py-1">    
+                            <!--<div class="input-group py-0 my-0">
+                                <div class="input-group-prepend">
+                                    <div *ngIf="chairInWork.prices.length > 1" class="btn-group" role="group">
+                                        
+                                    </div>-->
+                                    
+                                    <span class="card-text">ряд {{chairInWork.c.r}}</span>
+                                    <span class="card-text">місце {{chairInWork.c.c}}</span>
+                                    <span class="card-text">ціна </span>
+                                    <span *ngFor="let priceElement of chairInWork.prices" class="btn btn-danger">{{priceElement.price }}</span>
+                                    <span class="card-text">грн. </span>
+                            <!--</div>                           
+                            </div>-->        
+                        </li> 
+                    </ul>       
+                    <div class="card-footer text-white bg-danger">
+                        Разом :
+                    </div>
+                </div>  
+            </div>    
+        </div>    
+
     </div>
-  </div>
+</div>
   
   
   <!-- подвал - окно сообщений  -->

@@ -43,7 +43,11 @@
         margin-top: 10px;
         padding-top: 20px; 
     }
-
+   
+    #LegendMovieCol {
+        margin-top: 10px;
+        padding-top: 20px; 
+    }
 
     .col {
         border: 1px solid #F8F8FF;

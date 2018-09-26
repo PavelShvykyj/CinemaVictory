@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, OnChanges, Input } from '@angular/core';
 import { IGetSessionResponseViewModel, IHallInfo } from '../../iback-end';
 import { IdataObject } from '../idata-object';
 import * as _ from 'underscore';
@@ -8,7 +8,7 @@ import * as _ from 'underscore';
   templateUrl: './movie-price.component.html',
   styleUrls: ['./movie-price.component.css']
 })
-export class MoviePriceComponent implements OnInit {
+export class MoviePriceComponent implements OnInit,OnChanges {
 
   @Input() sessionInfo : IGetSessionResponseViewModel;
   @Input() hallInfo : IHallInfo;
@@ -16,6 +16,7 @@ export class MoviePriceComponent implements OnInit {
   constructor() { }
 
   UdatePriseList(){
+    this.priseList = {lists : []};
     if (this.hallInfo && this.sessionInfo)
     {
         this.sessionInfo.prices.forEach(price => {
@@ -39,6 +40,11 @@ export class MoviePriceComponent implements OnInit {
   }
 
   ngOnInit() {
+    //this.UdatePriseList();
+  }
+
+  ngOnChanges() {
     this.UdatePriseList();
   }
+
 }

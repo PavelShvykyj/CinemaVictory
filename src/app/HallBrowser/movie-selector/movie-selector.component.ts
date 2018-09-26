@@ -88,7 +88,7 @@ export class MovieSelectorComponent implements OnInit, AfterViewInit {
                     this.sessionData = resoult;
                     this.SessionDataParse();
                     this.sessionDataChange.emit(
-                    {'currentDate' : this.currentDate, 
+                    { 'currentDate' : this.currentDate, 
                       'currentMovie' : this.currentMovie,
                       'currentSession' : this.currentSession
                     });

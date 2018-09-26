@@ -10,7 +10,8 @@ import { ISessionData,
          ICurrentSessionInfo,
          ISyncTicketsResponseViewModelInternal,
          IHallInfo, 
-         IGetHallResponseViewModel} from '../../iback-end';
+         IGetHallResponseViewModel,
+         ITicketCategoryPriceViewModel} from '../../iback-end';
 import { Observable } from 'rxjs/Observable';
 import { element } from 'protractor';
 
@@ -145,14 +146,14 @@ export class HallComponent implements OnInit, OnDestroy {
 
   }
 
-  CalculateChairPrice(status : IChairStateViewModelInternal ) : number {
+  CalculateChairPrice(status : IChairStateViewModelInternal ) : Array<ITicketCategoryPriceViewModel> {
     
     //let chairsCategoty : IGetHallResponseViewModel =  _.find(this.hallInfo.chairsCateoryInfo,element=>{return element.idHall == 1});
     let  chairsCategoty  = this.hallInfo.chairsCateoryInfo;
     let chairCategory = _.find(chairsCategoty.chairs, element => {return element.r == status.c.r && element.c == status.c.c});
     let prices = _.find(this.sessionData.currentSession.prices,  element => {return element.idSeatCategory == chairCategory.idSeatCategory});
     
-    return prices.tickets[0].price;
+    return prices.tickets;
     
   }
 
@@ -160,16 +161,16 @@ export class HallComponent implements OnInit, OnDestroy {
   OnChairSelectStatusChange(status : IChairStateViewModelInternal ){
     if (this.sessionData.currentSession) {
       // массив без обрабатываемого елемента
-      console.log(' before ',this.chairsInWork) 
       let tempChairsInWork = _.filter(this.chairsInWork,element=>{return status.c.r != element.c.r || status.c.c != element.c.c;});
-      console.log(' temp ',tempChairsInWork); 
       if (status.s.isSelected) 
         {
-          status.p = this.CalculateChairPrice(status);
+          let chairPrices = this.CalculateChairPrice(status); 
+          status.p = chairPrices[0].price;
+          status.prices = chairPrices;
+          
           tempChairsInWork.push(status);
         }
       this.chairsInWork = tempChairsInWork; 
-      console.log(' after ',this.chairsInWork) 
     }
   }
 
@@ -197,11 +198,10 @@ export class HallComponent implements OnInit, OnDestroy {
       // свойства в дочерних обновлены а этот метод передергивает 
       // и себя и дочерние на предмет проверить изменения (является методом componentRef)
       this.hallStateLastSnapshot = StateInfo.hallState; 
-  
   }
  
   SyncHallState(workChairList : Array<IChairStateViewModelInternal> , currentHallState :Array<IChairStateViewModelInternal>){
-    this.ClearHallState();
+    
     let request : ISyncTicketsRequestViewModel = {
       idHall: -1, // сервис подменит на нужный
       starts: this.sessionData.currentSession.starts, //"yyyy-MM-dd HH:mm:ss",		
@@ -209,6 +209,7 @@ export class HallComponent implements OnInit, OnDestroy {
       hallState: currentHallState
     };
     this.apiServis.RoutSyncTickets(request).then(resoult => {this.UpdateHallState(resoult)});
+    
   }
  
   ClearHallState() {
@@ -217,11 +218,13 @@ export class HallComponent implements OnInit, OnDestroy {
         element.chairStateInternal.s = element.ChairStatusDefoult();
         
       });
-      this.changeDetector.detectChanges();
+    this.chairsInWork = [];  
+    this.changeDetector.detectChanges();
   }
 
   OnSessionDataChange(sessionData) {
     this.sessionData = sessionData;
+    this.ClearHallState();
     if (!this.hallInfo) 
       {
         this.UpdateHallInfo();
@@ -229,11 +232,7 @@ export class HallComponent implements OnInit, OnDestroy {
       
     if (sessionData.currentSession)
     {
-      this.SyncHallState([],[])
-    }
-    else
-    {
-      this.ClearHallState();
+      this.SyncHallState([],[]);
     }
   }
 
