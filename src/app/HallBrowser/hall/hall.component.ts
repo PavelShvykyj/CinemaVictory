@@ -157,6 +157,21 @@ export class HallComponent implements OnInit, OnDestroy {
     
   }
 
+  SelectPriceChairInWork(price : number ,chairInWork : IChairStateViewModelInternal){
+    this.chairsInWork[this.chairsInWork.indexOf(chairInWork)].p = price;  
+    //this.chairsInWork.forEach(element => {
+    //     if(element.c.r == chairInWork.c.r && element.c.c == chairInWork.c.c){
+    //      element.p = price;    
+    //     }
+    //    });
+    //console.log(this.chairsInWork);    
+  }
+
+  ChairsInWorkTotalSumm() : number {
+    let total = 0;
+    this.chairsInWork.forEach(element => {total = total+element.p})
+    return total
+  }
 
   OnChairSelectStatusChange(status : IChairStateViewModelInternal ){
     if (this.sessionData.currentSession) {

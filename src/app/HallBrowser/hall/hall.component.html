@@ -6,16 +6,54 @@
     </div>
   </div>
   <div class="row"> <!-- основная область  -->
-    <div class="col align-self-start justify-content-center" id="FuncMenuCol">
+    <div class="col align-self-start justify-content-center " id="FuncMenuCol">
       <!-- кнопки функционального меню  -->
-      <div class="btn-group-vertical btn-block" role="group" aria-label="Function Menu">
-        <button type="button" class="btn btn-secondary btn-funk-menu" (click) = "FunkBtnTest()">Продать</button>
-        <button type="button" class="btn btn-secondary btn-funk-menu" (click) = "FunkBtnUnderscoreTest()">underscore test</button>
-        <button type="button" class="btn btn-secondary btn-funk-menu">Действие 1</button>
-        <button type="button" class="btn btn-secondary btn-funk-menu">Действие 1</button>
-        <button type="button" class="btn btn-secondary btn-funk-menu">Действие 1</button>
-        <button type="button" class="btn btn-secondary btn-funk-menu">Действие 1</button>
-      </div>
+      <div class="row"> 
+        <div class="col align-self-start justify-content-center px-0">
+            <div   class="card mt-2 border border-secondary">
+                <!--<div class="card-header py-2 text-white bg-secondary">
+                 
+                </div>-->      
+        
+                <div class="card-body px-1 py-2">
+                <div class="btn-group-vertical btn-block" role="group" aria-label="Function Menu">
+                    <button type="button" class="btn btn-secondary mb-1" (click) = "FunkBtnTest()">Продать</button>
+                    <button type="button" class="btn btn-secondary mb-1" (click) = "FunkBtnUnderscoreTest()">underscore test</button>
+                    <button type="button" class="btn btn-secondary mb-1">Действие 1</button>
+                    <button type="button" class="btn btn-secondary mb-1">Действие 1</button>
+                    <!--<button type="button" class="btn btn-secondary btn-funk-menu">Действие 1</button>
+                    <button type="button" class="btn btn-secondary btn-funk-menu">Действие 1</button>-->
+                </div>
+                </div>
+            </div>  
+        </div>    
+      </div>    
+
+      <div class="row"> 
+        <div class="col align-self-start justify-content-center px-0">
+            <div *ngIf="chairsInWork.length != 0"  class="card mt-2">
+                <div class="card-header py-2 text-white bg-danger">
+                    Ваші квитки :
+                </div>      
+                <ul class="list-group list-group-flush">
+                    <li  *ngFor="let chairInWork of chairsInWork" class="list-group-item border border-danger py-1">    
+                                <span class="card-text">ряд {{chairInWork.c.r}}</span>
+                                <span class="card-text">місце {{chairInWork.c.c}}</span>
+                                <span class="card-text">ціна </span>
+                                <div class="btn-group btn-group-sm" role="group" >
+                                    <button *ngFor="let priceElement of chairInWork.prices" (click)="SelectPriceChairInWork(priceElement.price,chairInWork)" [ngClass]="{'btn' : true, 'btn-danger' : priceElement.price==chairInWork.p, 'btn-secondary' : priceElement.price!=chairInWork.p  }"   >{{priceElement.price }}</button>
+                                </div>
+                                <span class="card-text">грн. </span>
+                    </li> 
+                </ul>       
+                <div class="card-footer text-white bg-danger">
+                    Разом : {{ChairsInWorkTotalSumm()}}грн.
+                </div>
+            </div>  
+        </div>    
+      </div>    
+
+    
     </div>
     <!-- разметка зала  -->
     <div class="col-8" id="HallCol">
@@ -560,35 +598,29 @@
             </div>    
         </div>    
       
-        <div class="row"> 
+       <div class="row"> 
             <div class="col align-self-start justify-content-center px-0">
                 <div *ngIf="chairsInWork.length != 0"  class="card mt-2">
-                    <div class="card-header py-2 text-white bg-danger">
+                    <!--<div class="card-header py-2 text-white bg-danger">
                         Ваші квитки :
                     </div>      
                     <ul class="list-group list-group-flush">
                         <li  *ngFor="let chairInWork of chairsInWork" class="list-group-item border border-danger py-1">    
-                            <!--<div class="input-group py-0 my-0">
-                                <div class="input-group-prepend">
-                                    <div *ngIf="chairInWork.prices.length > 1" class="btn-group" role="group">
-                                        
-                                    </div>-->
-                                    
                                     <span class="card-text">ряд {{chairInWork.c.r}}</span>
                                     <span class="card-text">місце {{chairInWork.c.c}}</span>
                                     <span class="card-text">ціна </span>
-                                    <span *ngFor="let priceElement of chairInWork.prices" class="btn btn-danger">{{priceElement.price }}</span>
+                                    <div class="btn-group btn-group-sm" role="group" >
+                                        <button *ngFor="let priceElement of chairInWork.prices" (click)="SelectPriceChairInWork(priceElement.price,chairInWork)" [ngClass]="{'btn' : true, 'btn-danger' : priceElement.price==chairInWork.p, 'btn-secondary' : priceElement.price!=chairInWork.p  }"   >{{priceElement.price }}</button>
+                                    </div>
                                     <span class="card-text">грн. </span>
-                            <!--</div>                           
-                            </div>-->        
                         </li> 
-                    </ul>       
+                    </ul>-->       
                     <div class="card-footer text-white bg-danger">
-                        Разом :
+                        Разом до сплати: {{ChairsInWorkTotalSumm()}}грн.
                     </div>
                 </div>  
             </div>    
-        </div>    
+        </div>   
 
     </div>
 </div>
