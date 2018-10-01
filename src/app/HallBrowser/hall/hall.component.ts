@@ -13,7 +13,7 @@ import { ISessionData,
          IGetHallResponseViewModel,
          ITicketCategoryPriceViewModel} from '../../iback-end';
 import { Observable } from 'rxjs/Observable';
-import { element } from 'protractor';
+import print from 'print-js'
 
 
 
@@ -137,11 +137,7 @@ export class HallComponent implements OnInit, OnDestroy {
     //let s : number = 16;
     //console.log(s.toString(2));
     
-    let s = "123|||||--~~";
-    let s1 = s.replace(new RegExp("~",'g'),"=")
-              .replace(RegExp(/\|/ ,'g'),"/")  
-              .replace(new RegExp("-",'g'),"+"); 
-    console.log(s1);
+   /// printJS({printable :'forprint',  type : 'html'});
 
 
   }
