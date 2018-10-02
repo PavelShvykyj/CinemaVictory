@@ -13,8 +13,11 @@ import { ISessionData,
          IGetHallResponseViewModel,
          ITicketCategoryPriceViewModel} from '../../iback-end';
 import { Observable } from 'rxjs/Observable';
-import print from 'print-js'
+//import printJS from "print-js";
+//import 'jquery'; 
+//import '../../../../node_modules/jQuery-Print/dist/jQuery.print.min.js';
 
+	
 
 
 @Component({
@@ -137,8 +140,10 @@ export class HallComponent implements OnInit, OnDestroy {
     //let s : number = 16;
     //console.log(s.toString(2));
     
-   /// printJS({printable :'forprint',  type : 'html'});
-
+    //printJS({printable :'forprint',  type : 'html'});
+    
+    //($ as any).print("#forprint");
+    window.print();
 
   }
 

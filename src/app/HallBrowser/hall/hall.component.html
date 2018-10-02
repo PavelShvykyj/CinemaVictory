@@ -1,11 +1,12 @@
 
-<div  class="container-fluid container-main">
-  <div class="row"> <!-- гланое меню  -->
+<div  class="container-fluid container-main unprintable">
+  <div class="row unprintable"> <!-- гланое меню  -->
     <div class="col" id="MainMenuCol">
         <movie-selector (sessionDataChange) = "OnSessionDataChange($event)"></movie-selector>
     </div>
   </div>
-  <div class="row"> <!-- основная область  -->
+  <div class="row unprintable"> <!-- основная область  -->
+    <!--  функциональные кнопки и билеты  -->
     <div class="col align-self-start justify-content-center " id="FuncMenuCol">
       <!-- кнопки функционального меню  -->
       <div class="row"> 
@@ -18,7 +19,7 @@
                 <div class="card-body px-1 py-2">
                 <div class="btn-group-vertical btn-block" role="group" aria-label="Function Menu">
                     <button type="button" class="btn btn-secondary mb-1" (click) = "FunkBtnTest()">Продать</button>
-                    <button type="button" class="btn btn-secondary mb-1" (click) = "FunkBtnUnderscoreTest()">underscore test</button>
+                    <button type="button" class="btn btn-secondary mb-1" (click) = "FunkBtnUnderscoreTest()">Печать</button>
                     <button type="button" class="btn btn-secondary mb-1">Действие 1</button>
                     <button type="button" class="btn btn-secondary mb-1">Действие 1</button>
                     <!--<button type="button" class="btn btn-secondary btn-funk-menu">Действие 1</button>
@@ -28,7 +29,7 @@
             </div>  
         </div>    
       </div>    
-
+      <!-- выбранные билеты  -->
       <div class="row"> 
         <div class="col align-self-start justify-content-center px-0">
             <div *ngIf="chairsInWork.length != 0"  class="card mt-2">
@@ -56,7 +57,7 @@
     
     </div>
     <!-- разметка зала  -->
-    <div class="col-8" id="HallCol">
+    <div class="col-8 " id="HallCol">
       <!-- "Экран"  -->  
       <div class="row justify-content-center"> 
         <div class="col" >
@@ -585,7 +586,7 @@
     </div>
   
     <!-- легенда - цвета - цены инфо о фильме  -->
-    <div class="col align-self-start justify-content-center px-3" id="LegendMovieCol">
+    <div class="col align-self-start justify-content-center px-3 " id="LegendMovieCol">
         <div class="row"> 
             <div class="col align-self-start justify-content-center px-0">
                 <movie  *ngIf="sessionData.currentMovie" [movieInfo] = "sessionData.currentMovie"></movie>
@@ -623,15 +624,45 @@
         </div>   
 
     </div>
-</div>
+  </div>
   
   
-  <!-- подвал - окно сообщений  -->
-  <div class="row align-items-center"> 
-    <div class="col" id="FooterCol">
-      <div class="alert alert-warning" role="alert">
+  <!-- подвал - окно сообщений временно убираем  
+  <div class="row align-items-center printable"> 
+    <div class="col printable" id="FooterCol">
+      <div class="alert alert-warning printable" role="alert">
         Это уведомление-предупреждение — check it out!
       </div>
     </div>
-  </div>
+  </div>-->
+
+</div>
+
+<!-- областьпечати -->
+<div class="printable"> 
+    <div class="row"> 
+        <div class="col align-self-start justify-content-center px-0">
+            <div *ngIf="chairsInWork.length != 0"  class="card mt-2">
+                <div class="card-header py-2 text-white bg-danger">
+                    Ваші квитки :
+                </div>      
+                <ul class="list-group list-group-flush">
+                    <li  *ngFor="let chairInWork of chairsInWork" class="list-group-item border border-danger py-1">    
+                                <span class="card-text">ряд {{chairInWork.c.r}}</span>
+                                <span class="card-text">місце {{chairInWork.c.c}}</span>
+                                <span class="card-text">ціна </span>
+                                <div class="btn-group btn-group-sm" role="group" >
+                                    <button *ngFor="let priceElement of chairInWork.prices" (click)="SelectPriceChairInWork(priceElement.price,chairInWork)" [ngClass]="{'btn' : true, 'btn-danger' : priceElement.price==chairInWork.p, 'btn-secondary' : priceElement.price!=chairInWork.p  }"   >{{priceElement.price }}</button>
+                                </div>
+                                <span class="card-text">грн. </span>
+                    </li> 
+                </ul>       
+                <div class="card-footer text-white bg-danger">
+                    Разом : {{ChairsInWorkTotalSumm()}}грн.
+                </div>
+            </div>  
+        </div>    
+    </div>    
+        
+
 </div>

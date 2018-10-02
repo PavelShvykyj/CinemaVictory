@@ -3,3 +3,22 @@ body {background-color: #F8F8FF;
       padding: 10px;       
      }
 
+
+ @media print {
+      .printable {
+          display: block !important;
+      }
+      .unprintable {
+          display: none !important;
+      }
+  }
+
+  @media screen {
+      .printable {
+          display: none !important;
+      }
+      .unprintable {
+            display: block;
+        }
+  
+}     

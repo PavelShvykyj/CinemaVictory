@@ -80,8 +80,6 @@ export class MovieSelectorComponent implements OnInit, AfterViewInit {
     this.sessionData = null;
     this.currentMovies = [];
     this.currentSessions = [];
-    
-
     this.apiServis.RoutSessionsGetByDate(this.currentDate.toDateString())
                   .then(resoult => {
                     
@@ -130,8 +128,11 @@ export class MovieSelectorComponent implements OnInit, AfterViewInit {
     });
   }
 
-  OnSelectDatePicker(value, el){
-    this.OnChangeDate(Date.parse(value));
+  OnSelectDatePicker(value : string, el){
+    // для совместимости с ИЕ
+    let formatedValue = value.replace(RegExp(/\./,'g'),"-");
+    //console.log("date picker formatedValue",formatedValue);
+    this.OnChangeDate(Date.parse(formatedValue));
   }
 
   DatePickerChange(){

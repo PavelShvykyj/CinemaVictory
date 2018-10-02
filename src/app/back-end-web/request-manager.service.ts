@@ -138,11 +138,11 @@ ConvertSisionDataInternalToSisionData (SessionData : IdataObject ) : ISyncTicket
     setTimeout(() => {
               this.LoggInByPass(this._userData)
                   .then(resoult => {
-                    console.log('RefreshToken resoult',resoult)
+                    //console.log('RefreshToken resoult',resoult)
                     this.RefreshToken(); // rekursive     
                   })
                   .catch(resoult => {
-                    console.log('RefreshToken error',resoult)
+                    //console.log('RefreshToken error',resoult)
                     //  somthing wrong что то не так при обновлении токена что будем делать пока не ясно
                     //  токен почищен в  LoggInByPass данные пользователя в свойствах пока не чистим вдруг захотим переденуть
                   })
@@ -342,7 +342,7 @@ ConvertSisionDataInternalToSisionData (SessionData : IdataObject ) : ISyncTicket
                   .toPromise()
                   .then(response =>
                     {
-                      console.log(response);
+                      //console.log(response);
                       let resoult : ISyncTicketsResponseViewModelInternal  =  this.ConvertSisionDataToSisionDataInternal(response);
                       return resoult;
                     })
@@ -382,7 +382,7 @@ ConvertSisionDataInternalToSisionData (SessionData : IdataObject ) : ISyncTicket
                                                 let par = JSON.parse(resoult[i]);
                                                 Object.assign(par_1,par);     
                                               }
-                                          console.log(par_1);  
+                                          //console.log(par_1);  
                                           return par_1})
                                          .catch(error => {return null})   
                                          
@@ -402,7 +402,7 @@ ConvertSisionDataInternalToSisionData (SessionData : IdataObject ) : ISyncTicket
                                                 let par = JSON.parse(resoult[i]);
                                                 Object.assign(par_1,par);     
                                               }
-                                          console.log(par_1);  
+                                          //console.log(par_1);  
                                           return par_1})
                                          .catch(error => {return null})   
 
