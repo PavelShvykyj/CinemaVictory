@@ -13,11 +13,8 @@ import { ISessionData,
          IGetHallResponseViewModel,
          ITicketCategoryPriceViewModel} from '../../iback-end';
 import { Observable } from 'rxjs/Observable';
-//import printJS from "print-js";
-//import 'jquery'; 
-//import '../../../../node_modules/jQuery-Print/dist/jQuery.print.min.js';
+//import print from 'print-js'
 
-	
 
 
 @Component({
@@ -139,12 +136,9 @@ export class HallComponent implements OnInit, OnDestroy {
   FunkBtnUnderscoreTest() {
     //let s : number = 16;
     //console.log(s.toString(2));
-    
-    //printJS({printable :'forprint',  type : 'html'});
-    
-    //($ as any).print("#forprint");
+    console.log('print');
+    //print({printable :'forprint',  type : 'html'});
     window.print();
-
   }
 
   CalculateChairPrice(status : IChairStateViewModelInternal ) : Array<ITicketCategoryPriceViewModel> {
