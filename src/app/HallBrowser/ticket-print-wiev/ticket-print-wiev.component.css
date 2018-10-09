@@ -1,5 +1,5 @@
 @page  {
-    size: 6cm 10cm;  /* width height */
+    size: 6cm 5cm;  /* width height */
     margin: 0.2cm
 }
 
@@ -9,7 +9,7 @@
     -webkit-transform: rotate(90deg); /* Для Safari, Chrome, iOS */
     -o-transform: rotate(90deg); /* Для Opera */
     transform-origin: center;
-    transform: rotate(90deg) translateX(500px)  ;
+    transform: rotate(90deg) translateX(1200px) scaleX(2)    ;
       
 
 }

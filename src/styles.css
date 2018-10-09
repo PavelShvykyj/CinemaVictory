@@ -4,16 +4,21 @@ body {background-color: #F8F8FF;
      }
 
 
- @media print {
-      .printable {
-          display: block !important;
-      }
-      .unprintable {
-          display: none !important;
-      }
-  }
+    @media print {
+        .printable {
+            display: block !important;
+        }
+        .unprintable {
+            display: none !important;
+        }
+    }
 
-  @media screen {
+    @page  {
+        size: 60cm 50cm;  /* width height */
+        /*margin: 0.2cm */
+    }
+
+    @media screen {
       .printable {
           display: none !important;
       }

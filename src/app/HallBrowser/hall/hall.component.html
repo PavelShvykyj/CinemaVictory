@@ -10,7 +10,7 @@
     <div class="col align-self-start justify-content-center " id="FuncMenuCol">
       <!-- кнопки функционального меню  -->
       <div class="row"> 
-        <div class="col align-self-start justify-content-center px-0" id="forprint">
+        <div class="col align-self-start justify-content-center px-0" >
             <div   class="card mt-2 border border-secondary">
                 <!--<div class="card-header py-2 text-white bg-secondary">
                  
@@ -639,30 +639,6 @@
 </div>
 
 <!-- областьпечати -->
-<div class="printable"> 
-    <div class="row"> 
-        <div class="col align-self-start justify-content-center px-0">
-            <div *ngIf="chairsInWork.length != 0"  class="card mt-2">
-                <div class="card-header py-2 text-white bg-danger">
-                    Ваші квитки :
-                </div>      
-                <ul class="list-group list-group-flush">
-                    <li  *ngFor="let chairInWork of chairsInWork" class="list-group-item border border-danger py-1">    
-                                <span class="card-text">ряд {{chairInWork.c.r}}</span>
-                                <span class="card-text">місце {{chairInWork.c.c}}</span>
-                                <span class="card-text">ціна </span>
-                                <div class="btn-group btn-group-sm" role="group" >
-                                    <button *ngFor="let priceElement of chairInWork.prices" (click)="SelectPriceChairInWork(priceElement.price,chairInWork)" [ngClass]="{'btn' : true, 'btn-danger' : priceElement.price==chairInWork.p, 'btn-secondary' : priceElement.price!=chairInWork.p  }"   >{{priceElement.price }}</button>
-                                </div>
-                                <span class="card-text">грн. </span>
-                    </li> 
-                </ul>       
-                <div class="card-footer text-white bg-danger">
-                    Разом : {{ChairsInWorkTotalSumm()}}грн.
-                </div>
-            </div>  
-        </div>    
-    </div>    
-        
-
+<div class="printable" id="forprint"> 
+    <ticket-print-wiev></ticket-print-wiev>
 </div>

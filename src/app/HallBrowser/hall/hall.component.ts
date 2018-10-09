@@ -136,7 +136,7 @@ export class HallComponent implements OnInit, OnDestroy {
   FunkBtnUnderscoreTest() {
     //let s : number = 16;
     //console.log(s.toString(2));
-    console.log('print');
+    //console.log('print');
     //print({printable :'forprint',  type : 'html'});
     window.print();
   }
@@ -200,8 +200,18 @@ export class HallComponent implements OnInit, OnDestroy {
           return chair.chairStateInternal.c.r == element.c.r && chair.chairStateInternal.c.c == element.c.c;
         });
         
-        
+        /// Нужно учесть что может прилететь ответ по уже выбранным билетам
+        let foundChairInWork = _.find(this.chairsInWork,chair => {return chair.c.r == element.c.r && chair.c.c == element.c.c;})
+
         foundChair.chairStateInternal = element;
+        /// прилетел обновленный статус для места отмеченного в работу 
+        /// отмеим что он является выделенным (от сигнала isSelected всегда ложь)
+        /// можно ли дальше с ним работать зависит от ответа это решается в функции продажи.
+        if (foundChairInWork){
+          foundChairInWork.s = element.s;
+          foundChairInWork.s.isSelected = true;
+          foundChair.chairStateInternal.s.isSelected = true;
+        }
       });
      
       this.changeDetector.detectChanges();  // не хочет обновить картинку автоматически хотя в 

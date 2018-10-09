@@ -1,3 +1,4 @@
+import {TicketOperations } from "./global_enums"
 
 export interface ILoggInData {
     userName : string;
@@ -140,7 +141,8 @@ export interface ISyncTicketsRequestViewModel
     idHall: number,
     starts: string, //"yyyy-MM-dd HH:mm:ss",		
     blockSeats: Array<IChairStateViewModelInternal>,
-    hallState: Array<IChairStateViewModelInternal>
+    hallState: Array<IChairStateViewModelInternal>,
+    TicketOperation? : TicketOperations
 }
 
 export interface ISyncTicketsResponseViewModelInternal

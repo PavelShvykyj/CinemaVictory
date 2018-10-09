@@ -22,6 +22,8 @@ import * as _ from 'underscore';
 import { HubConnection, HubConnectionBuilder } from '@aspnet/signalr'
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
+import {TicketOperations } from "../global_enums";
+
 
 @Injectable()
 export class RequestManagerService implements IbackEnd {
@@ -67,11 +69,21 @@ export class RequestManagerService implements IbackEnd {
     return chairStatus
   }
 
-ConvertChairStatusToTicketStatus(ChairStatus : IChairStatus) : number {
+ConvertChairStatusToTicketStatus(ChairStatus : IChairStatus, OperationType : TicketOperations | null) : number {
+  //var result = 0;
+  //result = result | ((status.IdCashDesk & 0b1111) << 12);
+  //result = result | ((status.IdTicketCategory & 0b11111111) << 4);
+  //if (status.BuyOrReserveStarted) result = result | 2;
+  //if (status.TicketOperation == TicketOperation.Buy) result = result | 1;
+  //return result;
+  let result = 0;
+  
+
+  
   return 0
 }
 
-ConvertSisionDataInternalToSisionData (SessionData : IdataObject ) : ISyncTicketsResponseViewModel {
+ConvertSisionDataInternalToSisionData (SessionData : IdataObject,TicketOperation : TicketOperations | null ) : ISyncTicketsResponseViewModel {
   let sessionData : ISyncTicketsResponseViewModel = {
     starts : SessionData.starts,
     hallState : []
@@ -81,7 +93,7 @@ ConvertSisionDataInternalToSisionData (SessionData : IdataObject ) : ISyncTicket
     c : element.c,
     p : element.p,
     t : element.t,
-    s : this.ConvertChairStatusToTicketStatus(element.s)};
+    s : this.ConvertChairStatusToTicketStatus(element.s, TicketOperation)};
     sessionData.hallState.push(chairState);
   });
   return sessionData;
@@ -323,11 +335,11 @@ ConvertSisionDataInternalToSisionData (SessionData : IdataObject ) : ISyncTicket
                    };
 
     currentState.hallState.forEach(element => {
-      postBody.hallState.push(this.ConvertSisionDataInternalToSisionData(element));  
+      postBody.hallState.push(this.ConvertSisionDataInternalToSisionData(element, null));  
     });
     
     currentState.blockSeats.forEach(element => {
-      postBody.blockSeats.push(this.ConvertSisionDataInternalToSisionData(element));  
+      postBody.blockSeats.push(this.ConvertSisionDataInternalToSisionData(element,currentState.TicketOperation));  
     });
       
     return this.http.post(connection,
