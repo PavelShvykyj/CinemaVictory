@@ -135,11 +135,11 @@ export class HallComponent implements OnInit, OnDestroy {
       element.s.inReserving = true;
       element.s.iniciator = this.CASH_DESK_ID;
       element.s.isFree = false;
-      element.s.isSoled = false;
+      element.s.isSoled = true;
       element.s.isReserved = false;
     })
 
-    this.SyncHallState(this.chairsInWork,this.hallStateLastSnapshot)
+    this.SyncHallState(this.chairsInWork,[])
         .then(resoult=>{
           /// заблокировали - теперь печатаем
           this.UpdateHallState(resoult);
@@ -184,7 +184,7 @@ export class HallComponent implements OnInit, OnDestroy {
         element.s.isReserved = false;
       });
 
-      this.SyncHallState(this.chairsInWork,this.hallStateLastSnapshot)
+      this.SyncHallState([],this.chairsInWork)
           .then(resoult => {
             console.log('fifnish ', resoult);
             this.UpdateHallState(resoult);

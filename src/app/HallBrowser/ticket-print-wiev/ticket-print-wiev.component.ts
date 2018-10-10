@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import 'jquery'; 
-import '../../../../node_modules/jQuery-Print/jQuery.print.js'; 
+//import '../../../../node_modules/jQuery-Print/jQuery.print.js'; 
 
 @Component({
   selector: 'ticket-print-wiev',
@@ -15,7 +15,7 @@ export class TicketPrintWievComponent implements OnInit {
   }
 
   TestPrint(){
-    ($("#printable") as any).print();
+    //($("#printable") as any).print();
     //($ as any).print('printable');
 
   }

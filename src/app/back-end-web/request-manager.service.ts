@@ -62,8 +62,8 @@ export class RequestManagerService implements IbackEnd {
       iniciator : (intStatus & 0b1111000000000000) >> 12,
       idTicketCategory : (intStatus & 0b0000111111110000) >> 4,
       inReserving : (intStatus & 0b0000000000000010) == 2,
-      isSoled : ((intStatus & 1) == 1) && ((intStatus & 0b0000000000000010) != 2),
-      isReserved : ((intStatus & 1) != 1) && ((intStatus & 0b0000000000000010) != 2),
+      isSoled : ((intStatus & 1) == 1),// && ((intStatus & 0b0000000000000010) != 2),
+      isReserved : ((intStatus & 1) != 1),// && ((intStatus & 0b0000000000000010) != 2),
       isFree : false,
       isSelected : false,
     }
@@ -85,7 +85,7 @@ ConvertChairStatusToTicketStatus(ChairStatus : IChairStatus) : number {
     result = result | 2;
   }
   
-  if (ChairStatus.isSoled || ChairStatus.isReserved) {
+  if (ChairStatus.isSoled ) {
     result = result | 1;
   }
 
