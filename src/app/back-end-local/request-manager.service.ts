@@ -64,4 +64,12 @@ export class RequestManagerService implements IbackEnd {
     return null
   }
 
+  SetHallInfo(resoult: IHallInfo){
+    /// запись snapshot HallInfo in 1C buffer
+  }
+
+  SetSessionsInfoGetByDate(selectedDate : string , resoult : ISessionData){
+    /// запись snapshot  in 1C buffer
+  }
+
 }

@@ -18,9 +18,9 @@
         
                 <div class="card-body px-1 py-2">
                 <div class="btn-group-vertical btn-block" role="group" aria-label="Function Menu">
-                    <button type="button" class="btn btn-secondary mb-1" (click) = "FunkBtnTest()">Продать</button>
-                    <button type="button" class="btn btn-secondary mb-1" (click) = "FunkBtnUnderscoreTest()">Печать</button>
-                    <button type="button" class="btn btn-secondary mb-1">Действие 1</button>
+                    <button type="button" class="btn btn-secondary mb-1" (click) = "StartSailSelected()">Печать</button>
+                    <button type="button" class="btn btn-secondary mb-1" (click) = "FinishSailSelected()">Продать</button>
+                    <button type="button" class="btn btn-secondary mb-1" (click) = "FunkBtnUnderscoreTest()">Служебная тест</button>
                     <button type="button" class="btn btn-secondary mb-1">Действие 1</button>
                     <!--<button type="button" class="btn btn-secondary btn-funk-menu">Действие 1</button>
                     <button type="button" class="btn btn-secondary btn-funk-menu">Действие 1</button>-->
@@ -42,7 +42,7 @@
                                 <span class="card-text">місце {{chairInWork.c.c}}</span>
                                 <span class="card-text">ціна </span>
                                 <div class="btn-group btn-group-sm" role="group" >
-                                    <button *ngFor="let priceElement of chairInWork.prices" (click)="SelectPriceChairInWork(priceElement.price,chairInWork)" [ngClass]="{'btn' : true, 'btn-danger' : priceElement.price==chairInWork.p, 'btn-secondary' : priceElement.price!=chairInWork.p  }"   >{{priceElement.price }}</button>
+                                    <button *ngFor="let priceElement of chairInWork.prices" (click)="SelectPriceChairInWork(priceElement.price,priceElement.idTicketCategory,chairInWork)" [ngClass]="{'btn' : true, 'btn-danger' : priceElement.price==chairInWork.p, 'btn-secondary' : priceElement.price!=chairInWork.p  }"   >{{priceElement.price }}</button>
                                 </div>
                                 <span class="card-text">грн. </span>
                     </li> 

@@ -22,7 +22,8 @@ import * as _ from 'underscore';
 import { HubConnection, HubConnectionBuilder } from '@aspnet/signalr'
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
-import {TicketOperations } from "../global_enums";
+import { error } from 'util';
+
 
 
 @Injectable()
@@ -61,41 +62,65 @@ export class RequestManagerService implements IbackEnd {
       iniciator : (intStatus & 0b1111000000000000) >> 12,
       idTicketCategory : (intStatus & 0b0000111111110000) >> 4,
       inReserving : (intStatus & 0b0000000000000010) == 2,
-      isSoled : (intStatus & 1) == 1,
-      isReserved : (intStatus & 1) != 1,
+      isSoled : ((intStatus & 1) == 1) && ((intStatus & 0b0000000000000010) != 2),
+      isReserved : ((intStatus & 1) != 1) && ((intStatus & 0b0000000000000010) != 2),
       isFree : false,
       isSelected : false,
     }
     return chairStatus
   }
 
-ConvertChairStatusToTicketStatus(ChairStatus : IChairStatus, OperationType : TicketOperations | null) : number {
+ConvertChairStatusToTicketStatus(ChairStatus : IChairStatus) : number {
   //var result = 0;
   //result = result | ((status.IdCashDesk & 0b1111) << 12);
   //result = result | ((status.IdTicketCategory & 0b11111111) << 4);
   //if (status.BuyOrReserveStarted) result = result | 2;
   //if (status.TicketOperation == TicketOperation.Buy) result = result | 1;
   //return result;
+  //console.log(ChairStatus);
   let result = 0;
+  result = result | ((this.CASH_DESK_ID & 0b1111) << 12); 
+  result = result | ((ChairStatus.idTicketCategory & 0b11111111) << 4);
+  if (ChairStatus.inReserving) {
+    result = result | 2;
+  }
   
+  if (ChairStatus.isSoled || ChairStatus.isReserved) {
+    result = result | 1;
+  }
 
   
-  return 0
+
+
+  return result
 }
 
-ConvertSisionDataInternalToSisionData (SessionData : IdataObject,TicketOperation : TicketOperations | null ) : ISyncTicketsResponseViewModel {
-  let sessionData : ISyncTicketsResponseViewModel = {
-    starts : SessionData.starts,
-    hallState : []
-  };
-  SessionData.hallState.forEach(element => {
+ConvertHallStateInternalToHallState(HallStateInternal : Array<IChairStateViewModelInternal>) : Array<IChairStateViewModel>{
+  let hallState = [];
+  HallStateInternal.forEach(element => {
     let chairState : IChairStateViewModel = {
     c : element.c,
     p : element.p,
     t : element.t,
-    s : this.ConvertChairStatusToTicketStatus(element.s, TicketOperation)};
-    sessionData.hallState.push(chairState);
+    s : this.ConvertChairStatusToTicketStatus(element.s)};
+    hallState.push(chairState);
   });
+  return hallState
+}
+
+ConvertSisionDataInternalToSisionData (SessionData : IdataObject) : ISyncTicketsResponseViewModel {
+  let sessionData : ISyncTicketsResponseViewModel = {
+    starts : SessionData.starts,
+    hallState : this.ConvertHallStateInternalToHallState(SessionData.hallState)
+  };
+  //SessionData.hallState.forEach(element => {
+  //  let chairState : IChairStateViewModel = {
+  //  c : element.c,
+  //  p : element.p,
+  //  t : element.t,
+  //  s : this.ConvertChairStatusToTicketStatus(element.s)};
+  //  sessionData.hallState.push(chairState);
+  //});
   return sessionData;
 } 
 
@@ -272,7 +297,8 @@ ConvertSisionDataInternalToSisionData (SessionData : IdataObject,TicketOperation
                         reportProgress:true,
                         responseType:'text'})
                      .toPromise()
-                     .then(reoult =>{return JSON.stringify({movieInfo : JSON.parse(reoult)})});   
+                     .then(reoult =>{return JSON.stringify({movieInfo : JSON.parse(reoult)})})
+                     .catch(error=>{return error});   
   }
 
   GetCategoryTickets(){
@@ -286,7 +312,8 @@ ConvertSisionDataInternalToSisionData (SessionData : IdataObject,TicketOperation
                         reportProgress:true,
                         responseType:'text'})
                      .toPromise()
-                     .then(reoult =>{return JSON.stringify({categoryTicketsInfo : JSON.parse(reoult)})});   
+                     .then(reoult =>{return JSON.stringify({categoryTicketsInfo : JSON.parse(reoult)})})
+                     .catch(error=>{throw error});   
 
 
   }
@@ -302,7 +329,8 @@ ConvertSisionDataInternalToSisionData (SessionData : IdataObject,TicketOperation
                         reportProgress:true,
                         responseType:'text'})
                      .toPromise()
-                     .then(reoult =>{return JSON.stringify({categorySeatsInfo : JSON.parse(reoult)})});   
+                     .then(reoult =>{return JSON.stringify({categorySeatsInfo : JSON.parse(reoult)})})
+                     .catch(error=>{throw error});   
 
 
   }
@@ -318,7 +346,8 @@ ConvertSisionDataInternalToSisionData (SessionData : IdataObject,TicketOperation
                         reportProgress:true,
                         responseType:'text'})
                      .toPromise()
-                     .then(reoult =>{return JSON.stringify({chairsCateoryInfo : JSON.parse(reoult)})});   
+                     .then(reoult =>{return JSON.stringify({chairsCateoryInfo : JSON.parse(reoult)})})
+                     .catch(error=>{throw error});   
 
 
   }
@@ -330,18 +359,12 @@ ConvertSisionDataInternalToSisionData (SessionData : IdataObject,TicketOperation
     let postBody = {
                     idHall: this.HALL_ID,
                     starts: currentState.starts, 
-                    blockSeats: [],
-                    hallState: []
+                    blockSeats: this.ConvertHallStateInternalToHallState(currentState.blockSeats),
+                    hallState: this.ConvertHallStateInternalToHallState(currentState.hallState)
                    };
-
-    currentState.hallState.forEach(element => {
-      postBody.hallState.push(this.ConvertSisionDataInternalToSisionData(element, null));  
-    });
     
-    currentState.blockSeats.forEach(element => {
-      postBody.blockSeats.push(this.ConvertSisionDataInternalToSisionData(element,currentState.TicketOperation));  
-    });
-      
+  
+    
     return this.http.post(connection,
                   postBody,
                   {
@@ -354,11 +377,11 @@ ConvertSisionDataInternalToSisionData (SessionData : IdataObject,TicketOperation
                   .toPromise()
                   .then(response =>
                     {
-                      //console.log(response);
+                      console.log('ok in web serveice',response);
                       let resoult : ISyncTicketsResponseViewModelInternal  =  this.ConvertSisionDataToSisionDataInternal(response);
                       return resoult;
-                    })
-                  .catch(error => {return null});
+                    });
+                  //.catch(error => {console.log('error in web serveice ', error); return error});
   }
 
   SessionsGetByDate(selectedDate : string) : Promise<string>  {
@@ -379,7 +402,8 @@ ConvertSisionDataInternalToSisionData (SessionData : IdataObject,TicketOperation
                   reportProgress:true,
                   responseType:'text'})
                   .toPromise()
-                  .then(reoult =>{return JSON.stringify({sessionInfo : JSON.parse(reoult)})});
+                  .then(reoult =>{return JSON.stringify({sessionInfo : JSON.parse(reoult)})})
+                  .catch(error=>{return error});
       
   }
 
@@ -396,7 +420,7 @@ ConvertSisionDataInternalToSisionData (SessionData : IdataObject,TicketOperation
                                               }
                                           //console.log(par_1);  
                                           return par_1})
-                                         .catch(error => {return null})   
+                                         .catch(error => {return error})   
                                          
     
     
@@ -416,7 +440,7 @@ ConvertSisionDataInternalToSisionData (SessionData : IdataObject,TicketOperation
                                               }
                                           //console.log(par_1);  
                                           return par_1})
-                                         .catch(error => {return null})   
+                                         .catch(error => {console.log('HallInfo error in web serveice',error); return error})   
 
 
   }
