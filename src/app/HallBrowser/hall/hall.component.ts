@@ -186,9 +186,9 @@ export class HallComponent implements OnInit, OnDestroy {
 
       this.SyncHallState([],this.chairsInWork)
           .then(resoult => {
-            console.log('fifnish ', resoult);
-            this.UpdateHallState(resoult);
+            console.log('finish ok', resoult);
             this.chairsInWork = [];
+            this.UpdateHallState(resoult);
           })
           .catch(error=>{console.log('bad synk Tickets in finish', error)})
   }
