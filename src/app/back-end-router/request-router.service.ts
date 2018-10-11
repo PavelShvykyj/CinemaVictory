@@ -45,11 +45,11 @@ export class RequestRouterService {
     } 
   }
 
-  emitLoginName(change: string) {
+  EmitLoginName(change: string) {
     this.emitChangeLoginName.next(change);
   }
 
-  emitBackEndName(change: string) {
+  EmitBackEndName(change: string) {
     this.emitChangeBackEndName.next(change);
   }
 
@@ -68,14 +68,14 @@ export class RequestRouterService {
     
     
     let LocalUserData : ILoggInData = this.webServise.getUserData();
-    this.emitBackEndName("1C"); 
-    this.emitLoginName(LocalUserData.userName);
+    this.EmitBackEndName("1C"); 
+    this.EmitLoginName(LocalUserData.userName);
 
     return this.webServise.LoggInByPass(userdata)
                           .then(resoult => { 
                             if (resoult.status == "200" ){
-                              this.emitBackEndName("WEB");
-                              this.emitLoginName(userdata.userName);
+                              this.EmitBackEndName("WEB");
+                              this.EmitLoginName(userdata.userName);
                             }
                             return resoult});
   }
@@ -84,16 +84,16 @@ export class RequestRouterService {
   RoutLoggInByLocal(userdata : ILoggInData) : Promise<IResponseData> {
      
     // 1C логин всегда успех подумать как тут получить правильное имя юзера
-    this.emitBackEndName("1C");
-    this.emitLoginName(this.localServise.getLocalUserName());
+    this.EmitBackEndName("1C");
+    this.EmitLoginName(this.localServise.getLocalUserName());
 
     let WebUserData : ILoggInData = this.localServise.getUserData();
 
     return this.webServise.LoggInByPass(WebUserData)
                           .then(resoult => { 
                             if (resoult.status == "200" ){
-                              this.emitBackEndName("WEB");
-                              this.emitLoginName(WebUserData.userName);
+                              this.EmitBackEndName("WEB");
+                              this.EmitLoginName(WebUserData.userName);
                             }
                             return resoult});
   }
@@ -111,8 +111,8 @@ export class RequestRouterService {
                               throw error
                             }  
                             else{
-                              this.emitBackEndName("1C");
-                              this.emitLoginName(this.localServise.getLocalUserName());
+                              this.EmitBackEndName("1C");
+                              this.EmitLoginName(this.localServise.getLocalUserName());
                               return this.localServise.SessionsInfoGetByDate(selectedDate);
                             }
                           });   
@@ -123,7 +123,7 @@ export class RequestRouterService {
                                           /// web вернул актуальный статус загоним его 1С
                                           /// теоритически может возникнуть ситуация что вернулась связь 
                                           /// и со старым токеном прошел запрос при отображенном состоянии
-                                          /// emitBackEndName("1C") Не меняем его - пусть перелогинятся так надежнее
+                                          /// EmitBackEndName("1C") Не меняем его - пусть перелогинятся так надежнее
                                           this.localServise.SetHallInfo(resoult);
                                           return resoult;
                                         
@@ -138,8 +138,8 @@ export class RequestRouterService {
                                           else{
                                             ////// неизвестно что думаем сайт не на связи ставим в буфер 1С
                                             /// отображаем что  работаем с 1С
-                                            this.emitBackEndName("1C");
-                                            this.emitLoginName(this.localServise.getLocalUserName());
+                                            this.EmitBackEndName("1C");
+                                            this.EmitLoginName(this.localServise.getLocalUserName());
                                             return this.localServise.GetHallInfo();
                                           }
                                         });
@@ -172,19 +172,26 @@ export class RequestRouterService {
   RoutSyncTickets(currentState :  ISyncTicketsRequestViewModel) : Promise<ISyncTicketsResponseViewModelInternal> | null {
     return this.webServise.SyncTickets(currentState)
                           .then(resoult => {
-                            console.log('ok in rout servise',resoult)
+                            //console.log('ok in rout servise',resoult)
+                            this.localServise.SetHallState(currentState,resoult);
                             return resoult;
                           })
                           .catch(error => {
-                            console.log('error in rout servise',error)
+                            //console.log('error in rout servise',error)
                             if (this.IsInternalError(error.status)){
-                              ///// сайт на связи вернул ошибку т.е. это реальная ошибка
-                              ////  тут придумать лог/сообщение ахтунг
+                              //// сайт на связи вернул ошибку т.е. это реальная ошибка
+                              //// тут придумать лог/сообщение ахтунг
+                              //// здесь у нас все равно есть состояние зала 
+                              //// его можно запомнить в 1С и \ или отобразить 
+                              if(error.error.hallState){
+                                console.log(' hallState in rout error ',error.error.hallState);
+                                this.localServise.SetHallState(currentState,error.error.hallState);    
+                              }
                               throw error
                             }
                             else{
-                              this.emitBackEndName("1C");
-                              this.emitLoginName(this.localServise.getLocalUserName());
+                              this.EmitBackEndName("1C");
+                              this.EmitLoginName(this.localServise.getLocalUserName());
                               return this.localServise.SyncTickets(currentState)
                             }
                           });

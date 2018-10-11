@@ -72,7 +72,7 @@ export class HallComponent implements OnInit, OnDestroy {
       {
         if (resoult.id == this.sessionData.currentSession.id)
           {
-            console.log("signal ",resoult.chairsData);
+            //console.log("signal ",resoult.chairsData);
             this.UpdateHallState(resoult.chairsData);
           }
       }); 
@@ -127,8 +127,15 @@ export class HallComponent implements OnInit, OnDestroy {
   StartSailSelected(){
     // если ничего не отмечено - ничего и не делаем
     if(this.chairsInWork.length==0){
-      return
+      return;
     }
+
+    // если процесс начат повторно ничего не делаем
+    let firstChairStatus = this.chairsInWork[0].s;
+    if(firstChairStatus.inReserving || firstChairStatus.isReserved || firstChairStatus.isSoled){
+      return;
+    }
+
 
     /// отмечаем ин прогресс и отправляем запрос
     this.chairsInWork.forEach(element =>{
@@ -175,6 +182,12 @@ export class HallComponent implements OnInit, OnDestroy {
         return
       };
   
+      // если процесс Не начат  ничего не делаем
+      let firstChairStatus = this.chairsInWork[0].s;
+      if (!(firstChairStatus.inReserving || firstChairStatus.isReserved || firstChairStatus.isSoled)){
+        return;
+      }
+
       /// отмечаем в продажу и отправляем запрос
       this.chairsInWork.forEach(element =>{
         element.s.inReserving = false;
@@ -186,11 +199,33 @@ export class HallComponent implements OnInit, OnDestroy {
 
       this.SyncHallState([],this.chairsInWork)
           .then(resoult => {
-            console.log('finish ok', resoult);
+            //console.log('finish ok', resoult);
             this.chairsInWork = [];
             this.UpdateHallState(resoult);
           })
-          .catch(error=>{console.log('bad synk Tickets in finish', error)})
+          .catch(error=>{
+            console.log('bad synk Tickets in finish', error);
+            if(error.error.hallState){
+              let hallStateInError : ISyncTicketsResponseViewModelInternal = {
+                hallState: error.error.hallState,
+                starts : this.sessionData.currentSession.starts
+              }
+              this.chairsInWork = [];
+              this.UpdateHallState(hallStateInError);
+            }
+          });
+  }
+
+  StartCancel(){
+    
+  }
+
+  StartPrintReserved(){
+
+  }
+
+  StartSailReserved(){
+
   }
 
   ReserveSelected(){
@@ -204,7 +239,7 @@ export class HallComponent implements OnInit, OnDestroy {
     //console.log(s.toString(2));
     //console.log('print');
     //print({printable :'forprint',  type : 'html'});
-    console.log(this.apiServis.RoutConvertTicketStatusToChairStatus(4098))
+    //console.log(this.apiServis.RoutConvertTicketStatusToChairStatus(4098))
   }
 
   CalculateChairPrice(status : IChairStateViewModelInternal ) : Array<ITicketCategoryPriceViewModel> {
@@ -254,7 +289,7 @@ export class HallComponent implements OnInit, OnDestroy {
 
   UpdateHallInfo()  {
     
-    this.apiServis.RoutGetHallInfo().then(resoult => {this.hallInfo = resoult; console.log(this.hallInfo)})
+    this.apiServis.RoutGetHallInfo().then(resoult => {this.hallInfo = resoult; })
                                      .catch(error => {this.hallInfo = null}) 
   }
 
@@ -296,7 +331,7 @@ export class HallComponent implements OnInit, OnDestroy {
       // свойства в дочерних обновлены а этот метод передергивает 
       // и себя и дочерние на предмет проверить изменения (является методом componentRef)
       this.hallStateLastSnapshot = StateInfo.hallState;
-      console.log(this.hallStateLastSnapshot); 
+      //console.log(this.hallStateLastSnapshot); 
   }
  
   /// готовит объект для запроса SyncTickets и вызывает его возвращает промис результат

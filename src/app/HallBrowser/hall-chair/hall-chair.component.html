@@ -1,16 +1,14 @@
 
-<div class = "cell" [ngClass]="{'is-selected': chairStateInternal.s.isSelected,
-                                'is-unavailable': chairStateInternal.s.isSoled || 
-                                chairStateInternal.s.isReserved || 
-                                chairStateInternal.s.inReserving}"
+<div class = "cell" [ngClass]="{'is-selected': (chairStateInternal.s.isSelected) || (chairStateInternal.s.isSelected && (chairStateInternal.s.isSoled || chairStateInternal.s.isReserved || chairStateInternal.s.inReserving)),
+                                'is-unavailable': !(chairStateInternal.s.isSelected) && (chairStateInternal.s.isSoled || chairStateInternal.s.isReserved || chairStateInternal.s.inReserving) && (!chairStateInternal.s.isSelected)}"
      (click)='OnClick()'>
      
   <i  [ngClass]="{'fa': !chairStateInternal.s.isFree, 
                  'fa-clock-o': chairStateInternal.s.inReserving, 
                  'fa-male': chairStateInternal.s.isReserved && !chairStateInternal.s.inReserving,
                  'fa-street-view': chairStateInternal.s.isSoled && !chairStateInternal.s.inReserving,
-                 'fa-angle-down': chairStateInternal.s.isSelected,
-                 'is-selected': chairStateInternal.s.isSelected
+                 'fa-angle-down': chairStateInternal.s.isSelected && chairStateInternal.s.isFree,
+                 'is-selected': (chairStateInternal.s.isSelected) || (chairStateInternal.s.isSelected && chairStateInternal.s.inReserving)
                 }"
                  >
   </i>

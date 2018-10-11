@@ -61,6 +61,16 @@ export class RequestManagerService implements IbackEnd {
 
   SyncTickets(currentState :  ISyncTicketsRequestViewModel) : Promise<ISyncTicketsResponseViewModelInternal> | null
   { 
+    /// из  currentState вычитываем параметры зал сесиия получаем ключ 
+    /// по ключу получаем снепшот зала
+    /// дополняем снепшот зала данными из масивов халлстате и блокситс
+
+    /// возвращаем заполненный снепшот
+    /// вызываем this.SetHallState(currentState : ISyncTicketsRequestViewModel ,resoult : ISyncTicketsResponseViewModelInternal)
+    /// что бы запомнить текущий снепшот
+    /// если работают 2 кассы придумать блокировку и возврат ошибок
+    /// если снепшот успешно записан поставить команду в буфер передачи на сервер - это отдельная таблица должна быть
+    
     return null
   }
 
@@ -69,6 +79,11 @@ export class RequestManagerService implements IbackEnd {
   }
 
   SetSessionsInfoGetByDate(selectedDate : string , resoult : ISessionData){
+    /// запись snapshot  in 1C buffer
+  }
+
+  SetHallState(currentState : ISyncTicketsRequestViewModel ,resoult : ISyncTicketsResponseViewModelInternal){
+    /// из  currentState вычитываем параметры зал сесиия получаем ключ и записываем resoult как снепшот 
     /// запись snapshot  in 1C buffer
   }
 

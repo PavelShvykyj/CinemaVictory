@@ -43,7 +43,9 @@ export class HallChairComponent implements OnInit, OnChanges {
       this.chairSelectStatusChange.emit(this.chairStateInternal);
       
     }
-    else if (this.chairStateInternal.s.isSelected)
+    else if (this.chairStateInternal.s.isSelected && !(this.chairStateInternal.s.isSoled || 
+      this.chairStateInternal.s.isReserved || 
+      this.chairStateInternal.s.inReserving))
     {
       this.chairStateInternal.s.isFree = true;
       this.chairStateInternal.s.isSelected = false;

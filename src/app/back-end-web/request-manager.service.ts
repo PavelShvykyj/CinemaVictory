@@ -108,6 +108,20 @@ ConvertHallStateInternalToHallState(HallStateInternal : Array<IChairStateViewMod
   return hallState
 }
 
+ConvertHallStateToHallStateInternal(HallState : Array<IChairStateViewModel>) : Array<IChairStateViewModelInternal>{
+  let hallState = [];
+  HallState.forEach(element => {
+    let chairState : IChairStateViewModelInternal = {
+    c : element.c,
+    p : element.p,
+    t : element.t,
+    s : this.ConvertTicketStatusToChairStatus(element.s)};
+    hallState.push(chairState);
+  });
+  return hallState
+}
+
+
 ConvertSisionDataInternalToSisionData (SessionData : IdataObject) : ISyncTicketsResponseViewModel {
   let sessionData : ISyncTicketsResponseViewModel = {
     starts : SessionData.starts,
@@ -377,11 +391,17 @@ ConvertSisionDataInternalToSisionData (SessionData : IdataObject) : ISyncTickets
                   .toPromise()
                   .then(response =>
                     {
-                      console.log('ok in web serveice',response);
+                      //console.log('ok in web serveice',response);
                       let resoult : ISyncTicketsResponseViewModelInternal  =  this.ConvertSisionDataToSisionDataInternal(response);
                       return resoult;
+                    })
+                  .catch(error => 
+                    {
+                      if(error.error.hallState){
+                        error.error.hallState = this.ConvertHallStateToHallStateInternal(error.error.hallState);
+                      }
+                      throw error
                     });
-                  //.catch(error => {console.log('error in web serveice ', error); return error});
   }
 
   SessionsGetByDate(selectedDate : string) : Promise<string>  {
@@ -403,7 +423,7 @@ ConvertSisionDataInternalToSisionData (SessionData : IdataObject) : ISyncTickets
                   responseType:'text'})
                   .toPromise()
                   .then(reoult =>{return JSON.stringify({sessionInfo : JSON.parse(reoult)})})
-                  .catch(error=>{return error});
+                  .catch(error=>{throw error});
       
   }
 
@@ -420,7 +440,7 @@ ConvertSisionDataInternalToSisionData (SessionData : IdataObject) : ISyncTickets
                                               }
                                           //console.log(par_1);  
                                           return par_1})
-                                         .catch(error => {return error})   
+                                         .catch(error => {throw error})   
                                          
     
     
@@ -440,7 +460,7 @@ ConvertSisionDataInternalToSisionData (SessionData : IdataObject) : ISyncTickets
                                               }
                                           //console.log(par_1);  
                                           return par_1})
-                                         .catch(error => {console.log('HallInfo error in web serveice',error); return error})   
+                                         .catch(error => {console.log('HallInfo error in web serveice',error); throw error})   
 
 
   }
