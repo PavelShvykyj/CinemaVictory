@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import 'jquery'; 
 //import '../../../../node_modules/jQuery-Print/jQuery.print.js'; 
 
+
 @Component({
   selector: 'ticket-print-wiev',
   templateUrl: './ticket-print-wiev.component.html',

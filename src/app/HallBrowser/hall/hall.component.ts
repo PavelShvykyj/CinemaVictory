@@ -13,9 +13,7 @@ import { ISessionData,
          IGetHallResponseViewModel,
          ITicketCategoryPriceViewModel} from '../../iback-end';
 import { Observable } from 'rxjs/Observable';
-
-//import print from 'print-js'
-
+import printJS from 'print-js/src/index';
 
 
 @Component({
@@ -62,6 +60,8 @@ export class HallComponent implements OnInit, OnDestroy {
   hallStateSubscription;
   hallStateLastSnapshot = [];
   chairsInWork : Array<IChairStateViewModelInternal> = [];
+
+  showReserving = false;
   
   HALL_ID  = 1;
   CASH_DESK_ID = 1;
@@ -159,7 +159,6 @@ export class HallComponent implements OnInit, OnDestroy {
             this.SyncHallState([],[])
                 .then(resoult => {this.UpdateHallState(resoult)})
                 .catch(error=>{console.log('bad synk Tickets in start', error) }); /// 
-  
           }
           ///  обнулим только выбранные - остальной зал не трогаем
           else
@@ -224,8 +223,12 @@ export class HallComponent implements OnInit, OnDestroy {
 
   }
 
-  StartSailReserved(){
+  ReserveOperationForm(){
+    this.showReserving = !this.showReserving;
+  }
 
+  StartSailReserved(){
+    
   }
 
   ReserveSelected(){
@@ -235,6 +238,7 @@ export class HallComponent implements OnInit, OnDestroy {
   }
 
   FunkBtnUnderscoreTest() {
+    printJS({printable :'forprint', type : 'html'});
     //let s : number = 16;
     //console.log(s.toString(2));
     //console.log('print');

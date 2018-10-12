@@ -7,7 +7,8 @@ import { MovieSelectorComponent } from './movie-selector/movie-selector.componen
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MovieComponent } from './movie/movie.component';
 import { MoviePriceComponent } from './movie-price/movie-price.component';
-import { TicketPrintWievComponent } from './ticket-print-wiev/ticket-print-wiev.component'
+import { TicketPrintWievComponent } from './ticket-print-wiev/ticket-print-wiev.component';
+import { ReservingOperationsComponent } from './reserving-operations/reserving-operations.component'
 
 @NgModule({
   imports: [
@@ -16,7 +17,7 @@ import { TicketPrintWievComponent } from './ticket-print-wiev/ticket-print-wiev.
     FormsModule, 
     ReactiveFormsModule
   ],
-  declarations: [HallComponent, HallChairComponent, MovieSelectorComponent, MovieComponent, MoviePriceComponent, TicketPrintWievComponent],
+  declarations: [HallComponent, HallChairComponent, MovieSelectorComponent, MovieComponent, MoviePriceComponent, TicketPrintWievComponent, ReservingOperationsComponent],
   exports: [HallComponent]
 })
 export class HallBrowserModule { }

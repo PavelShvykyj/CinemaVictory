@@ -1,0 +1,40 @@
+<p>
+  <button class="btn btn-dark" (click)='testQueryList()'></button>
+</p>
+
+<form class="ml-1" [formGroup]='form'>
+  <div class="input-group input-group-sm my-2">
+    <input formControlName='phone' 
+           placeholder="тел." 
+           type="number"
+           class="form-control"
+           [ngClass]="{
+            'bg' : operation != '' && operation != 'search' && !phone.value,
+            'bg-warning' : operation != '' && operation != 'search' && !phone.value}">
+
+  </div>
+
+  <div class="input-group input-group-sm my-2">
+    <input placeholder="номер брони"
+           formControlName='secretCode'
+           type="number"
+           class="form-control"
+           [ngClass]="{
+            'bg' : operation != '' && operation != 'reserve' && !secretCode.value,
+            'bg-warning' :operation != '' && operation != 'reserve' && !secretCode.value }">
+    
+    
+    <div class="input-group-append">
+      <button class="btn btn-dark" type="button" (click)=Search()><i class="fa fa-search"></i></button>
+    </div>
+  </div>
+
+
+  <div class="btn-group btn-group-sm my-2" role="group" aria-label="rerserve functons">
+    <button type="button" class="btn btn-dark" (click)=Print()><i class="fa fa-print"></i></button>
+    <button type="button" class="btn btn-dark" (click)=Reserve()><i class="fa fa-male"></i></button>
+    <button type="button" class="btn btn-dark" (click)=Pay()><i class="fa fa-cc-visa"></i></button>
+  </div>
+  
+</form>
+

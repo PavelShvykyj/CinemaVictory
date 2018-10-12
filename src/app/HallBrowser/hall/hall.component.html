@@ -21,9 +21,8 @@
                     <button type="button" class="btn btn-secondary mb-1" (click) = "StartSailSelected()">Начать продажу</button>
                     <button type="button" class="btn btn-secondary mb-1" (click) = "FinishSailSelected()">Завершить продажу</button>
                     <button type="button" class="btn btn-secondary mb-1" (click) = "RePrintSelected()">Повторная печать</button>
-                    <button type="button" class="btn btn-secondary mb-1" (click) = "ReserveSelected()">Забронировать</button>
-                    <button type="button" class="btn btn-secondary mb-1" (click) = "StartPrintReserved()">Печать брони</button>
-                    <button type="button" class="btn btn-secondary mb-1" (click) = "StartSailReserved()">Оплата брони</button>
+                    <button type="button" class="btn btn-secondary mb-1" (click) = "ReserveOperationForm()">Бронь</button>
+                    <reserving-operations class="fool-wight" *ngIf="showReserving" [chairList] = "chairList" [chairsInWork]="chairsInWork"></reserving-operations>
                     <button type="button" class="btn btn-secondary mb-1" (click) = "StartCancel()">Отмена билета</button>
                     <button type="button" class="btn btn-secondary mb-1" (click) = "FunkBtnUnderscoreTest()">Служебная тест</button>
                     <button type="button" class="btn btn-secondary mb-1">Действие 1</button>
@@ -34,6 +33,7 @@
             </div>  
         </div>    
       </div>    
+      
       <!-- выбранные билеты  -->
       <div class="row"> 
         <div class="col align-self-start justify-content-center px-0">
@@ -643,7 +643,8 @@
 
 </div>
 
-<!-- областьпечати -->
+<!-- областьпечати печатет без class="printable" -->
 <div class="printable" id="forprint"> 
+    
     <ticket-print-wiev></ticket-print-wiev>
 </div>
