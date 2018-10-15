@@ -1,5 +1,5 @@
-import { FormGroup, FormControl, Validators, AbstractFormGroupDirective } from '@angular/forms';
-import { Component, OnInit, Input, Output, QueryList, } from '@angular/core';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { Component, OnInit, Input, Output, QueryList, EventEmitter} from '@angular/core';
 import { HallChairComponent } from '../hall-chair/hall-chair.component';
 
 import { ISessionData,
@@ -11,8 +11,15 @@ import { ISessionData,
   IHallInfo, 
   IGetHallResponseViewModel,
   ITicketCategoryPriceViewModel} from '../../iback-end';
-import { AngularFontAwesomeComponent } from 'angular-font-awesome'
 
+
+enum FormActions {
+  print,
+  reserve,
+  pay,
+  search,
+  nothing
+}
 
 
 @Component({
@@ -22,58 +29,101 @@ import { AngularFontAwesomeComponent } from 'angular-font-awesome'
 })
 export class ReservingOperationsComponent implements OnInit {
   
-  @Input()chairList : QueryList<HallChairComponent>;
-  @Input()chairsInWork : Array<IChairStateViewModelInternal>;
+  @Output() ReserveActionSearchEmmiter = new EventEmitter();
+  @Output() ReserveActionPrintEmmiter = new EventEmitter();
+  @Output() ReserveActionPayEmmiter = new EventEmitter();
+  @Output() ReserveActionReserveEmmiter = new EventEmitter();
+  @Output() ReserveActionReseteEmmiter = new EventEmitter();
 
-  
+  FORM_ACTIONS : typeof FormActions = FormActions;  
   form : FormGroup;
-  operation : string = '';
+  action : number = FormActions.nothing;  
 
   constructor() { 
     this.form   = new FormGroup({
-      phone : new FormControl(),
-      secretCode :  new FormControl()
-    })
-
-
+      phone : new FormControl('',[Validators.required,
+                                   Validators.minLength(10),
+                                   Validators.pattern(RegExp(/^\d+$/))]) ,
+      secretCode :  new FormControl('',[Validators.required,
+                                        Validators.minLength(6),
+                                        Validators.pattern(RegExp(/^\d+$/))])
+    })   
   }
 
   ngOnInit() {
   }
 
-  testQueryList(){
-    //let foundChair = this.chairList.find(function(chair) {
-    //  return chair.chairStateInternal.s.isSelected == true;
-    //});
-    //
-    //if (foundChair){
-    //  foundChair.chairStateInternal.s.isSelected = false;
-    //}
+  Resete(){
+    this.action = FormActions.nothing;
+    this.ReserveActionReseteEmmiter.emit();
   }
 
   get phone(){
     return this.form.get('phone');
   }
-  
+
+  SetPhone(value: string){
+    this.phone.setValue(value)
+  }
+ 
   get secretCode(){
     return this.form.get('secretCode');
   }
 
-  Search(){
-    this.operation = 'search';
+  SetSecretCode(value: string){
+    this.secretCode.setValue(value)
   }
 
-  Print(){
-    this.operation = 'print';
 
+  InputOnFocus(){    
+    this.action = FormActions.nothing;
   }
 
-  Reserve(){
-    this.operation = 'reserve';
+  GetFormValidStatus() : boolean{
+    switch (this.action) {
+      case FormActions.nothing:
+        return true;
+      case FormActions.pay:
+        return this.phone.valid && this.secretCode.valid;
+      case FormActions.print:
+        return  this.phone.valid && this.secretCode.valid;
+      case FormActions.reserve:
+        return  this.phone.valid;
+      case FormActions.search:
+        return  this.secretCode.valid;
+    }
   }
 
-  Pay(){
-    this.operation = 'pay';
+  Search(){  
+    this.action = FormActions.search;
+    if(!this.GetFormValidStatus()) {
+      return;
+    }
+    this.ReserveActionSearchEmmiter.emit(this.form.value)
+  }
+
+  Print(){    
+    this.action = FormActions.print;
+    if(!this.GetFormValidStatus()) {
+      return;
+    }
+    this.ReserveActionPrintEmmiter.emit(this.form.value)
+  }
+
+  Reserve(){   
+    this.action = FormActions.reserve;
+    if(!this.GetFormValidStatus()) {
+      return;
+    }
+    this.ReserveActionReserveEmmiter.emit(this.form.value)
+  }
+
+  Pay(){    
+    this.action = FormActions.pay;
+    if(!this.GetFormValidStatus()) {
+      return;
+    }
+    this.ReserveActionPayEmmiter.emit(this.form.value)
   }
 
 

@@ -70,47 +70,55 @@ export class RequestManagerService implements IbackEnd {
     return chairStatus
   }
 
-ConvertChairStatusToTicketStatus(ChairStatus : IChairStatus) : number {
-  //var result = 0;
-  //result = result | ((status.IdCashDesk & 0b1111) << 12);
-  //result = result | ((status.IdTicketCategory & 0b11111111) << 4);
-  //if (status.BuyOrReserveStarted) result = result | 2;
-  //if (status.TicketOperation == TicketOperation.Buy) result = result | 1;
-  //return result;
-  //console.log(ChairStatus);
-  let result = 0;
-  result = result | ((this.CASH_DESK_ID & 0b1111) << 12); 
-  result = result | ((ChairStatus.idTicketCategory & 0b11111111) << 4);
-  if (ChairStatus.inReserving) {
-    result = result | 2;
+  ConvertChairStatusToTicketStatus(ChairStatus : IChairStatus) : number {
+    //var result = 0;
+    //result = result | ((status.IdCashDesk & 0b1111) << 12);
+    //result = result | ((status.IdTicketCategory & 0b11111111) << 4);
+    //if (status.BuyOrReserveStarted) result = result | 2;
+    //if (status.TicketOperation == TicketOperation.Buy) result = result | 1;
+    //return result;
+    //console.log(ChairStatus);
+    let result = 0;
+    result = result | ((this.CASH_DESK_ID & 0b1111) << 12); 
+    result = result | ((ChairStatus.idTicketCategory & 0b11111111) << 4);
+    if (ChairStatus.inReserving) {
+      result = result | 2;
+    }
+    
+    if (ChairStatus.isSoled ) {
+      result = result | 1;
+    }
+    return result
   }
-  
-  if (ChairStatus.isSoled ) {
-    result = result | 1;
+
+  ConvertHallStateInternalToHallState(HallStateInternal : Array<IChairStateViewModelInternal>) : Array<IChairStateViewModel>{
+    let hallState = [];
+    HallStateInternal.forEach(element => {
+      let secretCode = element.t;
+      if (element.t) {
+        secretCode = this.Encrypt(element.t)
+      }
+      
+      let chairState : IChairStateViewModel = {
+      c : element.c,
+      p : element.p,
+      t : secretCode,
+      s : this.ConvertChairStatusToTicketStatus(element.s)};
+      hallState.push(chairState);
+    });
+    return hallState
   }
 
-  
-
-
-  return result
-}
-
-ConvertHallStateInternalToHallState(HallStateInternal : Array<IChairStateViewModelInternal>) : Array<IChairStateViewModel>{
-  let hallState = [];
-  HallStateInternal.forEach(element => {
-    let chairState : IChairStateViewModel = {
-    c : element.c,
-    p : element.p,
-    t : element.t,
-    s : this.ConvertChairStatusToTicketStatus(element.s)};
-    hallState.push(chairState);
-  });
-  return hallState
-}
-
-ConvertHallStateToHallStateInternal(HallState : Array<IChairStateViewModel>) : Array<IChairStateViewModelInternal>{
+  ConvertHallStateToHallStateInternal(HallState : Array<IChairStateViewModel>) : Array<IChairStateViewModelInternal>{
   let hallState = [];
   HallState.forEach(element => {
+    
+    if (element.t) {
+      element.t = this.Decrypt(element.t)
+      
+    }
+   
+    console.log('t in web convert ',element.t);  
     let chairState : IChairStateViewModelInternal = {
     c : element.c,
     p : element.p,
@@ -119,10 +127,9 @@ ConvertHallStateToHallStateInternal(HallState : Array<IChairStateViewModel>) : A
     hallState.push(chairState);
   });
   return hallState
-}
+  }
 
-
-ConvertSisionDataInternalToSisionData (SessionData : IdataObject) : ISyncTicketsResponseViewModel {
+  ConvertSisionDataInternalToSisionData (SessionData : IdataObject) : ISyncTicketsResponseViewModel {
   let sessionData : ISyncTicketsResponseViewModel = {
     starts : SessionData.starts,
     hallState : this.ConvertHallStateInternalToHallState(SessionData.hallState)
@@ -136,14 +143,18 @@ ConvertSisionDataInternalToSisionData (SessionData : IdataObject) : ISyncTickets
   //  sessionData.hallState.push(chairState);
   //});
   return sessionData;
-} 
+  } 
 
- ConvertSisionDataToSisionDataInternal (SessionData : IdataObject ) : ISyncTicketsResponseViewModelInternal {
+  ConvertSisionDataToSisionDataInternal (SessionData : IdataObject ) : ISyncTicketsResponseViewModelInternal {
     let sessionDataInternal : ISyncTicketsResponseViewModelInternal = {
       starts : SessionData.starts,
       hallState : []
     };
     SessionData.hallState.forEach(element => {
+      if (element.t) {
+        element.t = this.Decrypt(element.t)
+      }
+      console.log('t in web convert session ',element.t);
       let chairStateInternal : IChairStateViewModelInternal = {
       c : element.c,
       p : element.p,
@@ -152,15 +163,14 @@ ConvertSisionDataInternalToSisionData (SessionData : IdataObject) : ISyncTickets
       sessionDataInternal.hallState.push(chairStateInternal);
     });
     return sessionDataInternal;
- }
-
+  }
 
   HubbHallStateParse(encryptedIdSesion : string, SessionData : ISyncTicketsResponseViewModel) {
        
-    let encryptedId = encryptedIdSesion.replace(RegExp("~",'g'),"=")
-                                       .replace(RegExp("-",'g'),"+")
-                                       .replace(RegExp(/\|/ ,'g'),"/");
-    let idSesion = this.Decrypt(encryptedId);
+    //let encryptedId = encryptedIdSesion.replace(RegExp("~",'g'),"=")
+    //                                   .replace(RegExp("-",'g'),"+")
+    //                                   .replace(RegExp(/\|/ ,'g'),"/");
+    let idSesion = this.Decrypt(encryptedIdSesion);
     let sessionDataInternal : ISyncTicketsResponseViewModelInternal = this.ConvertSisionDataToSisionDataInternal(SessionData) 
     let hubSessionInfo = {id : parseInt(idSesion) , chairsData : sessionDataInternal};
     this._changeHallState.next(hubSessionInfo);
@@ -201,6 +211,11 @@ ConvertSisionDataInternalToSisionData (SessionData : IdataObject) : ISyncTickets
   }
 
   Decrypt(encryptedData) : string {
+    
+    encryptedData = encryptedData.replace(RegExp("~",'g'),"=")
+                                 .replace(RegExp("-",'g'),"+")
+                                 .replace(RegExp(/\|/ ,'g'),"/");
+    
     let key = CryptoJS.enc.Base64.parse(this.CRYPTO_KEY);
     let iv = CryptoJS.enc.Base64.parse(this.CRYPTO_IV);
     let decrypted = CryptoJS.AES.decrypt(encryptedData, key, {
@@ -209,6 +224,27 @@ ConvertSisionDataInternalToSisionData (SessionData : IdataObject) : ISyncTickets
   
     let  decryptedData = decrypted.toString(CryptoJS.enc.Utf8);
     return decryptedData;
+  }
+
+  Encrypt(decryptedData : string) : string  {
+    
+    
+    let key = CryptoJS.enc.Base64.parse(this.CRYPTO_KEY);
+    let iv = CryptoJS.enc.Base64.parse(this.CRYPTO_IV);
+    //console.log(decryptedData);
+    let encrypted = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(decryptedData), key,
+        {
+            iv: iv,
+            mode: CryptoJS.mode.CBC
+        });
+    //console.log('ciphertext', encrypted.ciphertext);
+    //console.log('toString', encrypted.toString());
+    let encryptedString = encrypted.toString()    
+                                   .replace(RegExp("=",'g'),"~")
+                                   .replace(RegExp(/\+/,'g'),"-")
+                                   .replace(RegExp(/\// ,'g'),"|");
+    //console.log('replace', encryptedString);                               
+    return  encryptedString;                                
   }
 
   TestCrypt()
@@ -268,7 +304,7 @@ ConvertSisionDataInternalToSisionData (SessionData : IdataObject) : ISyncTickets
                             this._token = resoult.token;
                             //sessionStorage.setItem('token',resoult.token)
                             this._userData = userData;
-                            this._refreshLoginTimer = +objResponse.expiryMinutes*60*10004
+                            this._refreshLoginTimer = (+(objResponse.expiryMinutes)-1)*60*1000;
                             this.RefreshToken();
                             
                             return resoult;
@@ -391,7 +427,7 @@ ConvertSisionDataInternalToSisionData (SessionData : IdataObject) : ISyncTickets
                   .toPromise()
                   .then(response =>
                     {
-                      //console.log('ok in web serveice',response);
+                      console.log('ok in web serveice',response);
                       let resoult : ISyncTicketsResponseViewModelInternal  =  this.ConvertSisionDataToSisionDataInternal(response);
                       return resoult;
                     })

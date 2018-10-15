@@ -1,0 +1,25 @@
+<p>
+  <button class="btn btn-dark" ></button>
+</p>
+
+<form class="ml-1" [formGroup]='form'>
+
+
+  <div class="input-group input-group-sm my-2">
+    <input placeholder="подтвердить?"
+           formControlName='confirm'
+           type="text"
+           (focus)=InputOnFocus()
+           class="form-control"
+           [ngClass]="{'bg-danger' : !confirm.valid && action==FORM_ACTIONS.confirm}">
+    <div class="input-group-append">
+      <button class="btn"
+              [ngClass]="{'btn-danger': !confirm.valid && action==FORM_ACTIONS.confirm,
+                          'btn-dark'  :  confirm.valid || action != FORM_ACTIONS.confirm}"
+              type="button"
+              (click)=Confirm() ><i class="fa fa-trash"></i></button>
+    </div>
+  </div>
+</form>
+
+

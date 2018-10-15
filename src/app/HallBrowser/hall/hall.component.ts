@@ -1,5 +1,6 @@
-import { Component, OnInit,OnDestroy , ViewChildren, QueryList, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit,OnDestroy , ViewChildren, QueryList,ViewChild ,ChangeDetectorRef } from '@angular/core';
 import { HallChairComponent } from '../hall-chair/hall-chair.component';
+import { ReservingOperationsComponent } from '../reserving-operations/reserving-operations.component';
 import { RequestRouterService } from '../../back-end-router/request-router.service';
 import { IdataObject } from '../idata-object'
 import * as _ from 'underscore';
@@ -14,6 +15,7 @@ import { ISessionData,
          ITicketCategoryPriceViewModel} from '../../iback-end';
 import { Observable } from 'rxjs/Observable';
 import printJS from 'print-js/src/index';
+import { IfObservable } from 'rxjs/observable/IfObservable';
 
 
 @Component({
@@ -25,6 +27,9 @@ export class HallComponent implements OnInit, OnDestroy {
   
   @ViewChildren(HallChairComponent)
   private chairList : QueryList<HallChairComponent>;
+  @ViewChild(ReservingOperationsComponent)
+  private reserveComponent : ReservingOperationsComponent;
+  
   mouseStatusCoverByRow : IdataObject = 
   {
     1: false,
@@ -61,8 +66,10 @@ export class HallComponent implements OnInit, OnDestroy {
   hallStateLastSnapshot = [];
   chairsInWork : Array<IChairStateViewModelInternal> = [];
 
+  // определяю видимость формочек операций резерва и отмены билетов
   showReserving = false;
-  
+  showCancel    = false;
+
   HALL_ID  = 1;
   CASH_DESK_ID = 1;
 
@@ -72,8 +79,8 @@ export class HallComponent implements OnInit, OnDestroy {
       {
         if (resoult.id == this.sessionData.currentSession.id)
           {
-            //console.log("signal ",resoult.chairsData);
-            this.UpdateHallState(resoult.chairsData);
+            console.log("signal R");
+            this.UpdateHallState(resoult.chairsData,true);
           }
       }); 
   }
@@ -120,37 +127,36 @@ export class HallComponent implements OnInit, OnDestroy {
     this.chairsInWork = [];
   }
   
-  PrintSelected(){}
+  CreateSecretCode(postfix : string) : string {
+    let prefix : string = ''+
+                          this.chairsInWork[0].c.c+
+                          this.chairsInWork[0].c.r+
+                          new Date().getMilliseconds().toString();
+    let maxLenth = 6;
+    let currentLenth = prefix.length;
+    if(currentLenth < maxLenth)
+    {
+      for (let index = 0; index <maxLenth-currentLenth; index++) {
+        prefix = prefix + '0';
+      }
+    } 
+    else
+      {
+        if(currentLenth > maxLenth)
+          {
+            prefix = prefix.substr(0,maxLenth-1);
+          }
+      } 
+    console.log('prefix', prefix);
+    return prefix + '-' + postfix;
+  }
 
-  RePrintSelected(){}
-
-  StartSailSelected(){
-    // если ничего не отмечено - ничего и не делаем
-    if(this.chairsInWork.length==0){
-      return;
-    }
-
-    // если процесс начат повторно ничего не делаем
-    let firstChairStatus = this.chairsInWork[0].s;
-    if(firstChairStatus.inReserving || firstChairStatus.isReserved || firstChairStatus.isSoled){
-      return;
-    }
-
-
-    /// отмечаем ин прогресс и отправляем запрос
-    this.chairsInWork.forEach(element =>{
-      element.s.inReserving = true;
-      element.s.iniciator = this.CASH_DESK_ID;
-      element.s.isFree = false;
-      element.s.isSoled = true;
-      element.s.isReserved = false;
-    })
-
-    this.SyncHallState(this.chairsInWork,[])
+  StartAction() : Promise<boolean> {
+   return this.SyncHallState(this.chairsInWork,[])
         .then(resoult=>{
-          /// заблокировали - теперь печатаем
+          /// заблокировали 
           this.UpdateHallState(resoult);
-          this.RePrintSelected();
+          return true
         })
         .catch(error=>{
           ///  ели это ошибка одновременного использования - то просто чистим рабочие и переобновим зал
@@ -158,7 +164,7 @@ export class HallComponent implements OnInit, OnDestroy {
           {
             this.SyncHallState([],[])
                 .then(resoult => {this.UpdateHallState(resoult)})
-                .catch(error=>{console.log('bad synk Tickets in start', error) }); /// 
+                .catch(error=>{console.log('bad synk Tickets in start', error); return false }); /// 
           }
           ///  обнулим только выбранные - остальной зал не трогаем
           else
@@ -172,7 +178,59 @@ export class HallComponent implements OnInit, OnDestroy {
           }
           /// скидываем рабочие
           this.chairsInWork = [];
+          return false;
         })  
+  }
+
+  FinishAction() : Promise<boolean> {
+   return this.SyncHallState([],this.chairsInWork)
+    .then(resoult => {
+      console.log('finish ok', resoult);
+      this.chairsInWork = [];
+      this.UpdateHallState(resoult);
+      return true;
+    })
+    .catch(error=>{
+      console.log('bad synk Tickets in finish', error);
+      if(error.error.hallState){
+        let hallStateInError : ISyncTicketsResponseViewModelInternal = {
+          hallState: error.error.hallState,
+          starts : this.sessionData.currentSession.starts
+        }
+        this.chairsInWork = [];
+        this.UpdateHallState(hallStateInError);
+        return false;
+      }
+    });
+  }
+
+  PrintSelected(){}
+
+
+  StartSailSelected(){
+    // если ничего не отмечено - ничего и не делаем
+    if(this.chairsInWork.length==0){
+      return;
+    }
+
+    // если процесс начат повторно ничего не делаем
+    let firstChairStatus = this.chairsInWork[0].s;
+    if(firstChairStatus.inReserving || firstChairStatus.isReserved || firstChairStatus.isSoled){
+      return;
+    }
+
+    /// отмечаем ин прогресс и отправляем запрос
+    this.chairsInWork.forEach(element =>{
+      element.s.inReserving = true;
+      element.s.iniciator = this.CASH_DESK_ID;
+      element.s.isFree = false;
+      element.s.isSoled = true;
+      element.s.isReserved = false;
+    })
+
+    // начинаем процесс продажи
+    this.StartAction().then(resoult => { if(resoult){this.PrintSelected()} });
+
   }
 
   FinishSailSelected(){
@@ -196,54 +254,160 @@ export class HallComponent implements OnInit, OnDestroy {
         element.s.isReserved = false;
       });
 
-      this.SyncHallState([],this.chairsInWork)
-          .then(resoult => {
-            //console.log('finish ok', resoult);
-            this.chairsInWork = [];
-            this.UpdateHallState(resoult);
-          })
-          .catch(error=>{
-            console.log('bad synk Tickets in finish', error);
-            if(error.error.hallState){
-              let hallStateInError : ISyncTicketsResponseViewModelInternal = {
-                hallState: error.error.hallState,
-                starts : this.sessionData.currentSession.starts
-              }
-              this.chairsInWork = [];
-              this.UpdateHallState(hallStateInError);
-            }
-          });
+      this.FinishAction().then(resoult=>{if(resoult){console.log('sucsesful sail.')}});
   }
 
   StartCancel(){
     
   }
 
-  StartPrintReserved(){
-
-  }
-
   ReserveOperationForm(){
+    this.ClearSelected();
     this.showReserving = !this.showReserving;
   }
 
-  StartSailReserved(){
+  CancelOperationForm(){
+    this.ClearSelected();
+    this.showCancel = !this.showCancel;
+  }
+
+  OnCancelActionCancel(){
+
+  }
+
+  OnReserveActionSearch(RerserveFormValues : IdataObject){
+    /// почистили
+    this.ClearSelected();
+    this.reserveComponent.SetPhone('');
+    console.log('code in search', RerserveFormValues.secretCode);
+    console.log('list in  search',this.chairList);
+    /// поискали подходяшее место по коду 
+    let foundComponents  = this.chairList.filter(function(chair) {
+      if (chair.chairStateInternal.t){
+        return chair.chairStateInternal.t.startsWith(RerserveFormValues.secretCode);
+      }
+      return false;
+    }) 
     
+    /// если нашли отметиди и места и сообщили телефон для сверки
+    if(foundComponents.length !=0){
+      let secretCode = foundComponents[0].chairStateInternal.t;
+      this.reserveComponent.SetPhone(secretCode.substr(secretCode.lastIndexOf('-')).replace('-38','').replace('-','')) ;
+      foundComponents.forEach(component=>{
+        component.chairStateInternal.s.isSelected = true;
+        this.chairsInWork.push(component.chairStateInternal);
+      })
+      this.changeDetector.detectChanges();
+    }
   }
 
-  ReserveSelected(){
+  OnReserveActionPrint(RerserveFormValues : IdataObject){
+
+    if(this.chairsInWork.length==0){
+      return;
+    }
+    this.PrintSelected();
+
   }
 
-  CancelSelected(){
+  OnReserveActionPay(RerserveFormValues : IdataObject){
+    // если ничего не отмечено - ничего и не делаем
+    if(this.chairsInWork.length==0){
+      return;
+    }
+
+    // если процесс начат повторно ничего не делаем
+    ///// тут это не работает
+    //let firstChairStatus = this.chairsInWork[0].s;
+    //if(firstChairStatus.inReserving || firstChairStatus.isReserved || firstChairStatus.isSoled){
+    //  return;
+    //}
+   
+    this.chairsInWork.forEach(element =>{
+      element.s.inReserving = false;
+      element.s.iniciator = this.CASH_DESK_ID;
+      element.s.isFree = false;
+      element.s.isSoled = true;
+      element.s.isReserved = false;
+    })
+    
+    console.log('start pay',this.chairsInWork);
+    /// предварительно блокировать при оплате ранее забронированных не нужно
+    this.FinishAction().then(resoult=>
+      {
+        if(resoult){
+          console.log('sucsesful pay.')
+        }
+    });
+  }
+
+  OnReserveActionResete(){
+    this.ClearSelected();
+    this.reserveComponent.SetPhone('');
+    this.reserveComponent.SetSecretCode('');
+  }
+
+  OnReserveActionReserve(RerserveFormValues : IdataObject){
+        // если ничего не отмечено - ничего и не делаем
+        if(this.chairsInWork.length==0){
+          return;
+        }
+    
+        // если процесс начат повторно ничего не делаем
+        let firstChairStatus = this.chairsInWork[0].s;
+        if(firstChairStatus.inReserving || firstChairStatus.isReserved || firstChairStatus.isSoled){
+          return;
+        }
+        /// отмечаем "ин прогресс" генерим ключ и отправляем запрос
+        let t = this.CreateSecretCode(RerserveFormValues.phone);
+        this.chairsInWork.forEach(element =>{
+          element.s.inReserving = true;
+          element.s.iniciator = this.CASH_DESK_ID;
+          element.s.isFree = false;
+          element.s.isSoled = false;
+          element.s.isReserved = true;
+          element.t = t;
+        })
+    
+        // начинаем процесс продажи
+        
+        this.StartAction().then(resoult => 
+          { 
+            if(resoult){
+              /// отмечаем в резерв и отправляем запрос
+              this.chairsInWork.forEach(element =>{
+                element.s.inReserving = false;
+                element.s.iniciator = this.CASH_DESK_ID;
+                element.s.isFree = false;
+                element.s.isSoled = false;
+                element.s.isReserved = true;
+                element.t = t;
+              });
+              this.FinishAction().then(resoult=>{
+                if(resoult){
+                  console.log('sucsesful reserve.')
+                  this.reserveComponent.SetSecretCode(t.substr(0,6));
+                }
+              });
+            }
+          });
   }
 
   FunkBtnUnderscoreTest() {
-    printJS({printable :'forprint', type : 'html'});
+    //printJS({printable :'forprint', type : 'html'});
     //let s : number = 16;
     //console.log(s.toString(2));
     //console.log('print');
     //print({printable :'forprint',  type : 'html'});
     //console.log(this.apiServis.RoutConvertTicketStatusToChairStatus(4098))
+
+    //let encrypt = this.apiServis.RoutEncrypt("120061");
+    //console.log(encrypt);
+    //let decrypt = this.apiServis.RoutDecrypt(encrypt);
+    //console.log(decrypt);
+    console.log(this.chairList);
+
+
   }
 
   CalculateChairPrice(status : IChairStateViewModelInternal ) : Array<ITicketCategoryPriceViewModel> {
@@ -297,21 +461,30 @@ export class HallComponent implements OnInit, OnDestroy {
                                      .catch(error => {this.hallInfo = null}) 
   }
 
-  UpdateHallState(StateInfo : ISyncTicketsResponseViewModelInternal  ) {
+  UpdateHallState(StateInfo : ISyncTicketsResponseViewModelInternal, isSgnalRData? : boolean  ) {
     
     StateInfo.hallState.forEach(element =>
       {
         
         let foundChair = this.chairList.find(function(chair) 
-        {
-          return chair.chairStateInternal.c.r == element.c.r && chair.chairStateInternal.c.c == element.c.c;
-        });
+                                              {
+                                                return chair.chairStateInternal.c.r == element.c.r &&
+                                                       chair.chairStateInternal.c.c == element.c.c;
+                                              });
         
         /// Нужно учесть что может прилететь ответ по уже выбранным билетам
-        let foundChairInWork = _.find(this.chairsInWork,chair => {return chair.c.r == element.c.r && chair.c.c == element.c.c;})
+        let foundChairInWork = _.find(this.chairsInWork,chair => {return chair.c.r == element.c.r && 
+                                                                         chair.c.c == element.c.c;})
+        /// от сигнала данные прилетают без т оградим себя пока так обновим только статус но это не панацея
+        if(isSgnalRData){
+          foundChair.chairStateInternal.s = element.s
+        } 
+        else{
+          foundChair.chairStateInternal = element;
+        }
 
-
-        foundChair.chairStateInternal = element;
+        
+        console.log('t in component',foundChair.chairStateInternal.t);
         /// прилетел обновленный статус для места отмеченного в работу 
         /// отмеим что он является выделенным (от сигнала isSelected всегда ложь)
         /// можно ли дальше с ним работать зависит от ответа это решается в функции продажи.
@@ -351,6 +524,18 @@ export class HallComponent implements OnInit, OnDestroy {
     
   }
  
+  ClearSelected(){
+    this.chairsInWork = [];  
+    let foundComponents  = this.chairList.filter(function(chair) {
+        return chair.chairStateInternal.s.isSelected;
+      }
+    ) 
+    foundComponents.forEach(component=>{
+      component.chairStateInternal.s.isSelected = false;
+    })
+    this.changeDetector.detectChanges();
+  }
+
   ClearHallState() {
     this.chairList.forEach(element  => 
       { 
@@ -359,6 +544,10 @@ export class HallComponent implements OnInit, OnDestroy {
       });
     this.chairsInWork = [];  
     this.changeDetector.detectChanges();
+  }
+
+  RefreshHallState(){
+    this.OnSessionDataChange(this.sessionData);
   }
 
   OnSessionDataChange(sessionData) {

@@ -20,12 +20,22 @@
                 <div class="btn-group-vertical btn-block" role="group" aria-label="Function Menu">
                     <button type="button" class="btn btn-secondary mb-1" (click) = "StartSailSelected()">Начать продажу</button>
                     <button type="button" class="btn btn-secondary mb-1" (click) = "FinishSailSelected()">Завершить продажу</button>
-                    <button type="button" class="btn btn-secondary mb-1" (click) = "RePrintSelected()">Повторная печать</button>
+                    <button type="button" class="btn btn-secondary mb-1" (click) = "PrintSelected()">Повторная печать</button>
                     <button type="button" class="btn btn-secondary mb-1" (click) = "ReserveOperationForm()">Бронь</button>
-                    <reserving-operations class="fool-wight" *ngIf="showReserving" [chairList] = "chairList" [chairsInWork]="chairsInWork"></reserving-operations>
-                    <button type="button" class="btn btn-secondary mb-1" (click) = "StartCancel()">Отмена билета</button>
+                    <reserving-operations class="fool-wight" *ngIf="showReserving" 
+                        (ReserveActionSearchEmmiter)  = "OnReserveActionSearch($event)" 
+                        (ReserveActionPrintEmmiter)   = "OnReserveActionPrint($event)" 
+                        (ReserveActionPayEmmiter)     = "OnReserveActionPay($event)" 
+                        (ReserveActionReserveEmmiter) = "OnReserveActionReserve($event)" 
+                        (ReserveActionReseteEmmiter) = "OnReserveActionResete()" 
+                    ></reserving-operations>
+                    <button type="button" class="btn btn-secondary mb-1" (click) = "CancelOperationForm()">Отмена билета</button>
+                    <cancel-operation class="fool-wight" *ngIf="showCancel">
+                        (CancelActionCancelEmmiter) = "OnCancelActionCancel()"
+                    </cancel-operation>
+                    
                     <button type="button" class="btn btn-secondary mb-1" (click) = "FunkBtnUnderscoreTest()">Служебная тест</button>
-                    <button type="button" class="btn btn-secondary mb-1">Действие 1</button>
+                    <button type="button" class="btn btn-secondary mb-1" (click) = "RefreshHallState()">Обновить</button>
                     <!--<button type="button" class="btn btn-secondary btn-funk-menu">Действие 1</button>
                     <button type="button" class="btn btn-secondary btn-funk-menu">Действие 1</button>-->
                 </div>

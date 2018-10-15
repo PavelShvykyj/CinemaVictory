@@ -169,6 +169,10 @@ export class RequestRouterService {
     return this.webServise.Decrypt(encryptedData);
   }
 
+  RoutEncrypt(decryptedData) : string {
+    return this.webServise.Encrypt(decryptedData);
+  }
+
   RoutSyncTickets(currentState :  ISyncTicketsRequestViewModel) : Promise<ISyncTicketsResponseViewModelInternal> | null {
     return this.webServise.SyncTickets(currentState)
                           .then(resoult => {
