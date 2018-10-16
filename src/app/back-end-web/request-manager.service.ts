@@ -9,6 +9,7 @@ import {  IbackEnd,
           ISyncTicketsResponseViewModelInternal,
           ISyncTicketsResponseViewModel,
           ISyncTicketsRequestViewModel,
+          ICancelTicketRequestViewModel,
           IGetSessionResponseViewModel,
           ISessionData,
           IHallInfo } from '../iback-end'
@@ -499,6 +500,35 @@ export class RequestManagerService implements IbackEnd {
                                          .catch(error => {console.log('HallInfo error in web serveice',error); throw error})   
 
 
+  }
+
+  CancelTickets(TicketsToCancel : ICancelTicketRequestViewModel) : Promise<number>{
+    let headers = new HttpHeaders().append('Authorization','Bearer '+this._token).append('Content-Type','text/json')
+    let connection = this.BASE_URL+"/tickets/cancel";  
+    let postBody = TicketsToCancel;
+    
+  
+    
+    return this.http.post(connection,
+                  postBody,
+                  {
+                    headers:headers,
+                    observe: 'response',
+                    withCredentials:false,
+                    reportProgress:true,
+                    responseType:'json'
+                  })
+                  .toPromise()
+                  .then(response =>
+                    {
+                      console.log('ok cancel in web serveice',response);
+                      return response.status;
+                    })
+                  .catch(error => 
+                    {
+                      console.log('error cancel in web serveice',error);
+                      throw error
+                    });
   }
 
 }

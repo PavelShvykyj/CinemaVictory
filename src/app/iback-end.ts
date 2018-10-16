@@ -157,6 +157,13 @@ export interface ICurrentSessionInfo{
     currentSession : IGetSessionResponseViewModel
 }
 
+export interface ICancelTicketRequestViewModel
+{
+    idHall : number,
+    starts : string, //"yyyy-MM-dd HH:mm:ss",
+    chairs : Array<IChairViewModel>
+}
+
 
 export interface IbackEnd {
     LoggInByPass(LoggInData : ILoggInData): Promise<IResponseData>;
@@ -164,5 +171,5 @@ export interface IbackEnd {
     SessionsInfoGetByDate(selectedDate : string) : Promise<ISessionData> | null;
     GetHallInfo() : Promise<IHallInfo> | null;
     SyncTickets(currentState :  ISyncTicketsRequestViewModel) : Promise<ISyncTicketsResponseViewModelInternal> | null;
-
+    CancelTickets(TicketsToCancel : ICancelTicketRequestViewModel) : Promise<number> | null
 }

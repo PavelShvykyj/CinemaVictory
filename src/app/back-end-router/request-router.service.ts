@@ -6,6 +6,8 @@ import { IbackEnd,
          ILoggInData,
          IResponseData,
          IChairsStatusInSessionInfo,
+         IChairStateViewModelInternal,
+         ICancelTicketRequestViewModel,
          ISessionData,
          ISyncTicketsRequestViewModel,
          ISyncTicketsResponseViewModelInternal,
@@ -171,6 +173,30 @@ export class RequestRouterService {
 
   RoutEncrypt(decryptedData) : string {
     return this.webServise.Encrypt(decryptedData);
+  }
+
+  RoutCancelTickets( TicketsToCancel : ICancelTicketRequestViewModel)  {
+ 
+    return this.webServise.CancelTickets(TicketsToCancel)
+                          .then(resoult => {
+                            /// метод почемуто не возвращает состояние зала как другие 
+                            /// придется вызывать апдате холл при чем из компоента чтоб перерисовало
+                            
+                            return resoult;
+                          })
+                          .catch(error => {
+                            //console.log('error in rout servise',error)
+                            if (this.IsInternalError(error.status)){
+                              return error.status
+                            }
+                            else{
+                              this.EmitBackEndName("1C");
+                              this.EmitLoginName(this.localServise.getLocalUserName());
+                              this.localServise.CancelTickets(TicketsToCancel)
+                                               .then(resoult => {
+                                                return resoult})
+                                }
+                          })
   }
 
   RoutSyncTickets(currentState :  ISyncTicketsRequestViewModel) : Promise<ISyncTicketsResponseViewModelInternal> | null {

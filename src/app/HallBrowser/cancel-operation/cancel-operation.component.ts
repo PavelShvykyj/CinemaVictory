@@ -34,7 +34,7 @@ export class CancelOperationComponent implements OnInit {
   constructor() { 
     this.form   = new FormGroup({
       confirm : new FormControl('',[Validators.required,
-                                   Validators.pattern(RegExp("подтвердить"))]) 
+                                   Validators.pattern(RegExp("да"))]) 
                                 });   
 
   }

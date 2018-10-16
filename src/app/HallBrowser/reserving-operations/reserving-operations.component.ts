@@ -18,6 +18,7 @@ enum FormActions {
   reserve,
   pay,
   search,
+  searchByPhone,
   nothing
 }
 
@@ -34,7 +35,7 @@ export class ReservingOperationsComponent implements OnInit {
   @Output() ReserveActionPayEmmiter = new EventEmitter();
   @Output() ReserveActionReserveEmmiter = new EventEmitter();
   @Output() ReserveActionReseteEmmiter = new EventEmitter();
-
+  @Output() ReserveActionSearchByPhoneEmmiter = new EventEmitter();
   FORM_ACTIONS : typeof FormActions = FormActions;  
   form : FormGroup;
   action : number = FormActions.nothing;  
@@ -91,6 +92,9 @@ export class ReservingOperationsComponent implements OnInit {
         return  this.phone.valid;
       case FormActions.search:
         return  this.secretCode.valid;
+      case FormActions.searchByPhone:
+        return  this.phone.valid;
+
     }
   }
 
@@ -101,6 +105,15 @@ export class ReservingOperationsComponent implements OnInit {
     }
     this.ReserveActionSearchEmmiter.emit(this.form.value)
   }
+
+  SearchByPhone(){  
+    this.action = FormActions.searchByPhone;
+    if(!this.GetFormValidStatus()) {
+      return;
+    }
+    this.ReserveActionSearchByPhoneEmmiter.emit(this.form.value)
+  }
+
 
   Print(){    
     this.action = FormActions.print;

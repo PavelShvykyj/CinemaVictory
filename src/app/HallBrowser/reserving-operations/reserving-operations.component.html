@@ -13,8 +13,17 @@
                                       (
                                        action==FORM_ACTIONS.print    ||
                                        action==FORM_ACTIONS.pay      || 
+                                       action==FORM_ACTIONS.searchByPhone || 
                                        action==FORM_ACTIONS.reserve 
                                       )}">
+    <div class="input-group-append">
+      <button class="btn"
+              [ngClass]="{'btn-danger': !GetFormValidStatus() && action == FORM_ACTIONS.searchByPhone,
+                          'btn-dark'  :  GetFormValidStatus() || action != FORM_ACTIONS.searchByPhone}"
+              type="button"
+              (click)=SearchByPhone() ><i class="fa fa-search"></i></button>
+    </div>
+                                  
 
   </div>
 

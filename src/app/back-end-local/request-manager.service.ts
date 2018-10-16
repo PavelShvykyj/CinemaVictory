@@ -4,6 +4,7 @@ import { IbackEnd,
          ISyncTicketsResponseViewModelInternal,
          ILoggInData,
          IChairsStatusInSessionInfo,
+         ICancelTicketRequestViewModel,
          IResponseData,
          ISessionData,
          IHallInfo } from '../iback-end'
@@ -86,5 +87,10 @@ export class RequestManagerService implements IbackEnd {
     /// из  currentState вычитываем параметры зал сесиия получаем ключ и записываем resoult как снепшот 
     /// запись snapshot  in 1C buffer
   }
+
+  CancelTickets(TicketsToCancel : ICancelTicketRequestViewModel) : Promise<number>{
+    return null
+  }
+
 
 }

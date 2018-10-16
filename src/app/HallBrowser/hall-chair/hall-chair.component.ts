@@ -11,9 +11,10 @@ import {IChairStatus,IChairStateViewModelInternal}  from '../../iback-end'
   styleUrls: ['./hall-chair.component.css']
 })
 export class HallChairComponent implements OnInit, OnChanges {
-  @Input() chairID : number
-  @Input() rowID : number
-  @Input() chairStateInternal : IChairStateViewModelInternal
+  @Input() chairID : number;
+  @Input() rowID : number;
+  @Input() cancelStatus : boolean;
+  @Input() chairStateInternal : IChairStateViewModelInternal;
   @Output() chairSelectStatusChange = new EventEmitter();
 
   constructor() { 
@@ -36,10 +37,10 @@ export class HallChairComponent implements OnInit, OnChanges {
 
   OnClick(){
     
-    if (this.chairStateInternal.s.isFree)
+    if (this.chairStateInternal.s.isFree || this.cancelStatus)
     {
       this.chairStateInternal.s.isFree = false;
-      this.chairStateInternal.s.isSelected = true;
+      this.chairStateInternal.s.isSelected = !this.chairStateInternal.s.isSelected;
       this.chairSelectStatusChange.emit(this.chairStateInternal);
       
     }

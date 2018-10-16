@@ -10,7 +10,9 @@ import { ISessionData,
          IChairStateViewModelInternal,
          ICurrentSessionInfo,
          ISyncTicketsResponseViewModelInternal,
+         IChairViewModel,
          IHallInfo, 
+         ICancelTicketRequestViewModel,
          IGetHallResponseViewModel,
          ITicketCategoryPriceViewModel} from '../../iback-end';
 import { Observable } from 'rxjs/Observable';
@@ -267,12 +269,37 @@ export class HallComponent implements OnInit, OnDestroy {
   }
 
   CancelOperationForm(){
+    
     this.ClearSelected();
     this.showCancel = !this.showCancel;
   }
 
   OnCancelActionCancel(){
+    this.CancelTickets();
+  }
 
+  OnReserveActionSearchByPhone(RerserveFormValues : IdataObject){
+    /// почистили
+    this.ClearSelected();
+    this.reserveComponent.SetSecretCode('');
+    /// поискали подходяшее место по телефону 
+    let foundComponents  = this.chairList.filter(function(chair) {
+      if (chair.chairStateInternal.t){
+        return chair.chairStateInternal.t.endsWith(RerserveFormValues.secretCode);
+      }
+      return false;
+    }) 
+    
+    /// если нашли отметили и места и сообщили код для сверки
+    if(foundComponents.length !=0){
+      let secretCode = foundComponents[0].chairStateInternal.t;
+      this.reserveComponent.SetSecretCode(secretCode.substr(0,secretCode.lastIndexOf('-')).replace('-','')) ;
+      foundComponents.forEach(component=>{
+        component.chairStateInternal.s.isSelected = true;
+        this.chairsInWork.push(component.chairStateInternal);
+      })
+      this.changeDetector.detectChanges();
+    }   
   }
 
   OnReserveActionSearch(RerserveFormValues : IdataObject){
@@ -524,6 +551,32 @@ export class HallComponent implements OnInit, OnDestroy {
     
   }
  
+  /// готовит объект для запроса CancelTickets и вызывает его возвращает промис результат
+  CancelTickets(){
+    let ticketsToCancel : Array<IChairViewModel> = [];
+    this.chairsInWork.forEach(element => {
+      let ticket : IChairViewModel = {r: element.c.r  , c: element.c.c}
+      ticketsToCancel.push(ticket);
+    })
+    console.log('cancel in hall',ticketsToCancel);
+    let request : ICancelTicketRequestViewModel = {
+      idHall: this.HALL_ID, 
+      starts: this.sessionData.currentSession.starts, //"yyyy-MM-dd HH:mm:ss",		
+      chairs : ticketsToCancel
+      
+    };
+    /// почему то этот метод не возвращает текущее состояние зала
+    /// поэтому вынуждены запрашивать обновление
+    return this.apiServis.RoutCancelTickets(request)
+                         .then(resoult=>{
+                            this.ClearSelected();
+                            this.RefreshHallState()})
+                         .catch(error=>{
+                            this.ClearSelected(); 
+                            this.RefreshHallState()});
+  }
+
+
   ClearSelected(){
     this.chairsInWork = [];  
     let foundComponents  = this.chairList.filter(function(chair) {
