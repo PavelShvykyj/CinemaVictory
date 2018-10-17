@@ -10,6 +10,9 @@
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
+                <button class="btn" (click) = "Alert1CdataIncome()">s</button> 
+                <!--<button class="btn" (click) = "Generate1CdataIncome()">f</button>--> 
+
                 <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                     <div class="navbar-nav">
                         <a class="nav-item nav-link" routerLink = "">Login <span class="sr-only">(current)</span></a>
@@ -39,7 +42,7 @@
         </div>
     </div>
 </div>
-
+<input #el hidden=true type="text" id="External1CValue" value="empty"  (click)="OnExternal1CValueChange(el.value)">
 <router-outlet></router-outlet>
 
 <!--<app-loggin></app-loggin>-->

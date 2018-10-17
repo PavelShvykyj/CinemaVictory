@@ -232,4 +232,9 @@ export class RequestRouterService {
 
   }
 
+  RoutOn1CDataIncome(data: string){
+    this.localServise.On1CDataIncome(data);
+  }
+
+ 
 }

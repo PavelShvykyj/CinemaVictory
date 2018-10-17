@@ -18,10 +18,18 @@ export class RequestManagerService implements IbackEnd {
 
   private _changeHallState = new Subject<IChairsStatusInSessionInfo>();
   changeHallState$ : Observable<IChairsStatusInSessionInfo> = this._changeHallState.asObservable(); 
-   
+  private _subj1CData = new Subject<string>(); 
+  promise1CData$ = this._subj1CData.asObservable();
 
   constructor() { }
 
+  // вызываем в компоненте он клик который генерит 1С (через наш сервис роутер)
+  On1CDataIncome(data: string){
+    alert('data in servese call next '+data)
+    this._subj1CData.next(data);
+  }
+
+ 
   getLocalUserName() {
     return "Atlantyka";
   }
