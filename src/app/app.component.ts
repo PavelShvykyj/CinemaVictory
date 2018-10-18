@@ -5,7 +5,8 @@ import {RequestRouterService}  from './back-end-router/request-router.service'
 import {RequestManagerService }  from './back-end-local/request-manager.service'
 import { ILoggInData } from './iback-end'
 import { Observable } from 'rxjs/Observable';
-import 'jquery'; 
+import 'jquery';
+
 
 
 @Component({
@@ -44,15 +45,21 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   Call1c(name,data){
-    //let evt = document.createEvent("MouseEvent");
-    // evt.initMouseEvent("ondblclick", false, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null)
-    // evt.cancelBubble = true;
-    //evt.returnValue = false;
-    //document.dispatchEvent(evt);
-    $(document).dblclick();
-   
+    // не отрабатывает в ИЕ
+    // var event = new Event("dblclick",{bubbles: true, cancelable: false});
+    //document.addEventListener("help", function(event){alert('event in JS')});
 
-    };
+    //let clickEvent = document.createEvent("MouseEvent");
+    //clickEvent.initMouseEvent( "help", false,false,window,    0, 0, 0, 0, 0, false, false, false, false, 0, null);
+    //document.dispatchEvent(clickEvent);
+    
+    
+    //var event = document.createEvent("MouseEvent");
+    //event.initEvent("dblclick", true, false);
+    //document.dispatchEvent(event);
+    
+ 
+  };
 
   Alert1CdataIncome(){
     //alert('start click');

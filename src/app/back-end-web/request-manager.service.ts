@@ -29,8 +29,8 @@ import { error } from 'util';
 
 @Injectable()
 export class RequestManagerService implements IbackEnd {
-
-  BASE_URL = "https://kino-peremoga.com.ua/api/1.0";
+  
+  BASE_URL = "https://kino-peremoga.com.ua/api/1.0"//"https://kino-peremoga.com.ua/api/1.0";
   HALL_ID  = 1;
   PACKAGE_MOVIES_SIZE = 50;
   CRYPTO_KEY = 'xm5POGDda6o1SiZMfuNSvXbV8r0+uyBF7BMdAYh+f5Q=';
@@ -47,7 +47,7 @@ export class RequestManagerService implements IbackEnd {
 
 
   constructor(private http : HttpClient) { 
-    this._hubHallConnection = new HubConnectionBuilder().withUrl('https://kino-peremoga.com.ua/hallHub').build();   
+    this._hubHallConnection = new HubConnectionBuilder().withUrl('https://kino-peremoga.com.ua/hallHub').build();   //'https://kino-peremoga.com.ua/hallHub'
   }
 
   ConvertTicketStatusToChairStatus(intStatus : number ) : IChairStatus {
@@ -119,7 +119,7 @@ export class RequestManagerService implements IbackEnd {
       
     }
    
-    console.log('t in web convert ',element.t);  
+    //console.log('t in web convert ',element.t);  
     let chairState : IChairStateViewModelInternal = {
     c : element.c,
     p : element.p,
@@ -155,7 +155,7 @@ export class RequestManagerService implements IbackEnd {
       if (element.t) {
         element.t = this.Decrypt(element.t)
       }
-      console.log('t in web convert session ',element.t);
+      //console.log('t in web convert session ',element.t);
       let chairStateInternal : IChairStateViewModelInternal = {
       c : element.c,
       p : element.p,
@@ -163,6 +163,7 @@ export class RequestManagerService implements IbackEnd {
       s : this.ConvertTicketStatusToChairStatus(element.s)};
       sessionDataInternal.hallState.push(chairStateInternal);
     });
+    console.log('in convert session ', sessionDataInternal)
     return sessionDataInternal;
   }
 
@@ -274,6 +275,10 @@ export class RequestManagerService implements IbackEnd {
     console.log('Decrypted : ' + decrypted);
     console.log('utf8 = ' + decrypted.toString(CryptoJS.enc.Utf8));
   }
+
+  get userData(){
+    return this._userData;
+  }  
 
   getUserData() : ILoggInData {
     return {userName : "Atlantica", password : "" }

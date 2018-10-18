@@ -27,7 +27,7 @@ export class RequestRouterService {
   changeHallState$ : Observable<IChairsStatusInSessionInfo>; 
   changeEmittedLoginName$ = this.emitChangeLoginName.asObservable();
   changeEmittedBackEndName$ = this.emitChangeBackEndName.asObservable();
-  internalErrors = [400, 401, 403, 404, 406];
+  internalErrors = [400, 401, 403, 406];
 
  
   constructor(private webServise : webManagerServise, private localServise : localManagerServise) { 
@@ -106,6 +106,8 @@ export class RequestRouterService {
     return this.webServise.SessionsInfoGetByDate(selectedDate)
                           .then(resoult=>{
                             this.localServise.SetSessionsInfoGetByDate(selectedDate,resoult);
+                            this.EmitBackEndName("WEB");
+                            this.EmitLoginName(this.webServise.userData.userName);
                             return resoult;
                           })
                           .catch(error=>{
@@ -127,11 +129,13 @@ export class RequestRouterService {
                                           /// и со старым токеном прошел запрос при отображенном состоянии
                                           /// EmitBackEndName("1C") Не меняем его - пусть перелогинятся так надежнее
                                           this.localServise.SetHallInfo(resoult);
+                                          this.EmitBackEndName("WEB");
+                                          this.EmitLoginName(this.webServise.userData.userName);
                                           return resoult;
                                         
                                         })
                                         .catch(error =>{
-                                          console.log('error in rour servise',error)
+                                          console.log('error in rout servise',error)
                                           if (this.IsInternalError(error.status)){
                                             ///// сайт на связи вернул ошибку т.е. это реальная ошибка
                                             ////  тут придумать лог/сообщение ахтунг
@@ -181,7 +185,8 @@ export class RequestRouterService {
                           .then(resoult => {
                             /// метод почемуто не возвращает состояние зала как другие 
                             /// придется вызывать апдате холл при чем из компоента чтоб перерисовало
-                            
+                            this.EmitBackEndName("WEB");
+                            this.EmitLoginName(this.webServise.userData.userName);
                             return resoult;
                           })
                           .catch(error => {
@@ -204,11 +209,13 @@ export class RequestRouterService {
                           .then(resoult => {
                             //console.log('ok in rout servise',resoult)
                             this.localServise.SetHallState(currentState,resoult);
+                            this.EmitBackEndName("WEB");
+                            this.EmitLoginName(this.webServise.userData.userName);
                             return resoult;
                           })
                           .catch(error => {
                             //console.log('error in rout servise',error)
-                            if (this.IsInternalError(error.status)){
+                            if (this.IsInternalError(error)){
                               //// сайт на связи вернул ошибку т.е. это реальная ошибка
                               //// тут придумать лог/сообщение ахтунг
                               //// здесь у нас все равно есть состояние зала 

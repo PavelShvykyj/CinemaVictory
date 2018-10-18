@@ -306,8 +306,8 @@ export class HallComponent implements OnInit, OnDestroy {
     /// почистили
     this.ClearSelected();
     this.reserveComponent.SetPhone('');
-    console.log('code in search', RerserveFormValues.secretCode);
-    console.log('list in  search',this.chairList);
+    //console.log('code in search', RerserveFormValues.secretCode);
+    //console.log('list in  search',this.chairList);
     /// поискали подходяшее место по коду 
     let foundComponents  = this.chairList.filter(function(chair) {
       if (chair.chairStateInternal.t){
@@ -432,7 +432,7 @@ export class HallComponent implements OnInit, OnDestroy {
     //console.log(encrypt);
     //let decrypt = this.apiServis.RoutDecrypt(encrypt);
     //console.log(decrypt);
-    console.log(this.chairList);
+    //console.log(this.chairList);
 
 
   }
@@ -511,7 +511,7 @@ export class HallComponent implements OnInit, OnDestroy {
         }
 
         
-        console.log('t in component',foundChair.chairStateInternal.t);
+        //console.log('t in component',foundChair.chairStateInternal.t);
         /// прилетел обновленный статус для места отмеченного в работу 
         /// отмеим что он является выделенным (от сигнала isSelected всегда ложь)
         /// можно ли дальше с ним работать зависит от ответа это решается в функции продажи.
@@ -559,6 +559,10 @@ export class HallComponent implements OnInit, OnDestroy {
       ticketsToCancel.push(ticket);
     })
     console.log('cancel in hall',ticketsToCancel);
+    if(ticketsToCancel.length == 0){
+      return;
+    }
+    
     let request : ICancelTicketRequestViewModel = {
       idHall: this.HALL_ID, 
       starts: this.sessionData.currentSession.starts, //"yyyy-MM-dd HH:mm:ss",		
