@@ -35,8 +35,6 @@ export class AppComponent implements OnInit, OnDestroy {
     this.subsUserName.unsubscribe();
   }
 
-  
- 
   OnExternal1CValueChange(value){
     // alert(document.getElementById("External1CValue").getAttribute("value"));
     alert('click from 1C');
@@ -52,7 +50,7 @@ export class AppComponent implements OnInit, OnDestroy {
     //let clickEvent = document.createEvent("MouseEvent");
     //clickEvent.initMouseEvent( "help", false,false,window,    0, 0, 0, 0, 0, false, false, false, false, 0, null);
     //document.dispatchEvent(clickEvent);
-    
+    Call1C('from JS');
     
     //var event = document.createEvent("MouseEvent");
     //event.initEvent("dblclick", true, false);
