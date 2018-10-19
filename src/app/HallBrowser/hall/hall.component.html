@@ -59,6 +59,7 @@
                                 <span class="card-text">ряд {{chairInWork.c.r}}</span>
                                 <span class="card-text">місце {{chairInWork.c.c}}</span>
                                 <span class="card-text">ціна </span>
+                                <span *ngIf="chairInWork.p!=0 && !chairInWork.prices" class="card-text">{{chairInWork.p}} </span>
                                 <div class="btn-group btn-group-sm" role="group" >
                                     <button  *ngFor="let priceElement of chairInWork.prices" [disabled]='chairInWork.s.inReserving' (click)="SelectPriceChairInWork(priceElement.price,priceElement.idTicketCategory,chairInWork)" [ngClass]="{'btn' : true, 'btn-danger' : priceElement.price==chairInWork.p, 'btn-secondary' : priceElement.price!=chairInWork.p  }"   >{{priceElement.price }}</button>
                                 </div>

@@ -79,7 +79,7 @@ export class HallComponent implements OnInit, OnDestroy {
     this.hallState$ = apiServis.changeHallState$;
     this.hallStateSubscription = this.hallState$.subscribe(resoult => 
       {
-        if (resoult.id == this.sessionData.currentSession.id)
+        if (resoult.chairsData.starts == this.sessionData.currentSession.starts)
           {
             console.log("signal R");
             this.UpdateHallState(resoult.chairsData,true);
@@ -285,7 +285,8 @@ export class HallComponent implements OnInit, OnDestroy {
     /// поискали подходяшее место по телефону 
     let foundComponents  = this.chairList.filter(function(chair) {
       if (chair.chairStateInternal.t){
-        return chair.chairStateInternal.t.endsWith(RerserveFormValues.secretCode);
+        //console.log('phone search ',chair.chairStateInternal.c.c,chair.chairStateInternal.c.r,chair.chairStateInternal.t)
+        return chair.chairStateInternal.t.endsWith(RerserveFormValues.phone);
       }
       return false;
     }) 
@@ -535,6 +536,10 @@ export class HallComponent implements OnInit, OnDestroy {
       // свойства в дочерних обновлены а этот метод передергивает 
       // и себя и дочерние на предмет проверить изменения (является методом componentRef)
       this.hallStateLastSnapshot = StateInfo.hallState;
+      
+      console.log('list after update');
+      this.chairList.forEach(chair => {console.log(chair.chairStateInternal.c.c,chair.chairStateInternal.c.r,chair.chairStateInternal.t,chair.chairStateInternal.p)})
+      
       //console.log(this.hallStateLastSnapshot); 
   }
  
@@ -597,7 +602,9 @@ export class HallComponent implements OnInit, OnDestroy {
     this.chairList.forEach(element  => 
       { 
         element.chairStateInternal.s = element.ChairStatusDefoult();
-        
+        element.chairStateInternal.t = "";
+        element.chairStateInternal.p = 0;
+        element.chairStateInternal.prices = [];
       });
     this.chairsInWork = [];  
     this.changeDetector.detectChanges();
@@ -610,6 +617,10 @@ export class HallComponent implements OnInit, OnDestroy {
   OnSessionDataChange(sessionData) {
     this.sessionData = sessionData;
     this.ClearHallState();
+    console.log('list after clear');
+    this.chairList.forEach(chair => {console.log(chair.chairStateInternal.c.c,chair.chairStateInternal.c.r,chair.chairStateInternal.t)})
+  
+    
     if (!this.hallInfo) 
       {
         this.UpdateHallInfo();
@@ -620,8 +631,10 @@ export class HallComponent implements OnInit, OnDestroy {
       this.SyncHallState([],[])
           .then(resoult => {this.UpdateHallState(resoult)})
           .catch(error=>{console.log('bad synk Tickets', error) }); /// 
-;
     }
+  
+    
+
   }
 
 }

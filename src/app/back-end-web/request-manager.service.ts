@@ -116,10 +116,10 @@ export class RequestManagerService implements IbackEnd {
     
     if (element.t) {
       element.t = this.Decrypt(element.t)
-      
+      console.log('t in web convert ',element.t); 
     }
    
-    //console.log('t in web convert ',element.t);  
+     
     let chairState : IChairStateViewModelInternal = {
     c : element.c,
     p : element.p,
@@ -154,8 +154,9 @@ export class RequestManagerService implements IbackEnd {
     SessionData.hallState.forEach(element => {
       if (element.t) {
         element.t = this.Decrypt(element.t)
+        console.log('t in web convert session ',element.t);
       }
-      //console.log('t in web convert session ',element.t);
+      
       let chairStateInternal : IChairStateViewModelInternal = {
       c : element.c,
       p : element.p,
