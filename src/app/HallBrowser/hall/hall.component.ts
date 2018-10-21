@@ -149,7 +149,7 @@ export class HallComponent implements OnInit, OnDestroy {
             prefix = prefix.substr(0,maxLenth-1);
           }
       } 
-    console.log('prefix', prefix);
+    //console.log('prefix', prefix);
     return prefix + '-' + postfix;
   }
 
@@ -537,8 +537,8 @@ export class HallComponent implements OnInit, OnDestroy {
       // и себя и дочерние на предмет проверить изменения (является методом componentRef)
       this.hallStateLastSnapshot = StateInfo.hallState;
       
-      console.log('list after update');
-      this.chairList.forEach(chair => {console.log(chair.chairStateInternal.c.c,chair.chairStateInternal.c.r,chair.chairStateInternal.t,chair.chairStateInternal.p)})
+      //console.log('list after update');
+      //this.chairList.forEach(chair => {console.log(chair.chairStateInternal.c.c,chair.chairStateInternal.c.r,chair.chairStateInternal.t,chair.chairStateInternal.p)})
       
       //console.log(this.hallStateLastSnapshot); 
   }
@@ -563,7 +563,7 @@ export class HallComponent implements OnInit, OnDestroy {
       let ticket : IChairViewModel = {r: element.c.r  , c: element.c.c}
       ticketsToCancel.push(ticket);
     })
-    console.log('cancel in hall',ticketsToCancel);
+    //console.log('cancel in hall',ticketsToCancel);
     if(ticketsToCancel.length == 0){
       return;
     }
@@ -617,8 +617,8 @@ export class HallComponent implements OnInit, OnDestroy {
   OnSessionDataChange(sessionData) {
     this.sessionData = sessionData;
     this.ClearHallState();
-    console.log('list after clear');
-    this.chairList.forEach(chair => {console.log(chair.chairStateInternal.c.c,chair.chairStateInternal.c.r,chair.chairStateInternal.t)})
+    //console.log('list after clear');
+    //this.chairList.forEach(chair => {console.log(chair.chairStateInternal.c.c,chair.chairStateInternal.c.r,chair.chairStateInternal.t)})
   
     
     if (!this.hallInfo) 

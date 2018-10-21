@@ -48,6 +48,7 @@ export class RequestManagerService implements IbackEnd {
 
   constructor(private http : HttpClient) { 
     this._hubHallConnection = new HubConnectionBuilder().withUrl('https://kino-peremoga.com.ua/hallHub').build();   //'https://kino-peremoga.com.ua/hallHub'
+    this._hubHallConnection.serverTimeoutInMilliseconds = 60*60*1000; // час - это с запасом жизнь токега - пол часа с токеном делаем реконнект
   }
 
   ConvertTicketStatusToChairStatus(intStatus : number ) : IChairStatus {
@@ -192,17 +193,27 @@ export class RequestManagerService implements IbackEnd {
     this._hubHallConnection.on("ReceiveHallState",(idSession, hallstate) =>{
                                                     this.HubbHallStateParse(idSession, hallstate)}
      ) 
-  }
+     this._hubHallConnection.onclose(error=>{}) 
+    }
 
   OfHubbHallConnection(){
     this._hubHallConnection.off("ReceiveHallState");
   }
 
   RefreshToken() {
+    console.log('refresh login ', this._userData);
+    try {
+      this.OfHubbHallConnection();
+      
+    } catch (error) {
+      console.log('error stop hub ',error);
+    }
+    
     setTimeout(() => {
               this.LoggInByPass(this._userData)
                   .then(resoult => {
-                    //console.log('RefreshToken resoult',resoult)
+                    console.log('connection',this._hubHallConnection);
+                    this.OnHubbHallConnection();
                     this.RefreshToken(); // rekursive     
                   })
                   .catch(resoult => {
@@ -311,6 +322,7 @@ export class RequestManagerService implements IbackEnd {
                             this._token = resoult.token;
                             //sessionStorage.setItem('token',resoult.token)
                             this._userData = userData;
+                            //console.log('token life ',+(objResponse.expiryMinutes)-1);
                             this._refreshLoginTimer = (+(objResponse.expiryMinutes)-1)*60*1000;
                             this.RefreshToken();
                             
