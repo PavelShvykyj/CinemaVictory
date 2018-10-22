@@ -79,7 +79,9 @@ export class HallComponent implements OnInit, OnDestroy {
     this.hallState$ = apiServis.changeHallState$;
     this.hallStateSubscription = this.hallState$.subscribe(resoult => 
       {
-        if (resoult.chairsData.starts == this.sessionData.currentSession.starts)
+        //console.log('signal starts ',resoult.chairsData.starts);
+        //console.log('current starts ',this.sessionData.currentSession.starts);
+        if (resoult.id == this.sessionData.currentSession.id)
           {
             console.log("signal R");
             this.UpdateHallState(resoult.chairsData,true);
@@ -473,7 +475,9 @@ export class HallComponent implements OnInit, OnDestroy {
       if (status.s.isSelected) 
         {
           let chairPrices = this.CalculateChairPrice(status); 
-          status.p = chairPrices[0].price;
+          if(!status.p || status.p == 0){
+            status.p = chairPrices[0].price;
+          }
           status.s.idTicketCategory = chairPrices[0].idTicketCategory;
           status.prices = chairPrices;
           

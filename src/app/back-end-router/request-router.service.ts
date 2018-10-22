@@ -151,12 +151,12 @@ export class RequestRouterService {
                                         });
   }
 
-  RoutStartHubbHallConnection(){
+  RoutStartHubbHallConnection()  {
     this.webServise.StartHubbHallConnection();
     this.localServise.StartHubbHallConnection();
   }
 
-  RoutStopHubbHallConnection(){
+  RoutStopHubbHallConnection() {
     this.webServise.StopHubbHallConnection();
     this.localServise.StopHubbHallConnection();
   }
@@ -214,7 +214,7 @@ export class RequestRouterService {
                             return resoult;
                           })
                           .catch(error => {
-                            //console.log('error in rout servise',error)
+                            console.log('error in rout servise',error)
                             if (this.IsInternalError(error)){
                               //// сайт на связи вернул ошибку т.е. это реальная ошибка
                               //// тут придумать лог/сообщение ахтунг

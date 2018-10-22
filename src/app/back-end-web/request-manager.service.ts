@@ -48,7 +48,7 @@ export class RequestManagerService implements IbackEnd {
 
   constructor(private http : HttpClient) { 
     this._hubHallConnection = new HubConnectionBuilder().withUrl('https://kino-peremoga.com.ua/hallHub').build();   //'https://kino-peremoga.com.ua/hallHub'
-    this._hubHallConnection.serverTimeoutInMilliseconds = 60*60*1000; // час - это с запасом жизнь токега - пол часа с токеном делаем реконнект
+    //this._hubHallConnection.serverTimeoutInMilliseconds = 60*60*1000; // час - это с запасом жизнь токега - пол часа с токеном делаем реконнект
   }
 
   ConvertTicketStatusToChairStatus(intStatus : number ) : IChairStatus {
@@ -174,6 +174,7 @@ export class RequestManagerService implements IbackEnd {
     //let encryptedId = encryptedIdSesion.replace(RegExp("~",'g'),"=")
     //                                   .replace(RegExp("-",'g'),"+")
     //                                   .replace(RegExp(/\|/ ,'g'),"/");
+    
     let idSesion = this.Decrypt(encryptedIdSesion);
     let sessionDataInternal : ISyncTicketsResponseViewModelInternal = this.ConvertSisionDataToSisionDataInternal(SessionData) 
     let hubSessionInfo = {id : parseInt(idSesion) , chairsData : sessionDataInternal};
@@ -181,43 +182,58 @@ export class RequestManagerService implements IbackEnd {
     
   }
 
-  StartHubbHallConnection(){  
-    this._hubHallConnection.start().catch(error => {console.log('start error',error)});   
+  StartHubbHallConnection()  {  
+    return this._hubHallConnection.start();//.catch(error => {console.log('start error',error)});   
   }
 
-  StopHubbHallConnection(){
-    this._hubHallConnection.stop().catch(error => {console.log(error)});
+  StopHubbHallConnection() {
+    return this._hubHallConnection.stop();//.catch(error => {console.log(error)});
   }
 
   OnHubbHallConnection(){
     this._hubHallConnection.on("ReceiveHallState",(idSession, hallstate) =>{
                                                     this.HubbHallStateParse(idSession, hallstate)}
      ) 
-     this._hubHallConnection.onclose(error=>{}) 
     }
 
   OfHubbHallConnection(){
     this._hubHallConnection.off("ReceiveHallState");
   }
 
+  HubbHallReconnect(){
+    this.OfHubbHallConnection();
+    this._hubHallConnection.stop()
+                           .then(resoult =>{
+                             
+                            
+                            this._hubHallConnection.start()
+                                                    .then(res=>{this.OnHubbHallConnection()})
+                                                    .catch(error=> {
+                                                      console.log('signal start err', error)})
+                                                    
+                                                    
+                                                    
+                                                    })
+                           .catch(error=> { 
+                             console.log('signal stop err', error)
+                             this._hubHallConnection.start()
+                                                    .then(res=>{this.OnHubbHallConnection()})
+                                                    .catch(error=> {
+                                                      console.log('signal start in cach err', error)
+                                                    }) 
+                            });  
+ }
+
   RefreshToken() {
-    console.log('refresh login ', this._userData);
-    try {
-      this.OfHubbHallConnection();
-      
-    } catch (error) {
-      console.log('error stop hub ',error);
-    }
-    
     setTimeout(() => {
               this.LoggInByPass(this._userData)
                   .then(resoult => {
-                    console.log('connection',this._hubHallConnection);
-                    this.OnHubbHallConnection();
-                    this.RefreshToken(); // rekursive     
+                    console.log('refresh token');  
+                    this.HubbHallReconnect()
+                    //this.RefreshToken(); // rekursive     
                   })
                   .catch(resoult => {
-                    //console.log('RefreshToken error',resoult)
+                    console.log('RefreshToken error',resoult)
                     //  somthing wrong что то не так при обновлении токена что будем делать пока не ясно
                     //  токен почищен в  LoggInByPass данные пользователя в свойствах пока не чистим вдруг захотим переденуть
                   })

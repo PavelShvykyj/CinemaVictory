@@ -37,8 +37,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   OnExternal1CValueChange(value){
     // alert(document.getElementById("External1CValue").getAttribute("value"));
-    alert('click from 1C');
-
+    // alert('click from 1C');
     this.apiServis.RoutOn1CDataIncome(value);
   }
 
