@@ -97,7 +97,7 @@ export class MovieSelectorComponent implements OnInit, AfterViewInit {
     this.currentSession = null;
     this.currentSessions = [];
     this.currentMovie = _.find(this.currentMovies,element => {return element.id == id})
-    this.currentSessions = _.filter(this.sessionData.sessionInfo, element => { return element.idMovie == id });
+    this.currentSessions = _.filter(this.sessionData.sessionInfo, element => { return element.idMovie == id && element.isVisible});
     
     this.sessionDataChange.emit(
       {'currentDate' : this.currentDate, 
@@ -107,7 +107,7 @@ export class MovieSelectorComponent implements OnInit, AfterViewInit {
   }
 
   OnChangeSession(id){
-    this.currentSession = _.find(this.currentSessions,element => {return element.id == id})
+    this.currentSession = _.find(this.currentSessions,element => {return element.id == id && element.isVisible})
     this.sessionDataChange.emit(
       {'currentDate' : this.currentDate, 
         'currentMovie' : this.currentMovie,

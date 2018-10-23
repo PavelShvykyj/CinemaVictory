@@ -1,6 +1,7 @@
 import { Component, OnInit,OnDestroy , ViewChildren, QueryList,ViewChild ,ChangeDetectorRef } from '@angular/core';
 import { HallChairComponent } from '../hall-chair/hall-chair.component';
 import { ReservingOperationsComponent } from '../reserving-operations/reserving-operations.component';
+import { CancelOperationComponent } from '../cancel-operation/cancel-operation.component';
 import { RequestRouterService } from '../../back-end-router/request-router.service';
 import { IdataObject } from '../idata-object'
 import * as _ from 'underscore';
@@ -32,6 +33,10 @@ export class HallComponent implements OnInit, OnDestroy {
   @ViewChild(ReservingOperationsComponent)
   private reserveComponent : ReservingOperationsComponent;
   
+  @ViewChild(CancelOperationComponent)
+  private cancelComponent : ReservingOperationsComponent;
+  
+
   mouseStatusCoverByRow : IdataObject = 
   {
     1: false,
@@ -268,35 +273,61 @@ export class HallComponent implements OnInit, OnDestroy {
   ReserveOperationForm(){
     this.ClearSelected();
     this.showReserving = !this.showReserving;
+    this.showCancel = false;
+
   }
 
   CancelOperationForm(){
     
     this.ClearSelected();
     this.showCancel = !this.showCancel;
+    this.showReserving = false;
   }
 
   OnCancelActionCancel(){
     this.CancelTickets();
   }
 
-  OnReserveActionSearchByPhone(RerserveFormValues : IdataObject){
+  OnActionSearchByPhone(RerserveFormValues : IdataObject){
     /// почистили
     this.ClearSelected();
-    this.reserveComponent.SetSecretCode('');
+    
+    if(this.showReserving) 
+    {
+      this.reserveComponent.SetSecretCode('');  
+    } else {
+      this.cancelComponent.SetSecretCode('');
+    } 
+    
+    let showReserving = this.showReserving;
+    
     /// поискали подходяшее место по телефону 
     let foundComponents  = this.chairList.filter(function(chair) {
       if (chair.chairStateInternal.t){
         //console.log('phone search ',chair.chairStateInternal.c.c,chair.chairStateInternal.c.r,chair.chairStateInternal.t)
-        return chair.chairStateInternal.t.endsWith(RerserveFormValues.phone);
+        if(showReserving){
+          return chair.chairStateInternal.t.endsWith(RerserveFormValues.phone) && chair.chairStateInternal.s.isReserved;
+        }
+        else{
+          return chair.chairStateInternal.t.endsWith(RerserveFormValues.phone);
+        }
       }
       return false;
     }) 
     
     /// если нашли отметили и места и сообщили код для сверки
     if(foundComponents.length !=0){
-      let secretCode = foundComponents[0].chairStateInternal.t;
-      this.reserveComponent.SetSecretCode(secretCode.substr(0,secretCode.lastIndexOf('-')).replace('-','')) ;
+      let secretCode = '';//foundComponents[0].chairStateInternal.t;
+      
+      foundComponents.forEach(foundComponent=>{secretCode = secretCode+foundComponent.chairStateInternal.t.substr(0,foundComponent.chairStateInternal.t.lastIndexOf('-')).replace('-','')+'-'});
+
+      if(this.showReserving) {
+        this.reserveComponent.SetSecretCode(secretCode) ;
+      } else  {
+        this.cancelComponent.SetSecretCode(secretCode) ;
+      } 
+         
+      
       foundComponents.forEach(component=>{
         component.chairStateInternal.s.isSelected = true;
         this.chairsInWork.push(component.chairStateInternal);
@@ -305,16 +336,30 @@ export class HallComponent implements OnInit, OnDestroy {
     }   
   }
 
-  OnReserveActionSearch(RerserveFormValues : IdataObject){
+  OnActionSearch(RerserveFormValues : IdataObject){
     /// почистили
     this.ClearSelected();
-    this.reserveComponent.SetPhone('');
+    
+    if(this.showReserving){
+      this.reserveComponent.SetPhone('');
+    }
+    else
+    {
+      this.cancelComponent.SetPhone('');
+    }
+    
+    let showReserving = this.showReserving;
     //console.log('code in search', RerserveFormValues.secretCode);
     //console.log('list in  search',this.chairList);
     /// поискали подходяшее место по коду 
     let foundComponents  = this.chairList.filter(function(chair) {
       if (chair.chairStateInternal.t){
-        return chair.chairStateInternal.t.startsWith(RerserveFormValues.secretCode);
+        if(showReserving){
+          return chair.chairStateInternal.t.startsWith(RerserveFormValues.secretCode) && chair.chairStateInternal.s.isReserved;
+        }
+        else{
+          return chair.chairStateInternal.t.startsWith(RerserveFormValues.secretCode);
+        }
       }
       return false;
     }) 
@@ -322,7 +367,15 @@ export class HallComponent implements OnInit, OnDestroy {
     /// если нашли отметиди и места и сообщили телефон для сверки
     if(foundComponents.length !=0){
       let secretCode = foundComponents[0].chairStateInternal.t;
-      this.reserveComponent.SetPhone(secretCode.substr(secretCode.lastIndexOf('-')).replace('-38','').replace('-','')) ;
+      
+      
+      if(this.showReserving){
+        this.reserveComponent.SetPhone(secretCode.substr(secretCode.lastIndexOf('-')).replace('-38','').replace('-',''));
+      }
+       else {
+        this.cancelComponent.SetPhone(secretCode.substr(secretCode.lastIndexOf('-')).replace('-38','').replace('-','')) ;
+      }
+      
       foundComponents.forEach(component=>{
         component.chairStateInternal.s.isSelected = true;
         this.chairsInWork.push(component.chairStateInternal);
@@ -371,10 +424,18 @@ export class HallComponent implements OnInit, OnDestroy {
     });
   }
 
-  OnReserveActionResete(){
+  OnActionResete(){
     this.ClearSelected();
-    this.reserveComponent.SetPhone('');
-    this.reserveComponent.SetSecretCode('');
+    if(this.showReserving){
+      this.reserveComponent.SetPhone('');
+      this.reserveComponent.SetSecretCode('');
+    }
+    else{
+      this.cancelComponent.SetPhone('');
+      this.cancelComponent.SetSecretCode('');
+    }
+  
+    
   }
 
   OnReserveActionReserve(RerserveFormValues : IdataObject){

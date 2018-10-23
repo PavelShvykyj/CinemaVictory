@@ -18,6 +18,7 @@ export class RequestManagerService implements IbackEnd {
 
   private _changeHallState = new Subject<IChairsStatusInSessionInfo>();
   changeHallState$ : Observable<IChairsStatusInSessionInfo> = this._changeHallState.asObservable(); 
+  
   private _subj1CData = new Subject<string>(); 
   promise1CData$ = this._subj1CData.asObservable();
 

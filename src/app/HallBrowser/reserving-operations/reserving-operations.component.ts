@@ -30,12 +30,13 @@ enum FormActions {
 })
 export class ReservingOperationsComponent implements OnInit {
   
-  @Output() ReserveActionSearchEmmiter = new EventEmitter();
+  @Output() ActionSearchEmmiter = new EventEmitter();
+  @Output() ActionSearchByPhoneEmmiter = new EventEmitter();
   @Output() ReserveActionPrintEmmiter = new EventEmitter();
   @Output() ReserveActionPayEmmiter = new EventEmitter();
   @Output() ReserveActionReserveEmmiter = new EventEmitter();
-  @Output() ReserveActionReseteEmmiter = new EventEmitter();
-  @Output() ReserveActionSearchByPhoneEmmiter = new EventEmitter();
+  @Output() ActionReseteEmmiter = new EventEmitter();
+  
   FORM_ACTIONS : typeof FormActions = FormActions;  
   form : FormGroup;
   action : number = FormActions.nothing;  
@@ -56,7 +57,7 @@ export class ReservingOperationsComponent implements OnInit {
 
   Resete(){
     this.action = FormActions.nothing;
-    this.ReserveActionReseteEmmiter.emit();
+    this.ActionReseteEmmiter.emit();
   }
 
   get phone(){
@@ -103,7 +104,7 @@ export class ReservingOperationsComponent implements OnInit {
     if(!this.GetFormValidStatus()) {
       return;
     }
-    this.ReserveActionSearchEmmiter.emit(this.form.value)
+    this.ActionSearchEmmiter.emit(this.form.value)
   }
 
   SearchByPhone(){  
@@ -111,7 +112,7 @@ export class ReservingOperationsComponent implements OnInit {
     if(!this.GetFormValidStatus()) {
       return;
     }
-    this.ReserveActionSearchByPhoneEmmiter.emit(this.form.value)
+    this.ActionSearchByPhoneEmmiter.emit(this.form.value)
   }
 
 

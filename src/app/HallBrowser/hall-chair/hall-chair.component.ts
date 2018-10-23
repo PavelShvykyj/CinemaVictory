@@ -14,6 +14,7 @@ export class HallChairComponent implements OnInit, OnChanges {
   @Input() chairID : number;
   @Input() rowID : number;
   @Input() cancelStatus : boolean;
+  @Input() reserveStatus : boolean;
   @Input() chairStateInternal : IChairStateViewModelInternal;
   @Output() chairSelectStatusChange = new EventEmitter();
 
@@ -44,6 +45,12 @@ export class HallChairComponent implements OnInit, OnChanges {
       this.chairSelectStatusChange.emit(this.chairStateInternal);
       
     }
+    else if(this.chairStateInternal.s.isFree || (this.reserveStatus && this.chairStateInternal.s.isReserved)) {
+      this.chairStateInternal.s.isFree = false;
+      this.chairStateInternal.s.isSelected = !this.chairStateInternal.s.isSelected;
+      this.chairSelectStatusChange.emit(this.chairStateInternal);
+    }
+
     else if (this.chairStateInternal.s.isSelected && !(this.chairStateInternal.s.isSoled || 
       this.chairStateInternal.s.isReserved || 
       this.chairStateInternal.s.inReserving))

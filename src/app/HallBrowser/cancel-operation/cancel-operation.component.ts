@@ -15,6 +15,8 @@ import { ISessionData,
 
 enum FormActions {
   confirm,
+  search,
+  searchByPhone,
   nothing
 }
 
@@ -26,6 +28,9 @@ enum FormActions {
 export class CancelOperationComponent implements OnInit {
 
   @Output() CancelActionCancelEmmiter = new EventEmitter();
+  @Output() ActionSearchEmmiter = new EventEmitter();
+  @Output() ActionSearchByPhoneEmmiter = new EventEmitter();
+  @Output() ActionReseteEmmiter = new EventEmitter();
 
   FORM_ACTIONS : typeof FormActions = FormActions;  
   form : FormGroup;
@@ -34,8 +39,15 @@ export class CancelOperationComponent implements OnInit {
   constructor() { 
     this.form   = new FormGroup({
       confirm : new FormControl('',[Validators.required,
-                                   Validators.pattern(RegExp("да"))]) 
-                                });   
+                                   Validators.pattern(RegExp("да"))]), 
+      phone : new FormControl('',[Validators.required,
+                                    Validators.minLength(10),
+                                    Validators.pattern(RegExp(/^\d+$/))]),
+      secretCode :  new FormControl('',[Validators.required,
+                                         Validators.minLength(6),
+                                         Validators.pattern(RegExp(/^\d+$/))])
+                                  }); 
+
 
   }
 
@@ -54,12 +66,33 @@ export class CancelOperationComponent implements OnInit {
     this.confirm.setValue(value)
   }
 
+  get phone(){
+    return this.form.get('phone');
+  }
+
+  SetPhone(value: string){
+    this.phone.setValue(value)
+  }
+ 
+  get secretCode(){
+    return this.form.get('secretCode');
+  }
+
+  SetSecretCode(value: string){
+    this.secretCode.setValue(value)
+  }
+
+
   GetFormValidStatus() : boolean{
     switch (this.action) {
       case FormActions.nothing:
         return true;
       case FormActions.confirm:
         return this.confirm.valid;
+      case FormActions.search:
+        return  this.secretCode.valid;
+      case FormActions.searchByPhone:
+        return  this.phone.valid;
     }
   }
 
@@ -73,5 +106,25 @@ export class CancelOperationComponent implements OnInit {
     this.SetConfirm('');
   }
 
-  
+  Search(){  
+    this.action = FormActions.search;
+    if(!this.GetFormValidStatus()) {
+      return;
+    }
+    this.ActionSearchEmmiter.emit(this.form.value)
+  }
+
+  SearchByPhone(){  
+    this.action = FormActions.searchByPhone;
+    if(!this.GetFormValidStatus()) {
+      return;
+    }
+    this.ActionSearchByPhoneEmmiter.emit(this.form.value)
+  }
+
+  Resete(){
+    this.action = FormActions.nothing;
+    this.ActionReseteEmmiter.emit();
+  }
+
 }
