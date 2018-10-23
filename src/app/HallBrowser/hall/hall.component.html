@@ -18,8 +18,8 @@
         
                 <div class="card-body px-1 py-2">
                 <div class="btn-group-vertical btn-block" role="group" aria-label="Function Menu">
-                    <button type="button" class="btn btn-secondary mb-1" (click) = "StartSailSelected()">Начать продажу</button>
-                    <button type="button" class="btn btn-secondary mb-1" (click) = "FinishSailSelected()">Завершить продажу</button>
+                    <button type="button" [disabled]="showCancel || showReserving" class="btn btn-secondary mb-1" (click) = "StartSailSelected()">Начать продажу</button>
+                    <button type="button" [disabled]="showCancel || showReserving" class="btn btn-secondary mb-1" (click) = "FinishSailSelected()">Завершить продажу</button>
                     <button type="button" class="btn btn-secondary mb-1" (click) = "PrintSelected()">Повторная печать</button>
                     <button type="button" class="btn btn-secondary mb-1" (click) = "ReserveOperationForm()">Бронь</button>
                     <reserving-operations class="fool-wight" *ngIf="showReserving" 

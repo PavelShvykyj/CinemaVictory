@@ -18,6 +18,9 @@ export class HallChairComponent implements OnInit, OnChanges {
   @Input() chairStateInternal : IChairStateViewModelInternal;
   @Output() chairSelectStatusChange = new EventEmitter();
 
+  isMousOn : boolean = false;
+
+
   constructor() { 
    
   }
@@ -61,8 +64,7 @@ export class HallChairComponent implements OnInit, OnChanges {
     }
   }
 
-  ChairStatusDefoult() : IChairStatus
-  {
+  ChairStatusDefoult() : IChairStatus {
    let status = { isFree     : true,
     inReserving              : false,   
     isReserved               : false, 
@@ -73,5 +75,12 @@ export class HallChairComponent implements OnInit, OnChanges {
     return status
   }
   
+  Onmouseover() {
+    this.isMousOn = true;
+  }
+  
+  Onmouseout() {
+    this.isMousOn = false;
+  }
 
 }

@@ -1,15 +1,18 @@
 
 <div class = "cell" [ngClass]="{'is-selected': (chairStateInternal.s.isSelected) || (chairStateInternal.s.isSelected && (chairStateInternal.s.isSoled || chairStateInternal.s.isReserved || chairStateInternal.s.inReserving)),
                                 'is-unavailable': !(chairStateInternal.s.isSelected) && (chairStateInternal.s.isSoled || chairStateInternal.s.isReserved || chairStateInternal.s.inReserving) && (!chairStateInternal.s.isSelected)}"
-     (click)='OnClick()'>
+     (click)='OnClick()'
+     (mouseenter) = "Onmouseover()"
+     (mouseleave) = "Onmouseout()"
+     >
 
-  <i class="p-0 m-0" [ngClass]="{'fa': !chairStateInternal.s.isFree, 
+  <i *ngIf="!isMousOn" class="p-0 m-0" [ngClass]="{'fa': !chairStateInternal.s.isFree, 
                  'fa-clock-o': chairStateInternal.s.inReserving, 
                  'fa-male': chairStateInternal.s.isReserved && !chairStateInternal.s.inReserving,
                  'fa-street-view': chairStateInternal.s.isSoled && !chairStateInternal.s.inReserving,
                  'fa-angle-down': chairStateInternal.s.isSelected && chairStateInternal.s.isFree,
-                 'is-selected': (chairStateInternal.s.isSelected) || (chairStateInternal.s.isSelected && chairStateInternal.s.inReserving),
-                 'chair-semy-font' : true 
+                 'is-selected': (chairStateInternal.s.isSelected) || (chairStateInternal.s.isSelected && chairStateInternal.s.inReserving)
+                  
                 }"
                  >
   </i>
@@ -17,8 +20,8 @@
 
 
   
-<i class="chair-normal-font" *ngIf="!(chairStateInternal.s.isSoled || chairStateInternal.s.isReserved || chairStateInternal.s.inReserving)">{{ chairID }}</i>
-<i class="small-corner-font" *ngIf="(chairStateInternal.s.isSoled || chairStateInternal.s.isReserved || chairStateInternal.s.inReserving)">{{ chairID }}</i>
+<i *ngIf="isMousOn || !(chairStateInternal.s.isSoled || chairStateInternal.s.isReserved || chairStateInternal.s.inReserving)">{{ chairID }}</i>
+
 
 
 </div>  
