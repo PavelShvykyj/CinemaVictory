@@ -659,6 +659,12 @@ export class HallComponent implements OnInit, OnDestroy {
     ) 
     foundComponents.forEach(component=>{
       component.chairStateInternal.s.isSelected = false;
+      if(!(component.chairStateInternal.s.isSoled ||
+           component.chairStateInternal.s.isReserved ||
+            component.chairStateInternal.s.inReserving)) {
+              component.chairStateInternal.s.isFree = true;
+            }
+
     })
     this.changeDetector.detectChanges();
   }
