@@ -118,18 +118,23 @@ export class RequestManagerService implements IbackEnd {
   }
 
 PrintTicets(DataTo1C : string) :Promise<boolean>  {
-    let DataFrom1C = "";
-    let subs = this.promise1CPrintTickets$.subscribe(resuolt =>{
-      DataFrom1C = resuolt});    
-    Call1C(DataTo1C);  
-    /// встроить защиту по мамксимум времени т.е. если ждем более сколько то мили секунд перращаем и генерим ошибку
-    while(DataFrom1C == ""){
-      setTimeout(()=>{},1000);
-    }
-    
-    alert('DataFrom1C '+DataFrom1C);
-    subs.unsubscribe();
-    let myPromise : Promise<boolean> = new Promise((resolve)=>function(resolve){resolve(true)});
+  alert('DataTo1C '+DataTo1C);
+    let myPromise : Promise<boolean> = new Promise((resolve, reject)=>{
+      alert('DataTo1C in promise funk'+DataTo1C);
+      let DataFrom1C = "";
+      let subs = this.promise1CPrintTickets$.subscribe(resuolt =>{
+        DataFrom1C = resuolt});    
+      Call1C(DataTo1C);  
+      /// встроить защиту по мамксимум времени т.е. если ждем более сколько то мили секунд перращаем и генерим ошибку
+      while(DataFrom1C == ""){
+        setTimeout(()=>{},1000);
+      }
+      alert('DataFrom1C '+DataFrom1C);
+      subs.unsubscribe();
+      resolve(true);
+
+
+    });
     
     return myPromise.then(res => {alert('then in myPromise'); return res});
     
