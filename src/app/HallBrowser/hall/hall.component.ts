@@ -74,9 +74,10 @@ export class HallComponent implements OnInit, OnDestroy {
   chairsInWork : Array<IChairStateViewModelInternal> = [];
 
   // определяю видимость формочек операций резерва и отмены билетов
-  showReserving = false;
-  showCancel    = false;
-
+  showReserving      = false;
+  showCancel         = false;
+  showStartSail      = false;
+ 
   HALL_ID  = 1;
   CASH_DESK_ID = 1;
 
@@ -213,7 +214,20 @@ export class HallComponent implements OnInit, OnDestroy {
     });
   }
 
-  PrintSelected(){}
+  PrintSelected(toPrint? : Array<IChairStateViewModelInternal> ){
+    if(!toPrint){
+      toPrint = this.chairsInWork;
+    }
+    if(toPrint.length == 0 ){
+      console.log('nothing to print');
+      return;
+    }
+    
+    this.apiServis.RoutPrintBy1C(this.chairsInWork).then( resoult =>{
+      console.log("1C printed ",resoult);
+      alert('in hall '+resoult);
+    });
+  }
 
 
   StartSailSelected(){
@@ -221,6 +235,8 @@ export class HallComponent implements OnInit, OnDestroy {
     if(this.chairsInWork.length==0){
       return;
     }
+
+    this.showStartSail = true;
 
     // если процесс начат повторно ничего не делаем
     let firstChairStatus = this.chairsInWork[0].s;
@@ -243,6 +259,8 @@ export class HallComponent implements OnInit, OnDestroy {
   }
 
   FinishSailSelected(){
+      this.showStartSail = false;  
+
       // если ничего не отмечено - ничего и не делаем
       if(this.chairsInWork.length==0){
         return

@@ -35,10 +35,11 @@ export class AppComponent implements OnInit, OnDestroy {
     this.subsUserName.unsubscribe();
   }
 
-  OnExternal1CValueChange(value){
+  OnExternal1CValueChange(el){
     // alert(document.getElementById("External1CValue").getAttribute("value"));
-    // alert('click from 1C');
-    this.apiServis.RoutOn1CDataIncome(value);
+    //alert('click from 1C'+el.value);
+    this.apiServis.RoutOn1CDataIncome(el.value);
+    
   }
 
   Call1c(name,data){
@@ -61,12 +62,10 @@ export class AppComponent implements OnInit, OnDestroy {
   Alert1CdataIncome(){
     //alert('start click');
    
-    this.Call1c(1,1);
+    Call1C('from JS');
     if (this.subs1Cdata) {
-      
       this.subs1Cdata.unsubscribe();  
     }
-
     this.subs1Cdata = this.localService.promise1CData$.subscribe(resoult => {alert(resoult)});
   }
 

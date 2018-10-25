@@ -243,5 +243,11 @@ export class RequestRouterService {
     this.localServise.On1CDataIncome(data);
   }
 
- 
+  RoutPrintBy1C(data : Array<IChairStateViewModelInternal>){
+    let data1C = JSON.stringify({comand : 'PrintTickets', printdata : data});
+    let myPromise = this.localServise.PrintTicets(data1C);
+    alert('promise'+myPromise);
+    return myPromise.then(resoult =>{alert('in rout'); return resoult });
+  }
+
 }

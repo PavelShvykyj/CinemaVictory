@@ -15,6 +15,8 @@ export class HallChairComponent implements OnInit, OnChanges {
   @Input() rowID : number;
   @Input() cancelStatus : boolean;
   @Input() reserveStatus : boolean;
+  @Input() startSailStatus : boolean;
+ 
   @Input() chairStateInternal : IChairStateViewModelInternal;
   @Output() chairSelectStatusChange = new EventEmitter();
 
@@ -41,7 +43,7 @@ export class HallChairComponent implements OnInit, OnChanges {
 
   OnClick(){
     
-    if (this.chairStateInternal.s.isFree && !(this.cancelStatus || this.reserveStatus) )
+    if (this.chairStateInternal.s.isFree && !(this.cancelStatus || this.reserveStatus || this.startSailStatus))
     {
       console.log(1);
       this.chairStateInternal.s.isFree = false;
