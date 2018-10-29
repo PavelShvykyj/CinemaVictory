@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { IbackEnd,
+         IDataFrom1C,
          ISyncTicketsRequestViewModel,
          ISyncTicketsResponseViewModelInternal,
          ILoggInData,
@@ -14,6 +15,8 @@ import { IdataObject } from '../HallBrowser/idata-object';
 import { Subject } from 'rxjs/Subject';
 import { resolve } from 'url';
 
+
+
 @Injectable()
 export class RequestManagerService implements IbackEnd {
 
@@ -26,20 +29,36 @@ export class RequestManagerService implements IbackEnd {
   private _subj1CPrintTickets = new Subject<string>(); 
   promise1CPrintTickets$ = this._subj1CPrintTickets.asObservable();
 
+  private _subj1CGlobalParams = new Subject<string>(); 
+  Observ1CGlobalParams$ = this._subj1CGlobalParams.asObservable();
+
+
+  RESPONSE_TIME_OUT = 3000;
+  RESPONSE_WAIT_STEP = 500;
+
   constructor() { 
 
   }
 
   // вызываем в компоненте он клик который генерит 1С (через наш сервис роутер)
   On1CDataIncome(data: string){
-    alert('data in servese '+data)
-    this._subj1CPrintTickets.next(data);
+    //alert('data in servese '+data)
+    //this._subj1CPrintTickets.next(data);
     
-    //let data1C = JSON.parse(data);
-    
-    //if(data1C.command == 'PrintTickets'){
-    //  alert('call next ') 
-    //  this._subj1CPrintTickets.next(data1C.Resoult);
+    let data1C = JSON.parse(data);
+    let point = data1C.point;
+
+    switch (point) {
+      case 'PrintTickets' : 
+        this._subj1CPrintTickets.next(data);      
+      case 'GetGlobalParametrs' :  
+        this._subj1CGlobalParams.next(data);      
+    }
+
+
+    //if(data1C.point == 'PrintTickets'){
+    //alert('data in servese '+data)
+    //this._subj1CPrintTickets.next(data);
     //}
     //else{
     //  alert(data1C.command) 
@@ -117,13 +136,39 @@ export class RequestManagerService implements IbackEnd {
     return null
   }
 
+GetGlobalParametrs() : Promise<IDataFrom1C> {
+  let myPromise : Promise<IDataFrom1C> = new Promise((resolve, reject)=>{
+    let stringDataFrom1C : string = '';
+    let subs = this.Observ1CGlobalParams$.subscribe(resoult => {
+      stringDataFrom1C = resoult;
+    })
+    let dataTo1C : string = JSON.stringify({point : "GetGlobalParametrs"})
+    Call1C(dataTo1C); 
+    let timeRenain = 0;
+    while(stringDataFrom1C == "" || timeRenain<=this.RESPONSE_TIME_OUT){
+      setTimeout(()=>{},this.RESPONSE_WAIT_STEP);
+    }
+    subs.unsubscribe();
+    if(stringDataFrom1C != ""){
+      resolve(JSON.parse(stringDataFrom1C));
+    } else{
+      reject({
+        point : "GetGlobalParametrs",
+        resoult : false,
+        data : {errorText: "time out"}
+      });
+    }
+  });
+  return myPromise
+}
+
 PrintTicets(DataTo1C : string) :Promise<boolean>  {
   alert('DataTo1C '+DataTo1C);
-    let myPromise : Promise<boolean> = new Promise((resolve, reject)=>{
+  let myPromise : Promise<boolean> = new Promise((resolve, reject)=>{
       alert('DataTo1C in promise funk'+DataTo1C);
       let DataFrom1C = "";
       let subs = this.promise1CPrintTickets$.subscribe(resuolt =>{
-        DataFrom1C = resuolt});    
+      DataFrom1C = resuolt});    
       Call1C(DataTo1C);  
       /// встроить защиту по мамксимум времени т.е. если ждем более сколько то мили секунд перращаем и генерим ошибку
       while(DataFrom1C == ""){

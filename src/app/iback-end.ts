@@ -1,4 +1,5 @@
 import {TicketOperations } from "./global_enums"
+import { IdataObject } from "./HallBrowser/idata-object";
 
 export interface ILoggInData {
     userName : string;
@@ -164,6 +165,12 @@ export interface ICancelTicketRequestViewModel
     chairs : Array<IChairViewModel>
 }
 
+export interface IDataFrom1C 
+{
+    point : string,
+    resoult : boolean,
+    data : IdataObject
+}
 
 export interface IbackEnd {
     LoggInByPass(LoggInData : ILoggInData): Promise<IResponseData>;

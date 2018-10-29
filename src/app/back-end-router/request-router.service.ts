@@ -28,6 +28,7 @@ export class RequestRouterService {
   changeEmittedLoginName$ = this.emitChangeLoginName.asObservable();
   changeEmittedBackEndName$ = this.emitChangeBackEndName.asObservable();
   internalErrors = [400, 401, 403, 406];
+  READ_GLOBAL_FROM_1C : boolean = false; 
 
  
   constructor(private webServise : webManagerServise, private localServise : localManagerServise) { 
@@ -35,6 +36,16 @@ export class RequestRouterService {
     this.backends.push(this.localServise);
     this.changeHallState$ = Observable.merge(this.webServise.changeHallState$ ,this.localServise.changeHallState$); 
     
+    if(this.READ_GLOBAL_FROM_1C){
+      this.localServise.GetGlobalParametrs().then(resoult=>{
+        this.webServise.BASE_URL               = resoult.BASE_URL;
+        this.webServise.HALL_ID                = resoult.HALL_ID;
+        this.webServise.PACKAGE_MOVIES_SIZE    = resoult.PACKAGE_MOVIES_SIZE;
+        this.webServise.CRYPTO_KEY             = resoult.CRYPTO_KEY;
+        this.webServise.CRYPTO_IV              = resoult.CRYPTO_IV;
+        this.webServise.CASH_DESK_ID           = resoult.CASH_DESK_ID;
+      });
+    }
   }
 
   IsInternalError(status: number) {
