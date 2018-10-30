@@ -28,24 +28,13 @@ export class RequestRouterService {
   changeEmittedLoginName$ = this.emitChangeLoginName.asObservable();
   changeEmittedBackEndName$ = this.emitChangeBackEndName.asObservable();
   internalErrors = [400, 401, 403, 406];
-  READ_GLOBAL_FROM_1C : boolean = false; 
+  
 
  
   constructor(private webServise : webManagerServise, private localServise : localManagerServise) { 
     this.backends.push(this.webServise);
     this.backends.push(this.localServise);
     this.changeHallState$ = Observable.merge(this.webServise.changeHallState$ ,this.localServise.changeHallState$); 
-    
-    if(this.READ_GLOBAL_FROM_1C){
-      this.localServise.GetGlobalParametrs().then(resoult=>{
-        this.webServise.BASE_URL               = resoult.BASE_URL;
-        this.webServise.HALL_ID                = resoult.HALL_ID;
-        this.webServise.PACKAGE_MOVIES_SIZE    = resoult.PACKAGE_MOVIES_SIZE;
-        this.webServise.CRYPTO_KEY             = resoult.CRYPTO_KEY;
-        this.webServise.CRYPTO_IV              = resoult.CRYPTO_IV;
-        this.webServise.CASH_DESK_ID           = resoult.CASH_DESK_ID;
-      });
-    }
   }
 
   IsInternalError(status: number) {
@@ -250,15 +239,40 @@ export class RequestRouterService {
 
   }
 
+
+  RoutPrintBy1C(data : IdataObject){
+    let data1C = JSON.stringify({point : 'PrintTickets', data : data});
+    let myPromise = this.localServise.PrintTicets(data1C);
+    return myPromise;
+  }
+
+  SetGlobalParametrs(parametrs : IdataObject){
+    this.webServise.BASE_URL               = parametrs.BASE_URL;
+    this.webServise.HALL_ID                = parametrs.HALL_ID;
+    this.webServise.PACKAGE_MOVIES_SIZE    = parametrs.PACKAGE_MOVIES_SIZE;
+    this.webServise.CRYPTO_KEY             = parametrs.CRYPTO_KEY;
+    this.webServise.CRYPTO_IV              = parametrs.CRYPTO_IV;
+    this.webServise.CASH_DESK_ID           = parametrs.CASH_DESK_ID;
+    this.localServise.webUserName          = parametrs.LOGIN;
+    this.localServise.webPassword          = parametrs.PASSWORD; 
+    this.localServise.localeUserName       = parametrs.USER;
+    this.localServise.RESPONSE_TIME_OUT    = +parametrs.RESPONSE_TIME_OUT;
+    this.localServise.RESPONSE_WAIT_STEP   = +parametrs.RESPONSE_WAIT_STEP; 
+
+  }
+
+  // точка входа от 1С старт из js
   RoutOn1CDataIncome(data: string){
     this.localServise.On1CDataIncome(data);
   }
 
-  RoutPrintBy1C(data : Array<IChairStateViewModelInternal>){
-    let data1C = JSON.stringify({comand : 'PrintTickets', printdata : data});
-    let myPromise = this.localServise.PrintTicets(data1C);
-    alert('promise'+myPromise);
-    return myPromise.then(resoult =>{alert('in rout'); return resoult });
+  // точка входа от 1С старт из 1С
+  RoutInit1CDataIncome(StringDataFrom1C : string){
+      let DataFrom1C = JSON.parse(StringDataFrom1C);
+      switch (DataFrom1C.point) {
+        case 'SetGlobalParametrs' : 
+          this.SetGlobalParametrs(DataFrom1C.data);
+      }
   }
 
 }

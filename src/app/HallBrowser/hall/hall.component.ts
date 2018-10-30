@@ -222,10 +222,19 @@ export class HallComponent implements OnInit, OnDestroy {
       console.log('nothing to print');
       return;
     }
+
+    if(!this.sessionData.currentSession){
+      console.log('nothing to print');
+      return;
+    }
     
-    this.apiServis.RoutPrintBy1C(this.chairsInWork).then( resoult =>{
+    let printData = {
+      chairs : this.chairsInWork,
+      movie : this.sessionData
+    }
+
+    this.apiServis.RoutPrintBy1C(printData).then( resoult =>{
       console.log("1C printed ",resoult);
-      alert('in hall '+resoult);
     });
   }
 
