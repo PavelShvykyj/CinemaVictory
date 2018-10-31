@@ -349,7 +349,7 @@ export class HallComponent implements OnInit, OnDestroy {
       
       let foundCodes = [];
       foundComponents.forEach(foundComponent=>{foundCodes.push(foundComponent.chairStateInternal.t.substr(0,foundComponent.chairStateInternal.t.lastIndexOf('-')).replace('-',''))});
-      let uniqCodes = _.uniq(foundComponents);
+      let uniqCodes = _.uniq(foundCodes);
       
 
       if(this.showReserving) {
@@ -717,7 +717,9 @@ export class HallComponent implements OnInit, OnDestroy {
   }
 
   OnSessionDataChange(sessionData) {
+    
     this.sessionData = sessionData;
+    
     this.ClearHallState();
     //console.log('list after clear');
     //this.chairList.forEach(chair => {console.log(chair.chairStateInternal.c.c,chair.chairStateInternal.c.r,chair.chairStateInternal.t)})

@@ -125,6 +125,7 @@ export class MovieSelectorComponent implements OnInit, AfterViewInit {
       
       this.currentMovies.push(found)                
     });
+    
   }
 
   OnSelectDatePicker(value : string, el){
