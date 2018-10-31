@@ -172,6 +172,7 @@ export class HallComponent implements OnInit, OnDestroy {
           ///  ели это ошибка одновременного использования - то просто чистим рабочие и переобновим зал
           if (error.status = 406)
           {
+            this.ClearSelected();
             this.SyncHallState([],[])
                 .then(resoult => {this.UpdateHallState(resoult)})
                 .catch(error=>{console.log('bad synk Tickets in start', error); return false }); /// 
@@ -185,6 +186,7 @@ export class HallComponent implements OnInit, OnDestroy {
               });
               foundChair.chairStateInternal.s = foundChair.ChairStatusDefoult();
             })
+            this.ClearSelected();
           }
           /// скидываем рабочие
           this.chairsInWork = [];
@@ -196,8 +198,8 @@ export class HallComponent implements OnInit, OnDestroy {
    return this.SyncHallState([],this.chairsInWork)
     .then(resoult => {
       console.log('finish ok', resoult);
-      this.chairsInWork = [];
       this.UpdateHallState(resoult);
+      this.ClearSelected();
       return true;
     })
     .catch(error=>{
@@ -207,7 +209,7 @@ export class HallComponent implements OnInit, OnDestroy {
           hallState: error.error.hallState,
           starts : this.sessionData.currentSession.starts
         }
-        this.chairsInWork = [];
+        this.ClearSelected();
         this.UpdateHallState(hallStateInError);
         return false;
       }
@@ -344,14 +346,16 @@ export class HallComponent implements OnInit, OnDestroy {
     
     /// если нашли отметили и места и сообщили код для сверки
     if(foundComponents.length !=0){
-      let secretCode = '';//foundComponents[0].chairStateInternal.t;
       
-      foundComponents.forEach(foundComponent=>{secretCode = secretCode+foundComponent.chairStateInternal.t.substr(0,foundComponent.chairStateInternal.t.lastIndexOf('-')).replace('-','')+'-'});
+      let foundCodes = [];
+      foundComponents.forEach(foundComponent=>{foundCodes.push(foundComponent.chairStateInternal.t.substr(0,foundComponent.chairStateInternal.t.lastIndexOf('-')).replace('-',''))});
+      let uniqCodes = _.uniq(foundComponents);
+      
 
       if(this.showReserving) {
-        this.reserveComponent.SetSecretCode(secretCode) ;
+        this.reserveComponent.SetSecretCode(uniqCodes.join(';')) ;
       } else  {
-        this.cancelComponent.SetSecretCode(secretCode) ;
+        this.cancelComponent.SetSecretCode(uniqCodes.join(';')) ;
       } 
          
       
@@ -688,7 +692,7 @@ export class HallComponent implements OnInit, OnDestroy {
       component.chairStateInternal.s.isSelected = false;
       if(!(component.chairStateInternal.s.isSoled ||
            component.chairStateInternal.s.isReserved ||
-            component.chairStateInternal.s.inReserving)) {
+           component.chairStateInternal.s.inReserving)) {
               component.chairStateInternal.s.isFree = true;
             }
 

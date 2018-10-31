@@ -24,6 +24,7 @@ import { HubConnection, HubConnectionBuilder } from '@aspnet/signalr'
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 import { error } from 'util';
+import { reject } from 'q';
 
 
 
@@ -36,7 +37,7 @@ export class RequestManagerService implements IbackEnd {
   CRYPTO_KEY = 'xm5POGDda6o1SiZMfuNSvXbV8r0+uyBF7BMdAYh+f5Q=';
   CRYPTO_IV  = 'TweTnUNAAL8VMtvtMNj0Vg==';
   CASH_DESK_ID = 1;
-
+  
 
   private _userData : ILoggInData;
   private _refreshLoginTimer : number;
@@ -170,11 +171,6 @@ export class RequestManagerService implements IbackEnd {
   }
 
   HubbHallStateParse(encryptedIdSesion : string, SessionData : ISyncTicketsResponseViewModel) {
-       
-    //let encryptedId = encryptedIdSesion.replace(RegExp("~",'g'),"=")
-    //                                   .replace(RegExp("-",'g'),"+")
-    //                                   .replace(RegExp(/\|/ ,'g'),"/");
-    
     let idSesion = this.Decrypt(encryptedIdSesion);
     let sessionDataInternal : ISyncTicketsResponseViewModelInternal = this.ConvertSisionDataToSisionDataInternal(SessionData) 
     let hubSessionInfo = {id : parseInt(idSesion) , chairsData : sessionDataInternal};
@@ -439,6 +435,7 @@ export class RequestManagerService implements IbackEnd {
 
   SyncTickets(currentState :  ISyncTicketsRequestViewModel) : Promise<ISyncTicketsResponseViewModelInternal> | null
   { 
+    
     let headers = new HttpHeaders().append('Authorization','Bearer '+this._token).append('Content-Type','text/json')
     let connection = this.BASE_URL+"/tickets/sync";  
     let postBody = {
@@ -473,6 +470,7 @@ export class RequestManagerService implements IbackEnd {
                       }
                       throw error
                     });
+                 
   }
 
   SessionsGetByDate(selectedDate : string) : Promise<string>  {
@@ -508,8 +506,7 @@ export class RequestManagerService implements IbackEnd {
                                           for (let i = 1; i <= resoult.length-1; i++) {
                                                 let par = JSON.parse(resoult[i]);
                                                 Object.assign(par_1,par);     
-                                              }
-                                          //console.log(par_1);  
+                                              }                                          
                                           return par_1})
                                          .catch(error => {throw error})   
                                          

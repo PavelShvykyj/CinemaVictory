@@ -103,8 +103,10 @@ export class RequestRouterService {
 
   RoutSessionsGetByDate(selectedDate : string) : Promise<ISessionData> | null {
 
+   
     return this.webServise.SessionsInfoGetByDate(selectedDate)
                           .then(resoult=>{
+                            
                             this.localServise.SetSessionsInfoGetByDate(selectedDate,resoult);
                             this.EmitBackEndName("WEB");
                             this.EmitLoginName(this.webServise.userData.userName);
@@ -204,7 +206,7 @@ export class RequestRouterService {
                           })
   }
 
-  RoutSyncTickets(currentState :  ISyncTicketsRequestViewModel) : Promise<ISyncTicketsResponseViewModelInternal> | null {
+  RoutSyncTickets_(currentState :  ISyncTicketsRequestViewModel) : Promise<ISyncTicketsResponseViewModelInternal> | null {
     return this.webServise.SyncTickets(currentState)
                           .then(resoult => {
                             //console.log('ok in rout servise',resoult)
@@ -233,6 +235,11 @@ export class RequestRouterService {
                             }
                           });
   } 
+
+  RoutSyncTickets(currentState :  ISyncTicketsRequestViewModel) : Promise<ISyncTicketsResponseViewModelInternal> | null {
+    
+    return this.localServise.SyncTickets(currentState);
+  }
 
   RoutConvertTicketStatusToChairStatus(status){
     return this.webServise.ConvertTicketStatusToChairStatus(status)

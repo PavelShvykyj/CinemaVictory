@@ -10,9 +10,6 @@ import 'jquery-ui/ui/widgets/datepicker.js';
 const ONE_DAY = 24*60*60*1000;
 
 
-
-
-
 @Component({
   selector: 'movie-selector',
   templateUrl: './movie-selector.component.html',
@@ -80,7 +77,9 @@ export class MovieSelectorComponent implements OnInit, AfterViewInit {
     this.sessionData = null;
     this.currentMovies = [];
     this.currentSessions = [];
-    this.apiServis.RoutSessionsGetByDate(this.currentDate.toDateString())
+    
+    
+    this.apiServis.RoutSessionsGetByDate(this.currentDate.toISOString())
                   .then(resoult => {
                     
                     this.sessionData = resoult;

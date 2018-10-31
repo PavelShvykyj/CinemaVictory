@@ -13,8 +13,7 @@ import { IbackEnd,
 import { Observable } from 'rxjs/Observable';
 import { IdataObject } from '../HallBrowser/idata-object';
 import { Subject } from 'rxjs/Subject';
-import { resolve } from 'url';
-
+import * as _ from 'underscore';
 
 
 @Injectable()
@@ -63,6 +62,12 @@ export class RequestManagerService implements IbackEnd {
         this._subj1CPrintTickets.next(data);      
       case 'GetGlobalParametrs' :  
         this._subj1CGlobalParams.next(data); 
+      case 'GetHallState' :  
+        this._subj1CHallState.next(data); 
+      case 'SessionsInfoGetByDate' :  
+        this._subj1CSessionsInfo.next(data); 
+      case 'GetHallInfo' :  
+        this._subj1CHallInfo.next(data); 
     }
   }
 
@@ -143,8 +148,68 @@ export class RequestManagerService implements IbackEnd {
   }
 
  
-  SyncTickets(currentState :  ISyncTicketsRequestViewModel) : Promise<ISyncTicketsResponseViewModelInternal> | null
-  { 
+  SyncTickets(currentState :  ISyncTicketsRequestViewModel) : Promise<ISyncTicketsResponseViewModelInternal> | null { 
+    
+    let myPromise : Promise<ISyncTicketsResponseViewModelInternal> = new Promise((resolve, reject)=>{
+      this.GetHallState(currentState).then(dataFrom1C=>{
+        
+        let newState : ISyncTicketsResponseViewModelInternal = (dataFrom1C.data as ISyncTicketsResponseViewModelInternal);
+        
+        if (currentState.blockSeats.length == 0 && currentState.hallState.length == 0){
+          /// просто вернуть как есть
+          resolve(newState);
+        }
+
+        if (currentState.blockSeats.length != 0){
+        /// проверяем возможность заблокировать места 
+        let disableBlock : boolean = false;
+        currentState.blockSeats.forEach(blockSeat => {
+          let currentSeat =  _.find(newState.hallState, element => {return element.c.r == blockSeat.c.r && element.c.c == blockSeat.c.c});
+          if(currentSeat){
+            if(currentSeat.s.inReserving || currentSeat.s.isReserved || currentSeat.s.isSoled){
+              disableBlock = true;
+            }
+          }
+        });
+        
+        if(disableBlock){
+          /// Нет - возвращаем 406ую ошибку
+          let error = {staus: 406};
+          reject(error); 
+        }
+        else{
+          /// Да - инжектируем  блокировку
+          currentState.blockSeats.forEach(blockSeat => {
+            let currentSeat =  _.find(newState.hallState, element => {return element.c.r == blockSeat.c.r && element.c.c == blockSeat.c.c});
+            let index = newState.hallState.indexOf(currentSeat);
+            blockSeat.s.isSelected = false;
+            if(index>=0){
+              newState.hallState.splice(index,1,blockSeat);  
+            } else{
+              newState.hallState.push(blockSeat)
+            }
+            
+          });
+        }
+        }
+        if(currentState.hallState.length != 0){
+          /// Безусловно инжектируем переданное
+          currentState.hallState.forEach(actionSeat => {
+            let currentSeat =  _.find(newState.hallState, element => {return element.c.r == actionSeat.c.r && element.c.c == actionSeat.c.c});
+            let index = newState.hallState.indexOf(currentSeat);
+            actionSeat.s.isSelected = false;
+            if(index>=0){
+              newState.hallState.splice(index,1,actionSeat);  
+            } else{
+              newState.hallState.push(actionSeat)
+            }
+          });
+        }
+        /// Сохраняем новое состояние в 1С
+        this.SetHallState(currentState,newState);
+        resolve(newState);
+      })
+
     /// из  currentState вычитываем параметры зал сесиия получаем ключ 
     /// по ключу получаем снепшот зала
     /// дополняем снепшот зала данными из масивов халлстате и блокситс
@@ -154,8 +219,8 @@ export class RequestManagerService implements IbackEnd {
     /// что бы запомнить текущий снепшот
     /// если работают 2 кассы придумать блокировку и возврат ошибок
     /// если снепшот успешно записан поставить команду в буфер передачи на сервер - это отдельная таблица должна быть
-    
-    return null
+    })  
+    return myPromise;
   }
 
   SetHallInfo(hallInfo: IHallInfo){
@@ -265,6 +330,7 @@ export class RequestManagerService implements IbackEnd {
   GetHallState(currentState : ISyncTicketsRequestViewModel ) : Promise<IDataFrom1C> {
     /// из  currentState вычитываем параметры зал сесиия получаем ключ и записываем syncTickets как снепшот 
     /// запись snapshot  in 1C buffer
+    
     let currentKey = {idHall : currentState.idHall, starts : currentState.starts};
     
     let timeRemain : number = 0;
@@ -276,11 +342,14 @@ export class RequestManagerService implements IbackEnd {
         stringDataFrom1C = resoult;
       })
       let dataTo1C : string = JSON.stringify({point : "GetHallState", key : currentKey})
+      
+      
       Call1C(dataTo1C); 
 
       while(stringDataFrom1C == "" && timeRemain<=timeOut){        
         timeRemain = timeRemain + step;
-        setTimeout(()=>{},timeOut);
+        
+        setTimeout(()=>{},step);
       }
       subs.unsubscribe();
       if(stringDataFrom1C != ""){
@@ -316,6 +385,7 @@ export class RequestManagerService implements IbackEnd {
     }
     subs.unsubscribe();
     if(stringDataFrom1C != ""){
+      
       resolve(JSON.parse(stringDataFrom1C));
     } else{
       reject({

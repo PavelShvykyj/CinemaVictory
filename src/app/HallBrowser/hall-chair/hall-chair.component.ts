@@ -42,8 +42,7 @@ export class HallChairComponent implements OnInit, OnChanges {
   ngOnChanges(){}
 
   OnClick(){
-    
-    if (this.chairStateInternal.s.isFree && !(this.cancelStatus || this.reserveStatus || this.startSailStatus))
+    if (this.chairStateInternal.s.isFree && !(this.cancelStatus  || this.startSailStatus))
     {
       console.log(1);
       this.chairStateInternal.s.isFree = false;
