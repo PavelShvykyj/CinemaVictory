@@ -14,6 +14,7 @@ import { Observable } from 'rxjs/Observable';
 import { IdataObject } from '../HallBrowser/idata-object';
 import { Subject } from 'rxjs/Subject';
 import * as _ from 'underscore';
+import { reject } from 'q';
 
 
 @Injectable()
@@ -40,6 +41,9 @@ export class RequestManagerService implements IbackEnd {
   private _subj1CHallState = new Subject<string>(); 
   Observ1CHallState$ = this._subj1CHallState.asObservable();
 
+  private _subj1CBuferState = new Subject<string>(); 
+  Observ1CBuferState$ = this._subj1CBuferState.asObservable();
+
 
   RESPONSE_TIME_OUT = 3000;
   RESPONSE_WAIT_STEP = 500;
@@ -50,6 +54,10 @@ export class RequestManagerService implements IbackEnd {
 
   constructor() { 
 
+  }
+
+  async  delay(ms: number) {
+    return new Promise( resolve => setTimeout(resolve, ms) );
   }
 
   // вызываем в компоненте он клик который генерит 1С (через наш сервис роутер)
@@ -64,10 +72,19 @@ export class RequestManagerService implements IbackEnd {
         this._subj1CGlobalParams.next(data); 
       case 'GetHallState' :  
         this._subj1CHallState.next(data); 
+      case 'SetHallState' :  
+        this._subj1CHallState.next(data); 
       case 'SessionsInfoGetByDate' :  
         this._subj1CSessionsInfo.next(data); 
       case 'GetHallInfo' :  
-        this._subj1CHallInfo.next(data); 
+        this._subj1CHallInfo.next(data);
+      case 'GetBufer' :  
+        this._subj1CBuferState.next(data);
+      case 'ClearBufer' :  
+        this._subj1CBuferState.next(data);
+        
+        
+
     }
   }
 
@@ -99,7 +116,8 @@ export class RequestManagerService implements IbackEnd {
 
       while(stringDataFrom1C == "" && timeRemain<=timeOut){        
         timeRemain = timeRemain + step;
-        setTimeout(()=>{},timeOut);
+        async () => {await this.delay(step)};
+        //setTimeout(()=>{},step);
       }
       subs.unsubscribe();
       if(stringDataFrom1C != ""){
@@ -131,7 +149,8 @@ export class RequestManagerService implements IbackEnd {
 
       while(stringDataFrom1C == "" && timeRemain<=timeOut){        
         timeRemain = timeRemain + step;
-        setTimeout(()=>{},timeOut);
+        async () => {await this.delay(step)};
+        //setTimeout(()=>{},step);
       }
       subs.unsubscribe();
       if(stringDataFrom1C != ""){
@@ -158,6 +177,7 @@ export class RequestManagerService implements IbackEnd {
         if (currentState.blockSeats.length == 0 && currentState.hallState.length == 0){
           /// просто вернуть как есть
           resolve(newState);
+          return;
         }
 
         if (currentState.blockSeats.length != 0){
@@ -176,6 +196,7 @@ export class RequestManagerService implements IbackEnd {
           /// Нет - возвращаем 406ую ошибку
           let error = {staus: 406};
           reject(error); 
+          return;
         }
         else{
           /// Да - инжектируем  блокировку
@@ -205,10 +226,35 @@ export class RequestManagerService implements IbackEnd {
             }
           });
         }
+        
         /// Сохраняем новое состояние в 1С
-        this.SetHallState(currentState,newState);
-        resolve(newState);
+        /// команду на блок мест выполнять нету смысла
+        if(currentState.blockSeats.length==0 && currentState.hallState.length == 0){
+          alert('empty currentState');
+        }
+        else if(currentState.blockSeats.length==0){
+        let buferData = {toDo : "SyncTickets", parametr : currentState};
+        this.SetHallState(currentState,newState,buferData)
+        .then(res => {resolve(newState);})
+        .catch(err=>{
+          let error = {status: 100};
+          reject(error);
+        });
+        }else{
+          this.SetHallState(currentState,newState)
+          .then(res => {resolve(newState);})
+          .catch(err=>{
+            let error = {status: 100};
+            reject(error);
+          });
+        }
+        
       })
+      .catch(ExtError=>{
+          /// точно не внутреннюю ошибку генерим
+          let error = {status: 100};
+          reject(error);
+        });
 
     /// из  currentState вычитываем параметры зал сесиия получаем ключ 
     /// по ключу получаем снепшот зала
@@ -222,6 +268,40 @@ export class RequestManagerService implements IbackEnd {
     })  
     return myPromise;
   }
+
+  CancelTickets(TicketsToCancel : ICancelTicketRequestViewModel) : Promise<number>{
+    /// получили текущий статус - вычистили места на удаление и сохранили обновленный
+
+    let myPromise : Promise<number> = new Promise((resolve, reject)=>{
+
+    let reqestForHallState = {starts: TicketsToCancel.starts, 
+                              idHall: TicketsToCancel.idHall,
+                              blockSeats : [],
+                              hallState : []};
+    this.GetHallState(reqestForHallState)
+        .then(dataFrom1C=>{
+              let newState : ISyncTicketsResponseViewModelInternal = (dataFrom1C.data as ISyncTicketsResponseViewModelInternal);
+              TicketsToCancel.chairs.forEach(seat =>{
+                let currentSeat =  _.find(newState.hallState, element => {return element.c.r == seat.r && element.c.c == seat.c});
+                let index = newState.hallState.indexOf(currentSeat);
+                if(index>=0){
+                  newState.hallState.splice(index,1);
+                }                     
+              });
+    
+              /// Сохраняем новое состояние в 1С
+              let buferData = {toDo : "CancelTickets", parametr : TicketsToCancel};
+              this.SetHallState(reqestForHallState,newState,buferData)
+                  .then(res=>{resolve(200)})
+                  .catch(err=>{reject(100)});
+              ;
+              
+            })
+          .catch(err=>{reject(100)});  
+          })
+    return myPromise
+  }
+
 
   SetHallInfo(hallInfo: IHallInfo){
     /// запись snapshot HallInfo in 1C buffer
@@ -240,7 +320,8 @@ export class RequestManagerService implements IbackEnd {
 
       while(stringDataFrom1C == "" && timeRemain<=timeOut){        
         timeRemain = timeRemain + step;
-        setTimeout(()=>{},timeOut);
+        async () => {await this.delay(step)};
+        //setTimeout(()=>{},step);
       }
       subs.unsubscribe();
       if(stringDataFrom1C != ""){
@@ -274,7 +355,8 @@ export class RequestManagerService implements IbackEnd {
 
       while(stringDataFrom1C == "" && timeRemain<=timeOut){        
         timeRemain = timeRemain + step;
-        setTimeout(()=>{},timeOut);
+        async () => {await this.delay(step)};
+        //setTimeout(()=>{},step);
       }
       subs.unsubscribe();
       if(stringDataFrom1C != ""){
@@ -290,7 +372,7 @@ export class RequestManagerService implements IbackEnd {
     return myPromise
   }
 
-  SetHallState(currentState : ISyncTicketsRequestViewModel , syncTickets : ISyncTicketsResponseViewModelInternal){
+  SetHallState(currentState : ISyncTicketsRequestViewModel , syncTickets : ISyncTicketsResponseViewModelInternal, inBufer? : IdataObject) : Promise<IDataFrom1C>{
     /// из  currentState вычитываем параметры зал сесиия получаем ключ и записываем syncTickets как снепшот 
     /// запись snapshot  in 1C buffer
     let currentKey = {idHall : currentState.idHall, starts : currentState.starts};
@@ -303,12 +385,21 @@ export class RequestManagerService implements IbackEnd {
       let subs = this.Observ1CHallState$.subscribe(resoult => {
         stringDataFrom1C = resoult;
       })
-      let dataTo1C : string = JSON.stringify({point : "SetHallState", data : syncTickets, key : currentKey})
+  
+      let obj1CData = {data : syncTickets, Bufer : {makeBuffer : false, buferData : {}}}; 
+      
+      if(inBufer){
+        obj1CData.Bufer.makeBuffer = true;
+        obj1CData.Bufer.buferData  = inBufer;
+      }
+      
+      let dataTo1C : string = JSON.stringify({point : "SetHallState", data : obj1CData, key : currentKey})
       Call1C(dataTo1C); 
 
       while(stringDataFrom1C == "" && timeRemain<=timeOut){        
         timeRemain = timeRemain + step;
-        setTimeout(()=>{},timeOut);
+        async () => {await this.delay(step)};
+        //setTimeout(()=>{},step);
       }
       subs.unsubscribe();
       if(stringDataFrom1C != ""){
@@ -322,8 +413,75 @@ export class RequestManagerService implements IbackEnd {
       }
     });
     return myPromise
+  }
 
+  GetBuffer() : Promise<IDataFrom1C> {
+    let timeRemain : number = 0;
+    let timeOut : number = this.RESPONSE_TIME_OUT;
+    let step : number = this.RESPONSE_WAIT_STEP;
+    
+    let myPromise : Promise<IDataFrom1C> = new Promise((resolve, reject)=>{
+      let stringDataFrom1C : string = '';
+      let subs = this.Observ1CBuferState$.subscribe(resoult => {
+        stringDataFrom1C = resoult;
+      })
+      let dataTo1C : string = JSON.stringify({point : "GetBufer"})
+      Call1C(dataTo1C); 
 
+      while(stringDataFrom1C == "" && timeRemain<=timeOut){        
+        timeRemain = timeRemain + step;
+        async () => {await this.delay(step)};
+        //setTimeout(()=>{},step);
+      }
+      subs.unsubscribe();
+      if(stringDataFrom1C != ""){
+        resolve(JSON.parse(stringDataFrom1C));
+      } else{
+        reject({
+          point : "GetBufer",
+          resoult : false,
+          data : {errorText: "time out", status : 100}
+        });
+      }
+    });
+    return myPromise
+ 
+
+  }
+
+  ///DataToClear = {keys : [string]}
+  ///
+  ///
+  ClearBuffer(DataToClear : IdataObject) : Promise<IDataFrom1C> {
+    let timeRemain : number = 0;
+    let timeOut : number = this.RESPONSE_TIME_OUT;
+    let step : number = this.RESPONSE_WAIT_STEP;
+    
+    let myPromise : Promise<IDataFrom1C> = new Promise((resolve, reject)=>{
+      let stringDataFrom1C : string = '';
+      let subs = this.Observ1CBuferState$.subscribe(resoult => {
+        stringDataFrom1C = resoult;
+      })
+      let dataTo1C : string = JSON.stringify({point : "ClearBufer", data : DataToClear})
+      Call1C(dataTo1C); 
+
+      while(stringDataFrom1C == "" && timeRemain<=timeOut){        
+        timeRemain = timeRemain + step;
+        async () => {await this.delay(step)};
+        //setTimeout(()=>{},step);
+      }
+      subs.unsubscribe();
+      if(stringDataFrom1C != ""){
+        resolve(JSON.parse(stringDataFrom1C));
+      } else{
+        reject({
+          point : "ClearBufer",
+          resoult : false,
+          data : {errorText: "time out", status : 100}
+        });
+      }
+    });
+    return myPromise
 
   }
 
@@ -348,8 +506,8 @@ export class RequestManagerService implements IbackEnd {
 
       while(stringDataFrom1C == "" && timeRemain<=timeOut){        
         timeRemain = timeRemain + step;
-        
-        setTimeout(()=>{},step);
+        async () => {await this.delay(step)};
+        //setTimeout(()=>{},step);
       }
       subs.unsubscribe();
       if(stringDataFrom1C != ""){
@@ -358,7 +516,7 @@ export class RequestManagerService implements IbackEnd {
         reject({
           point : "GetHallState",
           resoult : false,
-          data : {errorText: "time out"}
+          data : {errorText: "time out", status : 100}
         });
       }
     });
@@ -366,9 +524,7 @@ export class RequestManagerService implements IbackEnd {
   }
 
 
-  CancelTickets(TicketsToCancel : ICancelTicketRequestViewModel) : Promise<number>{
-    return null
-  }
+  
 
   GetGlobalParametrs() : Promise<IDataFrom1C> {
     let myPromise : Promise<IDataFrom1C> = new Promise((resolve, reject)=>{
@@ -381,7 +537,9 @@ export class RequestManagerService implements IbackEnd {
     let timeRenain = 0;
     while(stringDataFrom1C == "" && timeRenain<=this.RESPONSE_TIME_OUT){
       timeRenain = timeRenain + this.RESPONSE_WAIT_STEP;
-      setTimeout(()=>{},this.RESPONSE_WAIT_STEP);
+      let step = this.RESPONSE_WAIT_STEP
+      async () => {await this.delay(step)};
+      //setTimeout(()=>{},this.RESPONSE_WAIT_STEP);
     }
     subs.unsubscribe();
     if(stringDataFrom1C != ""){
@@ -400,7 +558,7 @@ export class RequestManagerService implements IbackEnd {
 
   PrintTicets(DataTo1C : string) :Promise<boolean>  {
   
-  let myPromise : Promise<boolean> = new Promise((resolve, reject)=>{
+    let myPromise : Promise<boolean> = new Promise((resolve, reject)=>{
       
       let stringDataFrom1C = "";
       let subs = this.promise1CPrintTickets$.subscribe(resuolt =>{
@@ -410,7 +568,9 @@ export class RequestManagerService implements IbackEnd {
       let timeRenain = 0;
       while(stringDataFrom1C == "" && timeRenain<=this.RESPONSE_TIME_OUT){
         timeRenain = timeRenain + this.RESPONSE_WAIT_STEP;
-        setTimeout(()=>{},this.RESPONSE_WAIT_STEP);
+        let step = this.RESPONSE_WAIT_STEP;
+        async () => {await this.delay(step)};
+        //setTimeout(()=>{},this.RESPONSE_WAIT_STEP);
       }
         
       subs.unsubscribe();

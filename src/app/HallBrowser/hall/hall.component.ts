@@ -717,28 +717,22 @@ export class HallComponent implements OnInit, OnDestroy {
   }
 
   OnSessionDataChange(sessionData) {
-    
     this.sessionData = sessionData;
-    
     this.ClearHallState();
-    //console.log('list after clear');
-    //this.chairList.forEach(chair => {console.log(chair.chairStateInternal.c.c,chair.chairStateInternal.c.r,chair.chairStateInternal.t)})
-  
-    
     if (!this.hallInfo) 
       {
         this.UpdateHallInfo();
       } 
-      
     if (sessionData.currentSession)
     {
       this.SyncHallState([],[])
           .then(resoult => {this.UpdateHallState(resoult)})
           .catch(error=>{console.log('bad synk Tickets', error) }); /// 
     }
-  
-    
+  }
 
+  ExecuteQueue(){
+    this.apiServis.RoutExecuteBufer();
   }
 
 }

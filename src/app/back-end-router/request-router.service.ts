@@ -18,6 +18,8 @@ import { Subject } from 'rxjs/Subject';
 import 'rxjs/add/observable/merge';
 import * as _ from 'underscore';
 import { IdataObject } from '../HallBrowser/idata-object';
+import { async } from '@angular/core/testing';
+
 
 @Injectable()
 export class RequestRouterService {
@@ -181,7 +183,7 @@ export class RequestRouterService {
     return this.webServise.Encrypt(decryptedData);
   }
 
-  RoutCancelTickets( TicketsToCancel : ICancelTicketRequestViewModel)  {
+  RoutCancelTickets_( TicketsToCancel : ICancelTicketRequestViewModel)  {
  
     return this.webServise.CancelTickets(TicketsToCancel)
                           .then(resoult => {
@@ -240,6 +242,52 @@ export class RequestRouterService {
     
     return this.localServise.SyncTickets(currentState);
   }
+
+  RoutCancelTickets( TicketsToCancel : ICancelTicketRequestViewModel)  {
+    return this.localServise.CancelTickets(TicketsToCancel) 
+  }
+
+  async  delay(ms: number) {
+    return new Promise( resolve => setTimeout(resolve, ms) );
+  }
+
+  
+
+  RoutExecuteBufer() {
+    this.localServise.GetBuffer()
+                     .then(resoult => {
+                       let queue = resoult.data.queue;
+                       queue.forEach(queueElement => {
+                         async () => {await this.delay(500)};
+                         alert('pause hand made');
+                         if(queueElement.toDo == 'SyncTickets'){
+                          this.webServise.SyncTickets(queueElement.parametr)
+                                          .then(res =>{
+                                            let elementsToClear = {keys : []};                     
+                                            elementsToClear.keys.push(queueElement.key);
+                                            this.localServise.ClearBuffer(elementsToClear);
+                                          })
+                                          .catch(err=>{
+                                            throw err
+                                          });
+                         }
+                         else if(queueElement.toDo == 'CancelTickets'){
+                          this.webServise.CancelTickets(queueElement.parametr)
+                          .then(res =>{
+                            let elementsToClear = {keys : []};                     
+                            elementsToClear.keys.push(queueElement.key);
+                            this.localServise.ClearBuffer(elementsToClear);
+                          })
+                          .catch(err=>{
+                            throw err;
+                          });
+                         }
+                       });
+                     })
+                     .catch(err=>{throw err});
+  }
+
+
 
   RoutConvertTicketStatusToChairStatus(status){
     return this.webServise.ConvertTicketStatusToChairStatus(status)

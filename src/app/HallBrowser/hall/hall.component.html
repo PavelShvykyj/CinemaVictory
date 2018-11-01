@@ -40,7 +40,7 @@
                         (ActionReseteEmmiter) = "OnActionResete()" >
                     </cancel-operation>
                     
-                    <button type="button" class="btn btn-secondary mb-1" (click) = "FunkBtnUnderscoreTest()">Служебная тест</button>
+                    <button type="button" class="btn btn-secondary mb-1" (click) = "ExecuteQueue()">Данные на сайт</button>
                     <button type="button" class="btn btn-secondary mb-1" (click) = "RefreshHallState()">Обновить</button>
                     <!--<button type="button" class="btn btn-secondary btn-funk-menu">Действие 1</button>
                     <button type="button" class="btn btn-secondary btn-funk-menu">Действие 1</button>-->
@@ -209,7 +209,7 @@
                     </td>
                     <td class="table-hall-column-empty table-hall-column-b2" colspan=2></td> 
 
-                    <td *ngFor="let key of [13,15,15]" 
+                    <td *ngFor="let key of [13,14,15]" 
                         class="table-hall-column-color3 table-hall-column-b2" colspan=2
                         (mouseenter) = "OnmouseoverHallColumn(14)"
                         (mouseleave) = "OnmouseoutHallColumn(14)"
