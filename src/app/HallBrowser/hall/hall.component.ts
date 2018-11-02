@@ -1,4 +1,4 @@
-import { Component, OnInit,OnDestroy , ViewChildren, QueryList,ViewChild ,ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit,OnDestroy , ViewChildren, QueryList,ViewChild ,ChangeDetectorRef, AfterViewInit } from '@angular/core';
 import { HallChairComponent } from '../hall-chair/hall-chair.component';
 import { ReservingOperationsComponent } from '../reserving-operations/reserving-operations.component';
 import { CancelOperationComponent } from '../cancel-operation/cancel-operation.component';
@@ -26,7 +26,7 @@ import { IfObservable } from 'rxjs/observable/IfObservable';
   templateUrl: './hall.component.html',
   styleUrls: ['./hall.component.css'],
 })
-export class HallComponent implements OnInit, OnDestroy {
+export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
   
   @ViewChildren(HallChairComponent)
   private chairList : QueryList<HallChairComponent>;
@@ -76,10 +76,8 @@ export class HallComponent implements OnInit, OnDestroy {
   // определяю видимость формочек операций резерва и отмены билетов
   showReserving      = false;
   showCancel         = false;
-  showStartSail      = false;
- 
-  HALL_ID  = 1;
-  CASH_DESK_ID = 1;
+  showStartSale      = false;
+  GLOBAL_PARAMETRS;
 
   constructor(private apiServis : RequestRouterService, private changeDetector : ChangeDetectorRef) { 
     this.hallState$ = apiServis.changeHallState$;
@@ -96,12 +94,22 @@ export class HallComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.UpdateHallInfo();
     this.apiServis.RoutStartHubbHallConnection();
     this.apiServis.RoutOnHubbHallConnection();
     this.chairsInWork = [];
   }
  
+  GetParametrs(){
+    this.GLOBAL_PARAMETRS =  this.apiServis.RoutGetParametrs();
+   
+  }
+
+  ngAfterViewInit() {
+    setTimeout(() =>{this.GetParametrs();
+                     this.UpdateHallInfo();},500);
+
+  }
+
   ngOnDestroy() {
     this.hallStateSubscription.unsubscribe();
     this.apiServis.RoutOfHubbHallConnection();
@@ -116,27 +124,22 @@ export class HallComponent implements OnInit, OnDestroy {
     this.mouseStatusCoverByRow[row] = false
   }
 
-  MarkSelectedChairAsSold() {
-    let foundChair = this.chairList.find(function(chair) {
-      return chair.chairStateInternal.s.isSelected == true;
-    });
+  CreateSaleCode(element : IChairStateViewModelInternal) : string {
+    let code = ""+this.GLOBAL_PARAMETRS.HALL_ID+
+                  this.sessionData.currentSession.starts+
+                  element.c.c+
+                  element.c.r;
+    code = code.replace(RegExp("-",'g'),"")
+        .replace(RegExp(" ",'g'),"")
+        .replace(RegExp(":",'g'),"")
+        .replace(RegExp("00",'g'),"");
 
-    
-    while (foundChair != undefined)
-    {
-      foundChair.chairStateInternal.s.isSelected = false;
-      foundChair.chairStateInternal.s.isSoled = true;
-      foundChair = this.chairList.find(function(chair) {
-        return chair.chairStateInternal.s.isSelected == true;
-      });
-    }
+    let currentDate =  new Date();
+    let postfix = ''+currentDate.getHours()+currentDate.getMinutes()+currentDate.getSeconds()+currentDate.getMilliseconds();
+    code = code + '-'+postfix;
+    return code
   }
 
-  FunkBtnTest() {
-    this.MarkSelectedChairAsSold();
-    this.chairsInWork = [];
-  }
-  
   CreateSecretCode(postfix : string) : string {
     let prefix : string = ''+
                           this.chairsInWork[0].c.c+
@@ -240,14 +243,13 @@ export class HallComponent implements OnInit, OnDestroy {
     });
   }
 
-
-  StartSailSelected(){
+  StartSaleSelected(){
     // если ничего не отмечено - ничего и не делаем
+    
     if(this.chairsInWork.length==0){
       return;
     }
-
-    this.showStartSail = true;
+    this.showStartSale = true;
 
     // если процесс начат повторно ничего не делаем
     let firstChairStatus = this.chairsInWork[0].s;
@@ -258,7 +260,7 @@ export class HallComponent implements OnInit, OnDestroy {
     /// отмечаем ин прогресс и отправляем запрос
     this.chairsInWork.forEach(element =>{
       element.s.inReserving = true;
-      element.s.iniciator = this.CASH_DESK_ID;
+      element.s.iniciator = this.GLOBAL_PARAMETRS.CASH_DESK_ID;
       element.s.isFree = false;
       element.s.isSoled = true;
       element.s.isReserved = false;
@@ -266,11 +268,10 @@ export class HallComponent implements OnInit, OnDestroy {
 
     // начинаем процесс продажи
     this.StartAction().then(resoult => { if(resoult){this.PrintSelected()} });
-
   }
 
-  FinishSailSelected(){
-      this.showStartSail = false;  
+  FinishSaleSelected(){
+      this.showStartSale = false;  
 
       // если ничего не отмечено - ничего и не делаем
       if(this.chairsInWork.length==0){
@@ -286,13 +287,14 @@ export class HallComponent implements OnInit, OnDestroy {
       /// отмечаем в продажу и отправляем запрос
       this.chairsInWork.forEach(element =>{
         element.s.inReserving = false;
-        element.s.iniciator = this.CASH_DESK_ID;
+        element.s.iniciator = this.GLOBAL_PARAMETRS.CASH_DESK_ID;
         element.s.isFree = false;
         element.s.isSoled = true;
         element.s.isReserved = false;
+        element.t = this.CreateSaleCode(element);
       });
 
-      this.FinishAction().then(resoult=>{if(resoult){console.log('sucsesful sail.')}});
+      this.FinishAction().then(resoult=>{if(resoult){console.log('sucsesful Sale.')}});
   }
 
   StartCancel(){
@@ -439,7 +441,7 @@ export class HallComponent implements OnInit, OnDestroy {
    
     this.chairsInWork.forEach(element =>{
       element.s.inReserving = false;
-      element.s.iniciator = this.CASH_DESK_ID;
+      element.s.iniciator = this.GLOBAL_PARAMETRS.CASH_DESK_ID;
       element.s.isFree = false;
       element.s.isSoled = true;
       element.s.isReserved = false;
@@ -484,7 +486,7 @@ export class HallComponent implements OnInit, OnDestroy {
         let t = this.CreateSecretCode(RerserveFormValues.phone);
         this.chairsInWork.forEach(element =>{
           element.s.inReserving = true;
-          element.s.iniciator = this.CASH_DESK_ID;
+          element.s.iniciator = this.GLOBAL_PARAMETRS.CASH_DESK_ID;
           element.s.isFree = false;
           element.s.isSoled = false;
           element.s.isReserved = true;
@@ -499,7 +501,7 @@ export class HallComponent implements OnInit, OnDestroy {
               /// отмечаем в резерв и отправляем запрос
               this.chairsInWork.forEach(element =>{
                 element.s.inReserving = false;
-                element.s.iniciator = this.CASH_DESK_ID;
+                element.s.iniciator = this.GLOBAL_PARAMETRS.CASH_DESK_ID;
                 element.s.isFree = false;
                 element.s.isSoled = false;
                 element.s.isReserved = true;
@@ -515,23 +517,7 @@ export class HallComponent implements OnInit, OnDestroy {
           });
   }
 
-  FunkBtnUnderscoreTest() {
-    //printJS({printable :'forprint', type : 'html'});
-    //let s : number = 16;
-    //console.log(s.toString(2));
-    //console.log('print');
-    //print({printable :'forprint',  type : 'html'});
-    //console.log(this.apiServis.RoutConvertTicketStatusToChairStatus(4098))
-
-    //let encrypt = this.apiServis.RoutEncrypt("120061");
-    //console.log(encrypt);
-    //let decrypt = this.apiServis.RoutDecrypt(encrypt);
-    //console.log(decrypt);
-    //console.log(this.chairList);
-
-
-  }
-
+  
   CalculateChairPrice(status : IChairStateViewModelInternal ) : Array<ITicketCategoryPriceViewModel> {
     
     //let chairsCategoty : IGetHallResponseViewModel =  _.find(this.hallInfo.chairsCateoryInfo,element=>{return element.idHall == 1});
@@ -561,6 +547,7 @@ export class HallComponent implements OnInit, OnDestroy {
   }
 
   OnChairSelectStatusChange(status : IChairStateViewModelInternal ){
+    
     if (this.sessionData.currentSession) {
       // массив без обрабатываемого елемента
       let tempChairsInWork = _.filter(this.chairsInWork,element=>{return status.c.r != element.c.r || status.c.c != element.c.c;});
@@ -616,7 +603,7 @@ export class HallComponent implements OnInit, OnDestroy {
         /// да еще как то специально отобразить касиру
         if (foundChairInWork){
           // прилетел сигнал по месту с которым мы начали работу  - все ок отмечаем 
-          if(element.s.iniciator=this.CASH_DESK_ID){
+          if(element.s.iniciator=this.GLOBAL_PARAMETRS.CASH_DESK_ID){
             foundChairInWork.s = element.s;
             foundChairInWork.s.isSelected = true;
             foundChair.chairStateInternal.s.isSelected = true; 
@@ -643,7 +630,7 @@ export class HallComponent implements OnInit, OnDestroy {
   SyncHallState(workChairList : Array<IChairStateViewModelInternal> , currentHallState :Array<IChairStateViewModelInternal>) : Promise<ISyncTicketsResponseViewModelInternal> | null {
     
     let request : ISyncTicketsRequestViewModel = {
-      idHall: this.HALL_ID, 
+      idHall: this.GLOBAL_PARAMETRS.HALL_ID, 
       starts: this.sessionData.currentSession.starts, //"yyyy-MM-dd HH:mm:ss",		
       blockSeats: workChairList,
       hallState: currentHallState
@@ -665,7 +652,7 @@ export class HallComponent implements OnInit, OnDestroy {
     }
     
     let request : ICancelTicketRequestViewModel = {
-      idHall: this.HALL_ID, 
+      idHall: this.GLOBAL_PARAMETRS.HALL_ID, 
       starts: this.sessionData.currentSession.starts, //"yyyy-MM-dd HH:mm:ss",		
       chairs : ticketsToCancel
       

@@ -81,7 +81,6 @@ export class MovieSelectorComponent implements OnInit, AfterViewInit {
     
     this.apiServis.RoutSessionsGetByDate(this.currentDate.toISOString())
                   .then(resoult => {
-                    
                     this.sessionData = resoult;
                     this.SessionDataParse();
                     this.sessionDataChange.emit(

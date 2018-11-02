@@ -11,7 +11,8 @@ import { IbackEnd,
          ISessionData,
          ISyncTicketsRequestViewModel,
          ISyncTicketsResponseViewModelInternal,
-         IHallInfo } from '../iback-end'
+         IHallInfo, 
+         IDataFrom1C} from '../iback-end'
 
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
@@ -127,6 +128,7 @@ export class RequestRouterService {
   }
 
   RoutGetHallInfo() : Promise<IHallInfo> | null  {
+    
     return this.webServise.GetHallInfo().then(resoult => {
                                           /// web вернул актуальный статус загоним его 1С
                                           /// теоритически может возникнуть ситуация что вернулась связь 
@@ -140,6 +142,7 @@ export class RequestRouterService {
                                         })
                                         .catch(error =>{
                                           console.log('error in rout servise',error)
+                                          
                                           if (this.IsInternalError(error.status)){
                                             ///// сайт на связи вернул ошибку т.е. это реальная ошибка
                                             ////  тут придумать лог/сообщение ахтунг
@@ -150,6 +153,7 @@ export class RequestRouterService {
                                             /// отображаем что  работаем с 1С
                                             this.EmitBackEndName("1C");
                                             this.EmitLoginName(this.localServise.getLocalUserName());
+                                            
                                             return this.localServise.GetHallInfo();
                                           }
                                         });
@@ -183,7 +187,7 @@ export class RequestRouterService {
     return this.webServise.Encrypt(decryptedData);
   }
 
-  RoutCancelTickets_( TicketsToCancel : ICancelTicketRequestViewModel)  {
+  RoutCancelTickets( TicketsToCancel : ICancelTicketRequestViewModel)  {
  
     return this.webServise.CancelTickets(TicketsToCancel)
                           .then(resoult => {
@@ -208,7 +212,8 @@ export class RequestRouterService {
                           })
   }
 
-  RoutSyncTickets_(currentState :  ISyncTicketsRequestViewModel) : Promise<ISyncTicketsResponseViewModelInternal> | null {
+  RoutSyncTickets(currentState :  ISyncTicketsRequestViewModel) : Promise<ISyncTicketsResponseViewModelInternal> | null {
+    
     return this.webServise.SyncTickets(currentState)
                           .then(resoult => {
                             //console.log('ok in rout servise',resoult)
@@ -219,6 +224,7 @@ export class RequestRouterService {
                           })
                           .catch(error => {
                             console.log('error in rout servise',error)
+                            
                             if (this.IsInternalError(error)){
                               //// сайт на связи вернул ошибку т.е. это реальная ошибка
                               //// тут придумать лог/сообщение ахтунг
@@ -233,60 +239,56 @@ export class RequestRouterService {
                             else{
                               this.EmitBackEndName("1C");
                               this.EmitLoginName(this.localServise.getLocalUserName());
+                              
                               return this.localServise.SyncTickets(currentState)
                             }
                           });
   } 
 
-  RoutSyncTickets(currentState :  ISyncTicketsRequestViewModel) : Promise<ISyncTicketsResponseViewModelInternal> | null {
-    
-    return this.localServise.SyncTickets(currentState);
-  }
-
-  RoutCancelTickets( TicketsToCancel : ICancelTicketRequestViewModel)  {
-    return this.localServise.CancelTickets(TicketsToCancel) 
-  }
-
+  
   async  delay(ms: number) {
     return new Promise( resolve => setTimeout(resolve, ms) );
   }
 
-  
-
-  RoutExecuteBufer() {
-    this.localServise.GetBuffer()
-                     .then(resoult => {
-                       let queue = resoult.data.queue;
-                       queue.forEach(queueElement => {
-                         async () => {await this.delay(500)};
-                         alert('pause hand made');
-                         if(queueElement.toDo == 'SyncTickets'){
-                          this.webServise.SyncTickets(queueElement.parametr)
-                                          .then(res =>{
-                                            let elementsToClear = {keys : []};                     
-                                            elementsToClear.keys.push(queueElement.key);
-                                            this.localServise.ClearBuffer(elementsToClear);
-                                          })
-                                          .catch(err=>{
-                                            throw err
-                                          });
-                         }
-                         else if(queueElement.toDo == 'CancelTickets'){
-                          this.webServise.CancelTickets(queueElement.parametr)
-                          .then(res =>{
-                            let elementsToClear = {keys : []};                     
-                            elementsToClear.keys.push(queueElement.key);
-                            this.localServise.ClearBuffer(elementsToClear);
-                          })
-                          .catch(err=>{
-                            throw err;
-                          });
-                         }
-                       });
+  async ExecuteElementQueue(queueElement : IdataObject){
+    let pause = await this.delay(500);
+    if(queueElement.toDo == 'SyncTickets'){
+     this.webServise.SyncTickets(queueElement.parametr)
+                     .then(res =>{
+                       let elementsToClear = {keys : []};                     
+                       elementsToClear.keys.push(queueElement.key);
+                       this.localServise.ClearBuffer(elementsToClear);
                      })
+                     .catch(err=>{
+                       throw err
+                     });
+    }
+    else if(queueElement.toDo == 'CancelTickets'){
+     this.webServise.CancelTickets(queueElement.parametr)
+     .then(res =>{
+       let elementsToClear = {keys : []};                     
+       elementsToClear.keys.push(queueElement.key);
+       this.localServise.ClearBuffer(elementsToClear);
+     })
+     .catch(err=>{
+       throw err;
+     });
+    }
+  }
+  
+  async ExecuteQueue(resoult : IDataFrom1C){
+    let queue = resoult.data.queue;
+    for (let index = 0; index < queue.length; index++) {
+      let queueElement = queue[index];
+      await this.ExecuteElementQueue(queueElement);
+    }
+  };
+  
+  async RoutExecuteBufer() {
+    this.localServise.GetBuffer()
+                     .then(resoult => this.ExecuteQueue(resoult))
                      .catch(err=>{throw err});
   }
-
 
 
   RoutConvertTicketStatusToChairStatus(status){
@@ -308,12 +310,32 @@ export class RequestRouterService {
     this.webServise.CRYPTO_KEY             = parametrs.CRYPTO_KEY;
     this.webServise.CRYPTO_IV              = parametrs.CRYPTO_IV;
     this.webServise.CASH_DESK_ID           = parametrs.CASH_DESK_ID;
+    this.webServise.WEB_SERVISE_BLOCED     = parametrs.WEB_SERVISE_BLOCED;
+    this.localServise.LOCAL_SERVISE_BLOCED = parametrs.LOCAL_SERVISE_BLOCED;
     this.localServise.webUserName          = parametrs.LOGIN;
     this.localServise.webPassword          = parametrs.PASSWORD; 
     this.localServise.localeUserName       = parametrs.USER;
     this.localServise.RESPONSE_TIME_OUT    = +parametrs.RESPONSE_TIME_OUT;
     this.localServise.RESPONSE_WAIT_STEP   = +parametrs.RESPONSE_WAIT_STEP; 
 
+  }
+
+  RoutGetParametrs() {
+    return {
+      BASE_URL: this.webServise.BASE_URL,
+      HALL_ID: this.webServise.HALL_ID,
+      PACKAGE_MOVIES_SIZE: this.webServise.PACKAGE_MOVIES_SIZE,
+      CRYPTO_KEY: this.webServise.CRYPTO_KEY,
+      CRYPTO_IV: this.webServise.CRYPTO_IV,
+      CASH_DESK_ID: this.webServise.CASH_DESK_ID,
+      WEB_SERVISE_BLOCED: this.webServise.WEB_SERVISE_BLOCED,
+      LOCAL_SERVISE_BLOCED : this.localServise.LOCAL_SERVISE_BLOCED,
+      webUserName: this.localServise.webUserName,
+      webPassword: this.localServise.webPassword,
+      localeUserName: this.localServise.localeUserName,
+      RESPONSE_TIME_OUT: this.localServise.RESPONSE_TIME_OUT,
+      RESPONSE_WAIT_STEP: this.localServise.RESPONSE_WAIT_STEP
+    }
   }
 
   // точка входа от 1С старт из js
@@ -331,3 +353,42 @@ export class RequestRouterService {
   }
 
 }
+
+
+/////// Оставлено если потом восстановить нужно будет
+///// не работает задержка  -- async () => {await this.delay(500)}; --- 
+///// пауза не генериться почемуто 
+// function RoutExecuteBufer_() {
+//   this.localServise.GetBuffer()
+//     .then(resoult => {
+//       let queue = resoult.data.queue;
+//       queue.forEach(queueElement => {
+//         async () => { await this.delay(500) };
+//         alert('pause hand made');
+//         if (queueElement.toDo == 'SyncTickets') {
+//           this.webServise.SyncTickets(queueElement.parametr)
+//             .then(res => {
+//               let elementsToClear = { keys: [] };
+//               elementsToClear.keys.push(queueElement.key);
+//               this.localServise.ClearBuffer(elementsToClear);
+//             })
+//             .catch(err => {
+//               throw err
+//             });
+//         }
+//         else if (queueElement.toDo == 'CancelTickets') {
+//           this.webServise.CancelTickets(queueElement.parametr)
+//             .then(res => {
+//               let elementsToClear = { keys: [] };
+//               elementsToClear.keys.push(queueElement.key);
+//               this.localServise.ClearBuffer(elementsToClear);
+//             })
+//             .catch(err => {
+//               throw err;
+//             });
+//         }
+//       });
+//     })
+//     .catch(err => { throw err });
+// }
+

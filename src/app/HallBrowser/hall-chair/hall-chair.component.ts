@@ -15,7 +15,7 @@ export class HallChairComponent implements OnInit, OnChanges {
   @Input() rowID : number;
   @Input() cancelStatus : boolean;
   @Input() reserveStatus : boolean;
-  @Input() startSailStatus : boolean;
+  @Input() startSaleStatus : boolean;
  
   @Input() chairStateInternal : IChairStateViewModelInternal;
   @Output() chairSelectStatusChange = new EventEmitter();
@@ -42,7 +42,7 @@ export class HallChairComponent implements OnInit, OnChanges {
   ngOnChanges(){}
 
   OnClick(){
-    if (this.chairStateInternal.s.isFree && !(this.cancelStatus  || this.startSailStatus))
+    if (this.chairStateInternal.s.isFree && !(this.cancelStatus  || this.startSaleStatus))
     {
       console.log(1);
       this.chairStateInternal.s.isFree = false;

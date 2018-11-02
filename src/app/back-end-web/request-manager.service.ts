@@ -37,7 +37,7 @@ export class RequestManagerService implements IbackEnd {
   CRYPTO_KEY = 'xm5POGDda6o1SiZMfuNSvXbV8r0+uyBF7BMdAYh+f5Q=';
   CRYPTO_IV  = 'TweTnUNAAL8VMtvtMNj0Vg==';
   CASH_DESK_ID = 1;
-  
+  WEB_SERVISE_BLOCED = false;
 
   private _userData : ILoggInData;
   private _refreshLoginTimer : number;
@@ -179,24 +179,45 @@ export class RequestManagerService implements IbackEnd {
   }
 
   StartHubbHallConnection()  {  
+    if (this.WEB_SERVISE_BLOCED){
+      return;
+    }
+
     return this._hubHallConnection.start();//.catch(error => {console.log('start error',error)});   
   }
 
   StopHubbHallConnection() {
+    if (this.WEB_SERVISE_BLOCED){
+      return;
+    }
+
     return this._hubHallConnection.stop();//.catch(error => {console.log(error)});
   }
 
   OnHubbHallConnection(){
+    if (this.WEB_SERVISE_BLOCED){
+      return;
+    }
+
     this._hubHallConnection.on("ReceiveHallState",(idSession, hallstate) =>{
                                                     this.HubbHallStateParse(idSession, hallstate)}
      ) 
     }
 
   OfHubbHallConnection(){
+    if (this.WEB_SERVISE_BLOCED){
+      return;
+    }
+
     this._hubHallConnection.off("ReceiveHallState");
   }
 
   HubbHallReconnect(){
+    if (this.WEB_SERVISE_BLOCED){
+      return;
+    }
+
+
     this.OfHubbHallConnection();
     this._hubHallConnection.stop()
                            .then(resoult =>{
@@ -221,6 +242,10 @@ export class RequestManagerService implements IbackEnd {
  }
 
   RefreshToken() {
+    if (this.WEB_SERVISE_BLOCED){
+      return;
+    }
+
     setTimeout(() => {
               this.LoggInByPass(this._userData)
                   .then(resoult => {
@@ -273,32 +298,32 @@ export class RequestManagerService implements IbackEnd {
     return  encryptedString;                                
   }
 
-  TestCrypt()
-  {
-    var key = CryptoJS.enc.Utf8.parse('7061737323313233');
-    var iv = CryptoJS.enc.Utf8.parse('7061737323313233');
-    var encrypted = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse("It works"), key,
-        {
-            keySize: 128 / 8,
-            iv: iv,
-            mode: CryptoJS.mode.CBC,
-            padding: CryptoJS.pad.Pkcs7
-        });
+  // TestCrypt()
+  // {
+  //   var key = CryptoJS.enc.Utf8.parse('7061737323313233');
+  //   var iv = CryptoJS.enc.Utf8.parse('7061737323313233');
+  //   var encrypted = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse("It works"), key,
+  //       {
+  //           keySize: 128 / 8,
+  //           iv: iv,
+  //           mode: CryptoJS.mode.CBC,
+  //           padding: CryptoJS.pad.Pkcs7
+  //       });
 
-    var decrypted = CryptoJS.AES.decrypt(encrypted, key, {
-        keySize: 128 / 8,
-        iv: iv,
-        mode: CryptoJS.mode.CBC,
-        padding: CryptoJS.pad.Pkcs7
-    });
+  //   var decrypted = CryptoJS.AES.decrypt(encrypted, key, {
+  //       keySize: 128 / 8,
+  //       iv: iv,
+  //       mode: CryptoJS.mode.CBC,
+  //       padding: CryptoJS.pad.Pkcs7
+  //   });
 
-    console.log('Encrypted :' + encrypted);
-    console.log('Key :' + encrypted.key);
-    console.log('Salt :' + encrypted.salt);
-    console.log('iv :' + encrypted.iv);
-    console.log('Decrypted : ' + decrypted);
-    console.log('utf8 = ' + decrypted.toString(CryptoJS.enc.Utf8));
-  }
+  //   console.log('Encrypted :' + encrypted);
+  //   console.log('Key :' + encrypted.key);
+  //   console.log('Salt :' + encrypted.salt);
+  //   console.log('iv :' + encrypted.iv);
+  //   console.log('Decrypted : ' + decrypted);
+  //   console.log('utf8 = ' + decrypted.toString(CryptoJS.enc.Utf8));
+  // }
 
   get userData(){
     return this._userData;
@@ -310,8 +335,21 @@ export class RequestManagerService implements IbackEnd {
 
   LoggInByPass(userData : ILoggInData) : Promise<IResponseData>  {
 
-    //this.TestCrypt();
-    //sessionStorage.removeItem('token');
+    if (this.WEB_SERVISE_BLOCED){
+      let myPromise : Promise<IResponseData>  = new Promise((resolve,reject) => {
+        let resoult : IResponseData = 
+        {
+        status : '100',
+        statusText : 'bloced',
+        token : 'badToken',
+        expired : 0
+        }
+        reject(resoult);
+      });
+      return myPromise;
+    }
+
+
     this._token = "";
     let headers = new HttpHeaders().append('Authorization','none').append('Content-Type','text/json')
     let connection = this.BASE_URL+"/account/login";
@@ -356,7 +394,22 @@ export class RequestManagerService implements IbackEnd {
   }
 
   GetMovieByID(idMovie) {
-    
+    if (this.WEB_SERVISE_BLOCED){
+      let myPromise : Promise<IResponseData>  = new Promise((resolve,reject) => {
+        let resoult : IResponseData = 
+        {
+        status : '100',
+        statusText : 'bloced',
+        token : 'badToken',
+        expired : 0
+        }
+        reject(resoult);
+      });
+      return myPromise;
+    }
+
+
+
     let headers = new HttpHeaders().append('Authorization','Bearer '+this._token).append('Content-Type','text/json')
     let connection = this.BASE_URL+"/movies/get/"+idMovie;
     return this.http.get(connection,
@@ -369,6 +422,21 @@ export class RequestManagerService implements IbackEnd {
   } 
 
   GetPakegMoviesById(){
+    
+    if (this.WEB_SERVISE_BLOCED){
+      let myPromise : Promise<IResponseData>  = new Promise((resolve,reject) => {
+        let resoult : IResponseData = 
+        {
+        status : '100',
+        statusText : 'bloced',
+        token : 'badToken',
+        expired : 0
+        }
+        reject(resoult);
+      });
+      return myPromise;
+    }
+
     let headers = new HttpHeaders().append('Authorization','Bearer '+this._token).append('Content-Type','text/json')
     let connection = this.BASE_URL+"/movies/getall/0/"+this.PACKAGE_MOVIES_SIZE.toString();  
     return this.http.get(connection,
@@ -383,6 +451,21 @@ export class RequestManagerService implements IbackEnd {
   }
 
   GetCategoryTickets(){
+    
+    if (this.WEB_SERVISE_BLOCED){
+      let myPromise : Promise<IResponseData>  = new Promise((resolve,reject) => {
+        let resoult : IResponseData = 
+        {
+        status : '100',
+        statusText : 'bloced',
+        token : 'badToken',
+        expired : 0
+        }
+        reject(resoult);
+      });
+      return myPromise;
+    }
+
     // /ticketcategories/getall
     let headers = new HttpHeaders().append('Authorization','Bearer '+this._token).append('Content-Type','text/json')
     let connection = this.BASE_URL+"/ticketcategories/getall";  
@@ -400,6 +483,21 @@ export class RequestManagerService implements IbackEnd {
   }
 
   GetCategorySeats(){
+    
+    if (this.WEB_SERVISE_BLOCED){
+      let myPromise : Promise<IResponseData>  = new Promise((resolve,reject) => {
+        let resoult : IResponseData = 
+        {
+        status : '100',
+        statusText : 'bloced',
+        token : 'badToken',
+        expired : 0
+        }
+        reject(resoult);
+      });
+      return myPromise;
+    }
+
     // /ticketcategories/getall
     let headers = new HttpHeaders().append('Authorization','Bearer '+this._token).append('Content-Type','text/json')
     let connection = this.BASE_URL+"/seatcategories/getall";  
@@ -417,6 +515,22 @@ export class RequestManagerService implements IbackEnd {
   }
 
   GetChairsCateoryInfo(){
+    
+    if (this.WEB_SERVISE_BLOCED){
+      let myPromise : Promise<IResponseData>  = new Promise((resolve,reject) => {
+        let resoult : IResponseData = 
+        {
+        status : '100',
+        statusText : 'bloced',
+        token : 'badToken',
+        expired : 0
+        }
+        reject(resoult);
+      });
+      return myPromise;
+    }
+
+    
     // /ticketcategories/getall
     let headers = new HttpHeaders().append('Authorization','Bearer '+this._token).append('Content-Type','text/json')
     let connection = this.BASE_URL+"/hall/get/"+this.HALL_ID;  
@@ -436,6 +550,22 @@ export class RequestManagerService implements IbackEnd {
   SyncTickets(currentState :  ISyncTicketsRequestViewModel) : Promise<ISyncTicketsResponseViewModelInternal> | null
   { 
     
+    if (this.WEB_SERVISE_BLOCED){
+      let myPromise : Promise<ISyncTicketsResponseViewModelInternal>  = new Promise((resolve,reject) => {
+        let resoult : IResponseData = 
+        {
+        status : '100',
+        statusText : 'bloced',
+        token : 'badToken',
+        expired : 0
+        }
+        reject(resoult);
+      });
+      return myPromise;
+    }
+
+
+
     let headers = new HttpHeaders().append('Authorization','Bearer '+this._token).append('Content-Type','text/json')
     let connection = this.BASE_URL+"/tickets/sync";  
     let postBody = {
@@ -474,6 +604,24 @@ export class RequestManagerService implements IbackEnd {
   }
 
   SessionsGetByDate(selectedDate : string) : Promise<string>  {
+    
+    
+    if (this.WEB_SERVISE_BLOCED){
+      let myPromise : Promise<string>  = new Promise((resolve,reject) => {
+        let resoult : IResponseData = 
+        {
+        status : '100',
+        statusText : 'bloced',
+        token : 'badToken',
+        expired : 0
+        }
+        reject(resoult);
+      });
+      return myPromise;
+    }
+
+    
+    
     let headers = new HttpHeaders().append('Authorization','Bearer '+this._token).append('Content-Type','text/json')
     let connection = this.BASE_URL+"/sessions/getbydate";
    
@@ -497,6 +645,23 @@ export class RequestManagerService implements IbackEnd {
   }
 
   SessionsInfoGetByDate(selectedDate : string)  {
+    
+    if (this.WEB_SERVISE_BLOCED){
+      let myPromise : Promise<IdataObject>  = new Promise((resolve,reject) => {
+        let resoult : IResponseData = 
+        {
+        status : '100',
+        statusText : 'bloced',
+        token : 'badToken',
+        expired : 0
+        }
+        reject(resoult);
+      });
+      return myPromise;
+    }
+
+
+    
     let promiseCollection : Array<any> = [];
     promiseCollection.push(this.SessionsGetByDate(selectedDate));
     promiseCollection.push(this.GetPakegMoviesById());
@@ -515,6 +680,21 @@ export class RequestManagerService implements IbackEnd {
   }
 
   GetHallInfo(){
+    
+    if (this.WEB_SERVISE_BLOCED){
+      let myPromise : Promise<IdataObject>  = new Promise((resolve,reject) => {
+        let resoult : IResponseData = 
+        {
+        status : '100',
+        statusText : 'bloced',
+        token : 'badToken',
+        expired : 0
+        }
+        reject(resoult);
+      });
+      return myPromise;
+    }
+    
     let promiseCollection : Array<any> = [];
     promiseCollection.push(this.GetCategorySeats());
     promiseCollection.push(this.GetCategoryTickets());
@@ -534,6 +714,21 @@ export class RequestManagerService implements IbackEnd {
   }
 
   CancelTickets(TicketsToCancel : ICancelTicketRequestViewModel) : Promise<number>{
+    
+    if (this.WEB_SERVISE_BLOCED){
+      let myPromise : Promise<number>  = new Promise((resolve,reject) => {
+        let resoult : IResponseData = 
+        {
+        status : '100',
+        statusText : 'bloced',
+        token : 'badToken',
+        expired : 0
+        }
+        reject(resoult);
+      });
+      return myPromise;
+    }
+ 
     let headers = new HttpHeaders().append('Authorization','Bearer '+this._token).append('Content-Type','text/json')
     let connection = this.BASE_URL+"/tickets/cancel";  
     let postBody = TicketsToCancel;
