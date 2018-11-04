@@ -17,12 +17,13 @@
                 </div>-->      
         
                 <div class="card-body px-1 py-2">
-                <div class="btn-group-vertical btn-block" role="group" aria-label="Function Menu">
+                    <messages [historyLenth]=4> </messages>
+                    <div class="btn-group-vertical btn-block" role="group" aria-label="Function Menu">
                     <button type="button" [disabled]="showCancel || showReserving" class="btn btn-secondary mb-1" (click) = "StartSaleSelected()">Начать продажу</button>
                     <button type="button" [disabled]="showCancel || showReserving" class="btn btn-secondary mb-1" (click) = "FinishSaleSelected()">Завершить продажу</button>
                     <button type="button" class="btn btn-secondary mb-1" (click) = "PrintSelected()">Повторная печать</button>
                     <button type="button" class="btn btn-secondary mb-1" (click) = "ReserveOperationForm()">Бронь</button>
-                    <reserving-operations class="fool-wight" *ngIf="showReserving" 
+                    <reserving-operations class="fool-wight my-1 py-0" *ngIf="showReserving" 
                         (ActionSearchEmmiter)  = "OnActionSearch($event)" 
                         (ActionSearchByPhoneEmmiter)  = "OnActionSearchByPhone($event)" 
                         (ReserveActionPrintEmmiter)   = "OnReserveActionPrint($event)" 
@@ -647,21 +648,9 @@
 
     </div>
   </div>
-  
-  
-  <!-- подвал - окно сообщений временно убираем  
-  <div class="row align-items-center printable"> 
-    <div class="col printable" id="FooterCol">
-      <div class="alert alert-warning printable" role="alert">
-        Это уведомление-предупреждение — check it out!
-      </div>
-    </div>
-  </div>-->
-
 </div>
 
 <!-- областьпечати печатет без class="printable" -->
-<div class="printable" id="forprint"> 
-    
+<div class="printable" id="forprint">    
     <ticket-print-wiev></ticket-print-wiev>
 </div>

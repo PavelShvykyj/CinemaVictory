@@ -1,0 +1,10 @@
+
+<ul class="list-group m-0">
+  <li class="list-group-item list-group-item-danger message p-1"
+    *ngFor="let message of Messages.controls"
+    (click)="DeleteMessage(message)"
+  >
+  
+  {{message.value}}</li>
+  
+</ul>

@@ -1,6 +1,6 @@
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { Component, OnInit, Input, Output, QueryList, EventEmitter} from '@angular/core';
-import { HallChairComponent } from '../hall-chair/hall-chair.component';
+import { Component, OnInit, Input, Output, QueryList, EventEmitter, ViewChild} from '@angular/core';
+import { MessagesComponent } from '../messages/messages.component';
 
 import { ISessionData,
   ISyncTicketsRequestViewModel,
@@ -37,6 +37,8 @@ export class ReservingOperationsComponent implements OnInit {
   @Output() ReserveActionReserveEmmiter = new EventEmitter();
   @Output() ActionReseteEmmiter = new EventEmitter();
   
+  @ViewChild(MessagesComponent) messagesComponent : MessagesComponent;
+
   FORM_ACTIONS : typeof FormActions = FormActions;  
   form : FormGroup;
   action : number = FormActions.nothing;  
@@ -58,6 +60,11 @@ export class ReservingOperationsComponent implements OnInit {
   Resete(){
     this.action = FormActions.nothing;
     this.ActionReseteEmmiter.emit();
+    this.messagesComponent.ClearMessages();
+  }
+
+  ShowMessage(message: string ){
+    this.messagesComponent.AddMessage(message);
   }
 
   get phone(){
@@ -86,7 +93,7 @@ export class ReservingOperationsComponent implements OnInit {
       case FormActions.nothing:
         return true;
       case FormActions.pay:
-        return this.phone.valid && this.secretCode.valid;
+        return this.phone.valid || this.secretCode.valid;
       case FormActions.print:
         return  this.phone.valid && this.secretCode.valid;
       case FormActions.reserve:

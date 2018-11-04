@@ -1,5 +1,6 @@
 import { Component, OnInit,OnDestroy , ViewChildren, QueryList,ViewChild ,ChangeDetectorRef, AfterViewInit } from '@angular/core';
 import { HallChairComponent } from '../hall-chair/hall-chair.component';
+import { MessagesComponent } from '../messages/messages.component';
 import { ReservingOperationsComponent } from '../reserving-operations/reserving-operations.component';
 import { CancelOperationComponent } from '../cancel-operation/cancel-operation.component';
 import { RequestRouterService } from '../../back-end-router/request-router.service';
@@ -32,9 +33,10 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
   private chairList : QueryList<HallChairComponent>;
   @ViewChild(ReservingOperationsComponent)
   private reserveComponent : ReservingOperationsComponent;
-  
   @ViewChild(CancelOperationComponent)
   private cancelComponent : ReservingOperationsComponent;
+  @ViewChild(MessagesComponent)
+  messageComponent : MessagesComponent;
   
 
   mouseStatusCoverByRow : IdataObject = 
@@ -178,11 +180,14 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
             this.ClearSelected();
             this.SyncHallState([],[])
                 .then(resoult => {this.UpdateHallState(resoult)})
-                .catch(error=>{console.log('bad synk Tickets in start', error); return false }); /// 
+                .catch(error=>{
+                  this.AddFormateMessage('start action '+error.status); 
+                  console.log('bad synk Tickets in start', error); return false }); /// 
           }
           ///  обнулим только выбранные - остальной зал не трогаем
           else
           {
+            this.AddFormateMessage(' error '+error.status);
             this.chairsInWork.forEach(workChair=>{
               let foundChair = this.chairList.find(function(chair) {
                 return chair.chairStateInternal.c.c == workChair.c.c && chair.chairStateInternal.c.r == workChair.c.r;
@@ -207,6 +212,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
     })
     .catch(error=>{
       console.log('bad synk Tickets in finish', error);
+      this.AddFormateMessage('finish action '+error.status); 
       if(error.error.hallState){
         let hallStateInError : ISyncTicketsResponseViewModelInternal = {
           hallState: error.error.hallState,
@@ -431,6 +437,12 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
     if(this.chairsInWork.length==0){
       return;
     }
+   
+    let inCorrectSelected  = _.filter(this.chairsInWork,element=>{return !element.s.isReserved });
+    if (inCorrectSelected.length != 0){
+      this.reserveComponent.messagesComponent.AddMessage('Некорректные места для оплаты. Можно только забронированные');
+      return;
+    } 
 
     // если процесс начат повторно ничего не делаем
     ///// тут это не работает
@@ -476,12 +488,14 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
         if(this.chairsInWork.length==0){
           return;
         }
-    
-        // если процесс начат повторно ничего не делаем
-        let firstChairStatus = this.chairsInWork[0].s;
-        if(firstChairStatus.inReserving || firstChairStatus.isReserved || firstChairStatus.isSoled){
+        
+        let inCorrectSelected  = _.filter(this.chairsInWork,element=>{return element.s.isSoled || element.s.isReserved || element.s.inReserving});
+        if (inCorrectSelected.length != 0){
+          this.reserveComponent.messagesComponent.AddMessage('Некорректные места для бронирования. Можно только свободные.');
           return;
-        }
+        } 
+
+
         /// отмечаем "ин прогресс" генерим ключ и отправляем запрос
         let t = this.CreateSecretCode(RerserveFormValues.phone);
         this.chairsInWork.forEach(element =>{
@@ -569,7 +583,9 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
   UpdateHallInfo()  {
     
     this.apiServis.RoutGetHallInfo().then(resoult => {this.hallInfo = resoult; })
-                                     .catch(error => {this.hallInfo = null}) 
+                                     .catch(error => {
+                                      this.AddFormateMessage('UpdateHallInfo'+error.status); 
+                                      this.hallInfo = null}) 
   }
 
   UpdateHallState(StateInfo : ISyncTicketsResponseViewModelInternal, isSgnalRData? : boolean  ) {
@@ -664,6 +680,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
                             this.ClearSelected();
                             this.RefreshHallState()})
                          .catch(error=>{
+                            this.AddFormateMessage('Cancel tickets '+error.status); 
                             this.ClearSelected(); 
                             this.RefreshHallState()});
   }
@@ -714,12 +731,19 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
     {
       this.SyncHallState([],[])
           .then(resoult => {this.UpdateHallState(resoult)})
-          .catch(error=>{console.log('bad synk Tickets', error) }); /// 
+          .catch(error=>{
+            this.AddFormateMessage('On sesiion data change '+error.status); 
+            console.log('bad synk Tickets', error) }); /// 
     }
   }
 
   ExecuteQueue(){
     this.apiServis.RoutExecuteBufer();
   }
+
+  AddFormateMessage(message : string) {
+    this.messageComponent.AddMessage(new Date().toISOString()+' '+message);
+  } 
+  
 
 }
