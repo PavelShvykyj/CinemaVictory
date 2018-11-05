@@ -19,10 +19,10 @@
                 <div class="card-body px-1 py-2">
                     <messages [historyLenth]=4> </messages>
                     <div class="btn-group-vertical btn-block" role="group" aria-label="Function Menu">
-                    <button type="button" [disabled]="showCancel || showReserving" class="btn btn-secondary mb-1" (click) = "StartSaleSelected()">Начать продажу</button>
+                    <button type="button" [disabled]="showCancel || showReserving || showStartSale" class="btn btn-secondary mb-1" (click) = "StartSaleSelected()">Начать продажу</button>
                     <button type="button" [disabled]="showCancel || showReserving" class="btn btn-secondary mb-1" (click) = "FinishSaleSelected()">Завершить продажу</button>
                     <button type="button" class="btn btn-secondary mb-1" (click) = "PrintSelected()">Повторная печать</button>
-                    <button type="button" class="btn btn-secondary mb-1" (click) = "ReserveOperationForm()">Бронь</button>
+                    <button type="button" [disabled]="showStartSale" class="btn btn-secondary mb-1" (click) = "ReserveOperationForm()">Бронь</button>
                     <reserving-operations class="fool-wight my-1 py-0" *ngIf="showReserving" 
                         (ActionSearchEmmiter)  = "OnActionSearch($event)" 
                         (ActionSearchByPhoneEmmiter)  = "OnActionSearchByPhone($event)" 
@@ -33,7 +33,7 @@
 
 
                     ></reserving-operations>
-                    <button type="button" class="btn btn-secondary mb-1" (click) = "CancelOperationForm()">Отмена билета</button>
+                    <button type="button" [disabled]="showStartSale" class="btn btn-secondary mb-1" (click) = "CancelOperationForm()">Отмена билета</button>
                     <cancel-operation class="fool-wight" *ngIf="showCancel"
                         (CancelActionCancelEmmiter) = "OnCancelActionCancel()"
                         (ActionSearchEmmiter)  = "OnActionSearch($event)" 
@@ -41,8 +41,8 @@
                         (ActionReseteEmmiter) = "OnActionResete()" >
                     </cancel-operation>
                     
-                    <button type="button" class="btn btn-secondary mb-1" (click) = "ExecuteQueue()">Данные на сайт</button>
-                    <button type="button" class="btn btn-secondary mb-1" (click) = "RefreshHallState()">Обновить</button>
+                    <button type="button" [disabled]="showStartSale" class="btn btn-secondary mb-1" (click) = "ExecuteQueue()">Данные на сайт</button>
+                    <button type="button" [disabled]="showStartSale" class="btn btn-secondary mb-1" (click) = "RefreshHallState()">Обновить</button>
                     <!--<button type="button" class="btn btn-secondary btn-funk-menu">Действие 1</button>
                     <button type="button" class="btn btn-secondary btn-funk-menu">Действие 1</button>-->
                 </div>

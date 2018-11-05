@@ -270,10 +270,13 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
       element.s.isFree = false;
       element.s.isSoled = true;
       element.s.isReserved = false;
+      element.t = this.CreateSaleCode(element);
     })
 
     // начинаем процесс продажи
-    this.StartAction().then(resoult => { if(resoult){this.PrintSelected()} });
+    this.StartAction().then(resoult => { if(resoult){
+      this.PrintSelected()}
+    });
   }
 
   FinishSaleSelected(){
@@ -297,7 +300,6 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
         element.s.isFree = false;
         element.s.isSoled = true;
         element.s.isReserved = false;
-        element.t = this.CreateSaleCode(element);
       });
 
       this.FinishAction().then(resoult=>{if(resoult){console.log('sucsesful Sale.')}});
