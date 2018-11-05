@@ -20,6 +20,6 @@ import { MessagesComponent } from './messages/messages.component'
     ReactiveFormsModule
   ],
   declarations: [HallComponent, HallChairComponent, MovieSelectorComponent, MovieComponent, MoviePriceComponent, TicketPrintWievComponent, ReservingOperationsComponent, CancelOperationComponent, MessagesComponent],
-  exports: [HallComponent]
+  exports: [HallComponent,MessagesComponent]
 })
 export class HallBrowserModule { }

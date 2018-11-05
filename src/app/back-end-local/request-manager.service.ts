@@ -83,6 +83,8 @@ export class RequestManagerService implements IbackEnd {
         this._subj1CHallInfo.next(data);
       case 'GetBufer':
         this._subj1CBuferState.next(data);
+      case 'GetBuferSize':
+        this._subj1CBuferState.next(data);
       case 'ClearBufer':
         this._subj1CBuferState.next(data);
     }
@@ -539,6 +541,57 @@ export class RequestManagerService implements IbackEnd {
     });
     return myPromise
   }
+
+  GetBufferSize(): Promise<number> {
+    if (this.LOCAL_SERVISE_BLOCED){
+      let myPromise : Promise<number>  = new Promise((resolve,reject) => {
+        let resoult : IResponseData = 
+        {
+        status : '100',
+        statusText : 'bloced',
+        token : 'badToken',
+        expired : 0
+        }
+        reject(resoult);
+      });
+      return myPromise;
+    }
+ 
+
+    let timeRemain: number = 0;
+    let timeOut: number = this.RESPONSE_TIME_OUT;
+    let step: number = this.RESPONSE_WAIT_STEP;
+
+    let myPromise: Promise<number> = new Promise((resolve, reject) => {
+      let stringDataFrom1C: string = '';
+      let subs = this.Observ1CBuferState$.subscribe(resoult => {
+        stringDataFrom1C = resoult;
+      })
+      let dataTo1C: string = JSON.stringify({ point: "GetBuferSize" })
+      Call1C(dataTo1C);
+
+      while (stringDataFrom1C == "" && timeRemain <= timeOut) {
+        timeRemain = timeRemain + step;
+        async () => { await this.delay(step) };
+        //setTimeout(()=>{},step);
+      }
+      subs.unsubscribe();
+      if (stringDataFrom1C != "") {
+        let buferSize : number = JSON.parse(stringDataFrom1C).data;
+        resolve(buferSize);
+      } else {
+        reject({
+          point: "GetBuferSize",
+          resoult: false,
+          data: { errorText: "time out", status: 100 }
+        });
+      }
+    });
+    return myPromise
+  }
+
+
+
 
   ///DataToClear = {keys : [string]}
   ///

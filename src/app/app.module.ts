@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router'
 import { AppComponent } from './app.component';
 import { HallBrowserModule } from './HallBrowser/HallBrowser.module';
 import { HallComponent } from './HallBrowser/hall/hall.component';
+import { MessagesComponent } from './HallBrowser/messages/messages.component';
 import { TicketPrintWievComponent } from './HallBrowser/ticket-print-wiev/ticket-print-wiev.component';
 import { BackEndRouterModule } from './back-end-router/back-end-router.module';
 
@@ -23,6 +24,7 @@ const routes = [
 @NgModule({
   declarations: [
     AppComponent
+    
   ],
   imports: [
     BrowserModule,

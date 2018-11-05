@@ -1,8 +1,9 @@
-import { Component, OnInit, AfterViewInit , OnDestroy } from '@angular/core';
-import { HallComponent } from './HallBrowser/hall/hall.component';
-import { LogginComponent } from './logg-in/loggin/loggin.component'
+import { Component, OnInit, ViewChild,  OnDestroy } from '@angular/core';
+import { MessagesComponent } from './HallBrowser/messages/messages.component';
+//import { LogginComponent } from './logg-in/loggin/loggin.component'
 import {RequestRouterService}  from './back-end-router/request-router.service'
 import {RequestManagerService }  from './back-end-local/request-manager.service'
+
 import { ILoggInData } from './iback-end'
 import { Observable } from 'rxjs/Observable';
 import 'jquery';
@@ -21,23 +22,44 @@ export class AppComponent implements OnInit, OnDestroy {
   subsUserName;
   subs1Cdata;
   
+  @ViewChild(MessagesComponent) 
+  messagesComponent : MessagesComponent
+
+
   
 
   // зависимость нужна обязательно для оповещений
   constructor(private apiServis : RequestRouterService, private localService : RequestManagerService){}
 
   ngOnInit() {
-    this.subsBackEndName = this.apiServis.changeEmittedBackEndName$.subscribe(text => { this.currentBackEndName = text});
+    this.subsBackEndName = this.apiServis.changeEmittedBackEndName$.subscribe(text => {
+        if(this.currentBackEndName != text && this.currentBackEndName == "1C"){
+          this.apiServis.RoutGetBufferSize().then(size => {
+            if(size!=0){
+              // поменяли бек с 1С веб возможно нужно отправить очередь
+              this.ShowTemporaryMessage("Нужно передать Данные на сайт ( всего "+size+ " )...",5000);
+            }
+          }).catch(err=>{ this.ShowTemporaryMessage("нет связи с 1С...",5000); });
+        }
+        this.currentBackEndName = text;
+      });
     this.apiServis.changeEmittedLoginName$.subscribe(text => { this.currentUserName = text});
   }
+
+
 
   ngOnDestroy() {
     this.subsBackEndName.unsubscribe();
     this.subsUserName.unsubscribe();
   }
 
+  ShowTemporaryMessage(message : string, duration : number){
+    this.messagesComponent.AddMessage(message);
+    setTimeout(() => {
+      this.messagesComponent.ClearMessages(); 
+    }, duration);
+  }
   
-
   // Вызывается извне 1Сом через поиск соответствующего DOM инпута 
   // и генерации клика на нем данные передаются через value елемента
   // старт запроса из JS
@@ -52,26 +74,11 @@ export class AppComponent implements OnInit, OnDestroy {
     this.apiServis.RoutInit1CDataIncome(el.value);
   }
 
-  // удалить после тестов
-  Call1c(name,data){
-    Call1C('from JS');
-  };
-
-   // удалить после тестов
-  Alert1CdataIncome(){
-    //alert('start click');
-   
-    Call1C('from JS');
-    if (this.subs1Cdata) {
-      this.subs1Cdata.unsubscribe();  
-    }
-    this.subs1Cdata = this.localService.promise1CData$.subscribe(resoult => {alert(resoult)});
-  }
  
-  // удалить после тестов
-  Generate1CdataIncome(){
-    this.OnExternal1CValueChange('some data');
-  }
+
+   
+ 
+  
 
 
 }

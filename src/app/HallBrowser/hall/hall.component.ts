@@ -737,12 +737,22 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
     }
   }
 
-  ExecuteQueue(){
-    this.apiServis.RoutExecuteBufer();
+  async  ExecuteQueue() {
+    let size = await this.apiServis.RoutGetBufferSize();
+    this.AddFormateMessage('Отправляю данные ( всего ' + size + ')');
+    try {
+      let res = await this.apiServis.RoutExecuteBufer();
+      this.AddFormateMessage('Отправлено');
+    } catch (error) {
+      this.AddFormateMessage('Ошибка при передаче данных');
+    }
   }
 
   AddFormateMessage(message : string) {
     this.messageComponent.AddMessage(new Date().toISOString()+' '+message);
+    setTimeout(() => {
+      this.messageComponent.ClearMessages();  
+    }, 5000);
   } 
   
 

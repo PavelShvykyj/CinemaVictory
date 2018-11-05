@@ -250,7 +250,7 @@ export class RequestRouterService {
     return new Promise( resolve => setTimeout(resolve, ms) );
   }
 
-  async ExecuteElementQueue(queueElement : IdataObject){
+  private async ExecuteElementQueue(queueElement : IdataObject){
     let pause = await this.delay(500);
     if(queueElement.toDo == 'SyncTickets'){
      this.webServise.SyncTickets(queueElement.parametr)
@@ -276,7 +276,7 @@ export class RequestRouterService {
     }
   }
   
-  async ExecuteQueue(resoult : IDataFrom1C){
+  private async ExecuteQueue(resoult : IDataFrom1C){
     let queue = resoult.data.queue;
     for (let index = 0; index < queue.length; index++) {
       let queueElement = queue[index];
@@ -285,11 +285,14 @@ export class RequestRouterService {
   };
   
   async RoutExecuteBufer() {
-    this.localServise.GetBuffer()
+    return await this.localServise.GetBuffer()
                      .then(resoult => this.ExecuteQueue(resoult))
                      .catch(err=>{throw err});
   }
 
+  RoutGetBufferSize()  {
+    return  this.localServise.GetBufferSize()
+  }
 
   RoutConvertTicketStatusToChairStatus(status){
     return this.webServise.ConvertTicketStatusToChairStatus(status)

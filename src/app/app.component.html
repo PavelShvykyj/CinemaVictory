@@ -21,7 +21,10 @@
                     </div>
                     
                 </div>
-                
+                <span class="navbar-text" id="messageText" >
+                    <messages  [historyLenth]=1 > </messages>
+                </span>
+
                 <span id="loggDataText"
                       class="navbar-text"
                       [ngClass]="{'indicator-danger' : currentBackEndName=='Nothing',
@@ -52,8 +55,7 @@
 <input #BuferState hidden=true type="text" id="BuferState" value="empty"  (click)="OnExternal1CValueChange(BuferState)">
 <router-outlet></router-outlet>
 
-<!--<app-loggin></app-loggin>-->
-<!--<hall></hall>-->
+
 
 
 
