@@ -255,7 +255,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
     if(this.chairsInWork.length==0){
       return;
     }
-    this.showStartSale = true;
+    
 
     // если процесс начат повторно ничего не делаем
     let firstChairStatus = this.chairsInWork[0].s;
@@ -275,6 +275,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
 
     // начинаем процесс продажи
     this.StartAction().then(resoult => { if(resoult){
+      this.showStartSale = true;
       this.PrintSelected()}
     });
   }
