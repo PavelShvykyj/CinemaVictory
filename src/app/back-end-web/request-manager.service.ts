@@ -49,7 +49,7 @@ export class RequestManagerService implements IbackEnd {
 
   constructor(private http : HttpClient) { 
     this._hubHallConnection = new HubConnectionBuilder().withUrl('https://kino-peremoga.com.ua/hallHub').build();   //'https://kino-peremoga.com.ua/hallHub'
-    //this._hubHallConnection.serverTimeoutInMilliseconds = 60*60*1000; // час - это с запасом жизнь токега - пол часа с токеном делаем реконнект
+    this._hubHallConnection.serverTimeoutInMilliseconds = 60*60*1000; // час - это с запасом жизнь токега - пол часа с токеном делаем реконнект
   }
 
   ConvertTicketStatusToChairStatus(intStatus : number ) : IChairStatus {
@@ -498,6 +498,7 @@ export class RequestManagerService implements IbackEnd {
       return myPromise;
     }
 
+
     // /ticketcategories/getall
     let headers = new HttpHeaders().append('Authorization','Bearer '+this._token).append('Content-Type','text/json')
     let connection = this.BASE_URL+"/seatcategories/getall";  
@@ -508,7 +509,7 @@ export class RequestManagerService implements IbackEnd {
                         reportProgress:true,
                         responseType:'text'})
                      .toPromise()
-                     .then(reoult =>{return JSON.stringify({categorySeatsInfo : JSON.parse(reoult)})})
+                     .then(reoult =>{ return JSON.stringify({categorySeatsInfo : JSON.parse(reoult)})})
                      .catch(error=>{throw error});   
 
 

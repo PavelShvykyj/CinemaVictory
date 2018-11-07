@@ -33,7 +33,7 @@
 
 
                     ></reserving-operations>
-                    <button type="button" [disabled]="showStartSale" class="btn btn-secondary mb-1" (click) = "CancelOperationForm()">Отмена билета</button>
+                    <button type="button" [disabled]="showStartSale" class="btn btn-secondary mb-1" (click) = "CancelOperationForm()">Отмена и поиск</button>
                     <cancel-operation class="fool-wight" *ngIf="showCancel"
                         (CancelActionCancelEmmiter) = "OnCancelActionCancel()"
                         (ActionSearchEmmiter)  = "OnActionSearch($event)" 
@@ -41,7 +41,7 @@
                         (ActionReseteEmmiter) = "OnActionResete()" >
                     </cancel-operation>
                     
-                    <button type="button" [disabled]="showStartSale" class="btn btn-secondary mb-1" (click) = "ExecuteQueue()">Данные на сайт</button>
+                    <button type="button" [disabled]="showStartSale || showCancel || showReserving" class="btn btn-secondary mb-1" (click) = "ExecuteQueue()">Данные на сайт</button>
                     <button type="button" [disabled]="showStartSale" class="btn btn-secondary mb-1" (click) = "RefreshHallState()">Обновить</button>
                     <!--<button type="button" class="btn btn-secondary btn-funk-menu">Действие 1</button>
                     <button type="button" class="btn btn-secondary btn-funk-menu">Действие 1</button>-->

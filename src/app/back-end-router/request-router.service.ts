@@ -351,6 +351,7 @@ export class RequestRouterService {
       let DataFrom1C = JSON.parse(StringDataFrom1C);
       switch (DataFrom1C.point) {
         case 'SetGlobalParametrs' : 
+          
           this.SetGlobalParametrs(DataFrom1C.data);
       }
   }

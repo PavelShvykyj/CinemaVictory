@@ -587,7 +587,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
     
     this.apiServis.RoutGetHallInfo().then(resoult => {this.hallInfo = resoult; })
                                      .catch(error => {
-                                      this.AddFormateMessage('UpdateHallInfo'+error.status); 
+                                      this.AddFormateMessage('UpdateHallInfo '+error.status); 
                                       this.hallInfo = null}) 
   }
 
