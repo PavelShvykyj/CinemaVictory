@@ -2,7 +2,7 @@ import { Component, OnInit, OnChanges, Input, Output ,EventEmitter ,ChangeDetect
 import { IdataObject } from '../idata-object'
 import { AngularFontAwesomeComponent } from 'angular-font-awesome'
 import {IChairStatus,IChairStateViewModelInternal}  from '../../iback-end'
-
+import { HallShowStatus } from '../../global_enums'
 
 
 @Component({
@@ -11,12 +11,11 @@ import {IChairStatus,IChairStateViewModelInternal}  from '../../iback-end'
   styleUrls: ['./hall-chair.component.css']
 })
 export class HallChairComponent implements OnInit, OnChanges {
+  
+  showHallStatus : typeof HallShowStatus = HallShowStatus;
   @Input() chairID : number;
   @Input() rowID : number;
-  @Input() cancelStatus : boolean;
-  @Input() reserveStatus : boolean;
-  @Input() startSaleStatus : boolean;
- 
+  @Input() showStatus : number = this.showHallStatus.Defoult;  
   @Input() chairStateInternal : IChairStateViewModelInternal;
   @Output() chairSelectStatusChange = new EventEmitter();
 
@@ -42,7 +41,7 @@ export class HallChairComponent implements OnInit, OnChanges {
   ngOnChanges(){}
 
   OnClick(){
-    if (this.chairStateInternal.s.isFree && !(this.cancelStatus  || this.startSaleStatus))
+    if (this.chairStateInternal.s.isFree && !(this.showStatus == HallShowStatus.Cancel  || this.showStatus == HallShowStatus.StartSale || this.showStatus == HallShowStatus.Search))
     {
       console.log(1);
       this.chairStateInternal.s.isFree = false;
@@ -50,14 +49,21 @@ export class HallChairComponent implements OnInit, OnChanges {
       this.chairSelectStatusChange.emit(this.chairStateInternal);
       
     }
-    else if(this.cancelStatus  && !this.chairStateInternal.s.isFree) {
+    else if(this.showStatus == HallShowStatus.Cancel  && !this.chairStateInternal.s.isFree) {
       console.log(2);
       this.chairStateInternal.s.isFree = false;
       this.chairStateInternal.s.isSelected = !this.chairStateInternal.s.isSelected;
       this.chairSelectStatusChange.emit(this.chairStateInternal);
     }  
-    else if(this.reserveStatus && this.chairStateInternal.s.isReserved) {
+    else if(this.showStatus == HallShowStatus.Search  && !this.chairStateInternal.s.isFree) {
       console.log(3);
+      this.chairStateInternal.s.isFree = false;
+      this.chairStateInternal.s.isSelected = !this.chairStateInternal.s.isSelected;
+      this.chairSelectStatusChange.emit(this.chairStateInternal);
+    }  
+    
+    else if(this.showStatus == HallShowStatus.Reserving && this.chairStateInternal.s.isReserved) {
+      console.log(4);
       this.chairStateInternal.s.isFree = false;
       this.chairStateInternal.s.isSelected = !this.chairStateInternal.s.isSelected;
       this.chairSelectStatusChange.emit(this.chairStateInternal);
@@ -67,7 +73,7 @@ export class HallChairComponent implements OnInit, OnChanges {
       this.chairStateInternal.s.isReserved || 
       this.chairStateInternal.s.inReserving))
     {
-      console.log(4);
+      console.log(5);
       this.chairStateInternal.s.isFree = true;
       this.chairStateInternal.s.isSelected = false;
       this.chairSelectStatusChange.emit(this.chairStateInternal);

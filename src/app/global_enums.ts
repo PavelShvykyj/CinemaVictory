@@ -4,3 +4,11 @@ export enum TicketOperations {
     Cansel,
     SaleReserve
   }
+
+  export enum HallShowStatus {
+    Defoult,
+    Reserving,
+    Cancel,
+    StartSale,
+    Search
+  }  

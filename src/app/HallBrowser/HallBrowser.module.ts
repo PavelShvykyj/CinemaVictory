@@ -10,7 +10,8 @@ import { MoviePriceComponent } from './movie-price/movie-price.component';
 import { TicketPrintWievComponent } from './ticket-print-wiev/ticket-print-wiev.component';
 import { ReservingOperationsComponent } from './reserving-operations/reserving-operations.component';
 import { CancelOperationComponent } from './cancel-operation/cancel-operation.component';
-import { MessagesComponent } from './messages/messages.component'
+import { MessagesComponent } from './messages/messages.component';
+import { SearchingOperationsComponent } from './searching-operations/searching-operations.component'
 
 @NgModule({
   imports: [
@@ -19,7 +20,7 @@ import { MessagesComponent } from './messages/messages.component'
     FormsModule, 
     ReactiveFormsModule
   ],
-  declarations: [HallComponent, HallChairComponent, MovieSelectorComponent, MovieComponent, MoviePriceComponent, TicketPrintWievComponent, ReservingOperationsComponent, CancelOperationComponent, MessagesComponent],
+  declarations: [HallComponent, HallChairComponent, MovieSelectorComponent, MovieComponent, MoviePriceComponent, TicketPrintWievComponent, ReservingOperationsComponent, CancelOperationComponent, MessagesComponent, SearchingOperationsComponent],
   exports: [HallComponent,MessagesComponent]
 })
 export class HallBrowserModule { }

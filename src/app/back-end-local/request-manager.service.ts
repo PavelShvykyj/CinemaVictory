@@ -46,7 +46,7 @@ export class RequestManagerService implements IbackEnd {
   private _subj1CBuferState = new Subject<string>();
   Observ1CBuferState$ = this._subj1CBuferState.asObservable();
 
-
+  RESERVE_PRICE = 3;
   RESPONSE_TIME_OUT = 3000;
   RESPONSE_WAIT_STEP = 500;
   LOCAL_SERVISE_BLOCED = true; // по умолчанию не ясно где сайт запускается, если в окружении 1С она его включит

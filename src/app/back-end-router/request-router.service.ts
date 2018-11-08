@@ -320,7 +320,7 @@ export class RequestRouterService {
     this.localServise.localeUserName       = parametrs.USER;
     this.localServise.RESPONSE_TIME_OUT    = +parametrs.RESPONSE_TIME_OUT;
     this.localServise.RESPONSE_WAIT_STEP   = +parametrs.RESPONSE_WAIT_STEP; 
-
+    this.localServise.RESERVE_PRICE        = +parametrs.RESERVE_PRICE;
   }
 
   RoutGetParametrs() {
@@ -337,7 +337,8 @@ export class RequestRouterService {
       webPassword: this.localServise.webPassword,
       localeUserName: this.localServise.localeUserName,
       RESPONSE_TIME_OUT: this.localServise.RESPONSE_TIME_OUT,
-      RESPONSE_WAIT_STEP: this.localServise.RESPONSE_WAIT_STEP
+      RESPONSE_WAIT_STEP: this.localServise.RESPONSE_WAIT_STEP,
+      RESERVE_PRICE : this.localServise.RESERVE_PRICE
     }
   }
 
