@@ -158,8 +158,8 @@ export class RequestManagerService implements IbackEnd {
       let myPromise : Promise<IHallInfo>  = new Promise((resolve,reject) => {
         let resoult : IResponseData = 
         {
-        status : '100',
-        statusText : 'bloced',
+        status : '101',
+        statusText : 'bloced 1С',
         token : 'badToken',
         expired : 0
         }

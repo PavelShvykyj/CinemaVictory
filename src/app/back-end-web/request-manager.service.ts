@@ -25,6 +25,7 @@ import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 import { error } from 'util';
 import { reject } from 'q';
+import { Alert } from 'selenium-webdriver';
 
 
 
@@ -46,10 +47,18 @@ export class RequestManagerService implements IbackEnd {
   private _changeHallState = new Subject<IChairsStatusInSessionInfo>();
   changeHallState$ : Observable<IChairsStatusInSessionInfo> = this._changeHallState.asObservable(); 
 
+  private signalRCloseExpected : boolean = false;
 
   constructor(private http : HttpClient) { 
     this._hubHallConnection = new HubConnectionBuilder().withUrl('https://kino-peremoga.com.ua/hallHub').build();   //'https://kino-peremoga.com.ua/hallHub'
     this._hubHallConnection.serverTimeoutInMilliseconds = 60*60*1000; // час - это с запасом жизнь токега - пол часа с токеном делаем реконнект
+    this._hubHallConnection.onclose(error=>{
+      //alert('signal error'+error.message)
+      console.log('signal error',error);
+      if (!this.signalRCloseExpected) {
+        setTimeout(()=>{this.HubbHallReconnect()},200);
+      }
+    });
   }
 
   ConvertTicketStatusToChairStatus(intStatus : number ) : IChairStatus {
@@ -217,12 +226,11 @@ export class RequestManagerService implements IbackEnd {
       return;
     }
 
-
+    this.signalRCloseExpected = true;
     this.OfHubbHallConnection();
     this._hubHallConnection.stop()
                            .then(resoult =>{
-                             
-                            
+                            this.signalRCloseExpected = false;
                             this._hubHallConnection.start()
                                                     .then(res=>{this.OnHubbHallConnection()})
                                                     .catch(error=> {
@@ -233,6 +241,7 @@ export class RequestManagerService implements IbackEnd {
                                                     })
                            .catch(error=> { 
                              console.log('signal stop err', error)
+                             this.signalRCloseExpected = false;
                              this._hubHallConnection.start()
                                                     .then(res=>{this.OnHubbHallConnection()})
                                                     .catch(error=> {
@@ -373,6 +382,7 @@ export class RequestManagerService implements IbackEnd {
                             //sessionStorage.setItem('token',resoult.token)
                             this._userData = userData;
                             //console.log('token life ',+(objResponse.expiryMinutes)-1);
+                            
                             this._refreshLoginTimer = (+(objResponse.expiryMinutes)-1)*60*1000;
                             this.RefreshToken();
                             

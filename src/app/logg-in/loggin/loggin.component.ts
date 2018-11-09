@@ -66,7 +66,7 @@ export class LogginComponent implements OnInit {
       {
         this.login.setValue("");
         this.password.setValue("");
-        this.apiServis.RoutLoggInByLocal(new UserData("",""))
+        this.apiServis.RoutLoggInByLocal()
                       .then(
                         resoult => {
                           if (resoult.status != "200" )

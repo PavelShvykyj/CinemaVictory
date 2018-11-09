@@ -189,13 +189,13 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
             this.SyncHallState([],[])
                 .then(resoult => {this.UpdateHallState(resoult)})
                 .catch(error=>{
-                  this.AddFormateMessage('start action '+error.status); 
+                  this.AddFormateMessage('start action '+error.status,2); 
                   console.log('bad synk Tickets in start', error); return false }); /// 
           }
           ///  обнулим только выбранные - остальной зал не трогаем
           else
           {
-            this.AddFormateMessage(' error '+error.status);
+            this.AddFormateMessage(' error '+error.status,2);
             this.chairsInWork.forEach(workChair=>{
               let foundChair = this.chairList.find(function(chair) {
                 return chair.chairStateInternal.c.c == workChair.c.c && chair.chairStateInternal.c.r == workChair.c.r;
@@ -220,7 +220,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
     })
     .catch(error=>{
       console.log('bad synk Tickets in finish', error);
-      this.AddFormateMessage('finish action '+error.status); 
+      this.AddFormateMessage('finish action '+error.status,2); 
       if(error.error.hallState){
         let hallStateInError : ISyncTicketsResponseViewModelInternal = {
           hallState: error.error.hallState,
@@ -364,13 +364,13 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
     /// почистили
     this.ClearSelected();
     
-    if(this.showStatus = this.showHallStatus.Reserving) 
+    if(this.showStatus == this.showHallStatus.Reserving) 
     {
       this.reserveComponent.SetSecretCode('');  
-    } else if(this.showStatus = this.showHallStatus.Cancel) {
+    } else if(this.showStatus == this.showHallStatus.Cancel) {
       this.cancelComponent.SetSecretCode('');
     } 
-    else if(this.showStatus = this.showHallStatus.Search){
+    else if(this.showStatus == this.showHallStatus.Search){
       this.searchComponent.SetSecretCode('');
     }
 
@@ -419,14 +419,14 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
     /// почистили
     this.ClearSelected();
     
-    if(this.showStatus = this.showHallStatus.Reserving){
+    if(this.showStatus == this.showHallStatus.Reserving){
       this.reserveComponent.SetPhone('');
     }
-    else if(this.showStatus = this.showHallStatus.Cancel)
+    else if(this.showStatus == this.showHallStatus.Cancel)
     {
       this.cancelComponent.SetPhone('');
     }
-    else if(this.showStatus = this.showHallStatus.Search)
+    else if(this.showStatus == this.showHallStatus.Search)
     {
       this.searchComponent.SetPhone('');
     }
@@ -490,7 +490,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
    
     let inCorrectSelected  = _.filter(this.chairsInWork,element=>{return !element.s.isReserved });
     if (inCorrectSelected.length != 0){
-      this.reserveComponent.messagesComponent.AddMessage('Некорректные места для оплаты. Можно только забронированные');
+      this.reserveComponent.messagesComponent.AddMessage('Некорректные места для оплаты. Можно только забронированные',2);
       return;
     } 
 
@@ -557,7 +557,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
         
         let inCorrectSelected  = _.filter(this.chairsInWork,element=>{return element.s.isSoled || element.s.isReserved || element.s.inReserving});
         if (inCorrectSelected.length != 0){
-          this.reserveComponent.messagesComponent.AddMessage('Некорректные места для бронирования. Можно только свободные.');
+          this.reserveComponent.messagesComponent.AddMessage('Некорректные места для бронирования. Можно только свободные.',2);
           return;
         } 
 
@@ -657,7 +657,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
     
     this.apiServis.RoutGetHallInfo().then(resoult => {this.hallInfo = resoult; })
                                      .catch(error => {
-                                      this.AddFormateMessage('UpdateHallInfo '+error.status); 
+                                      this.AddFormateMessage('UpdateHallInfo '+error.status,2); 
                                       this.hallInfo = null}) 
   }
 
@@ -753,7 +753,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
                             this.ClearSelected();
                             this.RefreshHallState()})
                          .catch(error=>{
-                            this.AddFormateMessage('Cancel tickets '+error.status); 
+                            this.AddFormateMessage('Cancel tickets '+error.status,2); 
                             this.ClearSelected(); 
                             this.RefreshHallState()});
   }
@@ -805,24 +805,25 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
       this.SyncHallState([],[])
           .then(resoult => {this.UpdateHallState(resoult)})
           .catch(error=>{
-            this.AddFormateMessage('On sesiion data change '+error.status); 
+            this.AddFormateMessage('On sesiion data change '+error.status,2); 
             console.log('bad synk Tickets', error) }); /// 
     }
   }
 
   async  ExecuteQueue() {
     let size = await this.apiServis.RoutGetBufferSize();
-    this.AddFormateMessage('Отправляю данные ( всего ' + size + ')');
+    this.AddFormateMessage('Отправляю данные ( всего ' + size + ')',1);
     try {
       let res = await this.apiServis.RoutExecuteBufer();
-      this.AddFormateMessage('Отправлено');
+      size = await this.apiServis.RoutGetBufferSize();  
+      this.AddFormateMessage('Осталось неотправленных '+size,1);
     } catch (error) {
-      this.AddFormateMessage('Ошибка при передаче данных');
+      this.AddFormateMessage('Ошибка при передаче данных',2);
     }
   }
 
-  AddFormateMessage(message : string) {
-    this.messageComponent.AddMessage(new Date().toISOString()+' '+message);
+  AddFormateMessage(message : string, imp : number) {
+    this.messageComponent.AddMessage(new Date().toISOString()+' '+message,imp);
     setTimeout(() => {
       this.messageComponent.ClearMessages();  
     }, 5000);

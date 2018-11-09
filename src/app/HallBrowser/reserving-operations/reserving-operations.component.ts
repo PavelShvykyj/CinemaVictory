@@ -63,8 +63,8 @@ export class ReservingOperationsComponent implements OnInit {
     this.messagesComponent.ClearMessages();
   }
 
-  ShowMessage(message: string ){
-    this.messagesComponent.AddMessage(message);
+  ShowMessage(message: string, imp : number ){
+    this.messagesComponent.AddMessage(message, imp);
   }
 
   get phone(){

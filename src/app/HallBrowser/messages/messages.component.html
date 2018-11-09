@@ -1,10 +1,15 @@
 
-<ul class="list-group m-0">
-  <li class="list-group-item list-group-item-danger message p-1"
-    *ngFor="let message of Messages.controls"
-    (click)="DeleteMessage(message)"
+<ul *ngIf="controlsImpotent.length !=0" class="list-group m-0">
+  <li class="list-group-item  message p-1"
+    [ngClass]="{'list-group-item-danger': element.impotent == 2,
+      'list-group-item-warning': element.impotent == 1,
+      'list-group-item-success': element.impotent == 0}"
+    *ngFor="let element of controlsImpotent"
+
+
+    (click)="DeleteMessage(element.contol)"
   >
   
-  {{message.value}}</li>
+  {{element.control.value}}</li>
   
 </ul>
