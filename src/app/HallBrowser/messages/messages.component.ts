@@ -32,7 +32,6 @@ export class MessagesComponent implements OnInit {
     this.controlsImpotent.push(messageIpotent)
 
     if(formMessages.controls.length > this.historyLenth){
-      
       this.controlsImpotent.splice(0,1);
       formMessages.removeAt(0);
     }
