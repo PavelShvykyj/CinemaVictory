@@ -3,7 +3,7 @@ import { MessagesComponent } from './HallBrowser/messages/messages.component';
 //import { LogginComponent } from './logg-in/loggin/loggin.component'
 import {RequestRouterService}  from './back-end-router/request-router.service'
 import {RequestManagerService }  from './back-end-local/request-manager.service'
-
+import { MessageSate } from './global_enums'
 import { ILoggInData } from './iback-end'
 import { Observable } from 'rxjs/Observable';
 import 'jquery';
@@ -19,7 +19,8 @@ export class AppComponent implements OnInit, OnDestroy {
   subsBackEndName;
   subsUserName;
   subs1Cdata;
-  
+  messageSate : typeof MessageSate = MessageSate;
+
   @ViewChild(MessagesComponent) 
   messagesComponent : MessagesComponent
 
@@ -33,9 +34,9 @@ export class AppComponent implements OnInit, OnDestroy {
           this.apiServis.RoutGetBufferSize().then(size => {
             if(size!=0){
               // поменяли бек с 1С веб возможно нужно отправить очередь
-              this.ShowTemporaryMessage("Нужно передать Данные на сайт ( всего "+size+ " )...",0,2);
+              this.ShowTemporaryMessage("Нужно передать Данные на сайт ( всего "+size+ " )...",0,this.messageSate.Error);
             }
-          }).catch(err=>{ this.ShowTemporaryMessage("нет связи с 1С...",5000,2); });
+          }).catch(err=>{ this.ShowTemporaryMessage("нет связи с 1С...",5000,this.messageSate.Error); });
         }
         this.currentBackEndName = text;
       });

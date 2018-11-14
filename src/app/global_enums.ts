@@ -12,3 +12,9 @@ export enum TicketOperations {
     StartSale,
     Search
   }  
+
+  export enum MessageSate {
+    Error,
+    Info,
+    Sucsess
+  }

@@ -21,7 +21,7 @@ import { ISessionData,
 import { Observable } from 'rxjs/Observable';
 import printJS from 'print-js/src/index';
 import { IfObservable } from 'rxjs/observable/IfObservable';
-import { HallShowStatus } from '../../global_enums'
+import { HallShowStatus, MessageSate } from '../../global_enums'
 
 @Component({
   selector: 'hall',
@@ -84,6 +84,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
 
   // определяю видимость формочек операций резерва и отмены билетов
   showHallStatus : typeof HallShowStatus = HallShowStatus;
+  messageSate : typeof MessageSate = MessageSate;
   showStatus : number = this.showHallStatus.Defoult;  
 
  
@@ -189,13 +190,13 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
             this.SyncHallState([],[])
                 .then(resoult => {this.UpdateHallState(resoult)})
                 .catch(error=>{
-                  this.AddFormateMessage('start action '+error.status,2); 
+                  this.AddFormateMessage('start action '+error.status,this.messageSate.Error); 
                   console.log('bad synk Tickets in start', error); return false }); /// 
           }
           ///  обнулим только выбранные - остальной зал не трогаем
           else
           {
-            this.AddFormateMessage(' error '+error.status,2);
+            this.AddFormateMessage(' error '+error.status,this.messageSate.Error);
             this.chairsInWork.forEach(workChair=>{
               let foundChair = this.chairList.find(function(chair) {
                 return chair.chairStateInternal.c.c == workChair.c.c && chair.chairStateInternal.c.r == workChair.c.r;
@@ -220,7 +221,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
     })
     .catch(error=>{
       console.log('bad synk Tickets in finish', error);
-      this.AddFormateMessage('finish action '+error.status,2); 
+      this.AddFormateMessage('finish action '+error.status,this.messageSate.Error); 
       if(error.error.hallState){
         let hallStateInError : ISyncTicketsResponseViewModelInternal = {
           hallState: error.error.hallState,
@@ -237,6 +238,9 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
     if(!toPrint){
       toPrint = this.chairsInWork;
     }
+    
+    toPrint = _.filter(toPrint,element=>{return element.s.isSoled || element.s.inReserving || element.s.isReserved});
+    
     if(toPrint.length == 0 ){
       console.log('nothing to print');
       return;
@@ -246,9 +250,9 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
       console.log('nothing to print');
       return;
     }
-    
+
     let printData = {
-      chairs : this.chairsInWork,
+      chairs : toPrint,
       movie : this.sessionData
     }
 
@@ -375,13 +379,17 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
     }
 
     let showReserving = (this.showStatus == this.showHallStatus.Reserving);
-    
+    let showSearch = (this.showStatus == this.showHallStatus.Search);
+
     /// поискали подходяшее место по телефону 
     let foundComponents  = this.chairList.filter(function(chair) {
       if (chair.chairStateInternal.t){
         //console.log('phone search ',chair.chairStateInternal.c.c,chair.chairStateInternal.c.r,chair.chairStateInternal.t)
         if(showReserving){
           return chair.chairStateInternal.t.endsWith(ActionFormValues.phone) && chair.chairStateInternal.s.isReserved;
+        }
+        else if(showSearch){
+          return chair.chairStateInternal.t.endsWith(ActionFormValues.phone) && chair.chairStateInternal.s.isSoled;
         }
         else{
           return chair.chairStateInternal.t.endsWith(ActionFormValues.phone);
@@ -434,6 +442,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
     
 
     let showReserving = (this.showStatus == this.showHallStatus.Reserving);
+    let showSearch = (this.showStatus == this.showHallStatus.Search);
     //console.log('code in search', ActionFormValues.secretCode);
     //console.log('list in  search',this.chairList);
     /// поискали подходяшее место по коду 
@@ -441,6 +450,9 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
       if (chair.chairStateInternal.t){
         if(showReserving){
           return chair.chairStateInternal.t.startsWith(ActionFormValues.secretCode) && chair.chairStateInternal.s.isReserved;
+        }
+        else if(showSearch){
+          return chair.chairStateInternal.t.startsWith(ActionFormValues.secretCode) && chair.chairStateInternal.s.isSoled;
         }
         else{
           return chair.chairStateInternal.t.startsWith(ActionFormValues.secretCode);
@@ -626,7 +638,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
       {
         total = total+element.p
         // для билетов забронированных в инете для выкупа доплачиваем стоимость бронирования
-        if(element.s.iniciator == 0 && element.s.isReserved){
+        if(element.s.iniciator != 0 && element.s.isReserved){
           total = total+this.GLOBAL_PARAMETRS.RESERVE_PRICE;
         }
     })
@@ -657,7 +669,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
     
     this.apiServis.RoutGetHallInfo().then(resoult => {this.hallInfo = resoult; })
                                      .catch(error => {
-                                      this.AddFormateMessage('UpdateHallInfo '+error.status,2); 
+                                      this.AddFormateMessage('UpdateHallInfo '+error.status,this.messageSate.Error); 
                                       this.hallInfo = null}) 
   }
 
@@ -753,7 +765,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
                             this.ClearSelected();
                             this.RefreshHallState()})
                          .catch(error=>{
-                            this.AddFormateMessage('Cancel tickets '+error.status,2); 
+                            this.AddFormateMessage('Cancel tickets '+error.status,this.messageSate.Error); 
                             this.ClearSelected(); 
                             this.RefreshHallState()});
   }
@@ -805,20 +817,26 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
       this.SyncHallState([],[])
           .then(resoult => {this.UpdateHallState(resoult)})
           .catch(error=>{
-            this.AddFormateMessage('On sesiion data change '+error.status,2); 
+            this.AddFormateMessage('On sesiion data change '+error.status,this.messageSate.Error); 
             console.log('bad synk Tickets', error) }); /// 
     }
   }
 
   async  ExecuteQueue() {
     let size = await this.apiServis.RoutGetBufferSize();
-    this.AddFormateMessage('Отправляю данные ( всего ' + size + ')',1);
+    this.AddFormateMessage('Отправляю данные ( всего ' + size + ')',this.messageSate.Info);
     try {
       let res = await this.apiServis.RoutExecuteBufer();
       size = await this.apiServis.RoutGetBufferSize();  
-      this.AddFormateMessage('Осталось неотправленных '+size,1);
+      if(size == 0 ){
+        this.AddFormateMessage('Осталось неотправленных '+size,this.messageSate.Sucsess);
+      }
+      else{
+        this.AddFormateMessage('Осталось неотправленных '+size,this.messageSate.Error);
+      }
+      
     } catch (error) {
-      this.AddFormateMessage('Ошибка при передаче данных',2);
+      this.AddFormateMessage('Ошибка при передаче данных',this.messageSate.Error);
     }
   }
 

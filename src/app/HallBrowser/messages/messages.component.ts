@@ -1,6 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { FormGroup, FormArray, FormControl } from '@angular/forms';
 import { IdataObject } from '../idata-object';
+import { MessageSate } from '../../global_enums'
 
 @Component({
   selector: 'messages',
@@ -13,6 +14,8 @@ export class MessagesComponent implements OnInit {
   form = new FormGroup({messages : new FormArray([])})
 
   controlsImpotent : Array<IdataObject> = []
+
+  messageSate : typeof MessageSate = MessageSate;
 
   constructor() { }
 
