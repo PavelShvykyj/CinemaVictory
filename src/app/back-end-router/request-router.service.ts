@@ -195,6 +195,11 @@ export class RequestRouterService {
     this.localServise.StopHubbHallConnection();
   }
 
+  RoutHubbHallReconnect() {
+    this.webServise.HubbHallReconnect();
+    
+  }
+
   RoutOnHubbHallConnection() {
     this.webServise.OnHubbHallConnection();
     this.localServise.OnHubbHallConnection();
@@ -254,25 +259,30 @@ export class RequestRouterService {
       })
   }
 
-  RoutSyncTickets(currentState: ISyncTicketsRequestViewModel): Promise<ISyncTicketsResponseViewModelInternal> | null {
+  RoutSyncTickets(currentState: ISyncTicketsRequestViewModel, inReservePaymentBufer?: IdataObject): Promise<ISyncTicketsResponseViewModelInternal> | null {
     if (this.currentBackEndName == "1C") {
       return this.RoutLoggInByLocal().then(res => {
-        return this.SyncTickets(currentState);
+        return this.SyncTickets(currentState,inReservePaymentBufer);
       }).catch(res => {
-        return this.SyncTickets(currentState);
+        return this.SyncTickets(currentState,inReservePaymentBufer);
       });
     }
     else {
-      return this.SyncTickets(currentState);
+      return this.SyncTickets(currentState,inReservePaymentBufer);
     }
   }
 
-  private SyncTickets(currentState: ISyncTicketsRequestViewModel): Promise<ISyncTicketsResponseViewModelInternal> | null {
+  private SyncTickets(currentState: ISyncTicketsRequestViewModel, inReservePaymentBufer?: IdataObject): Promise<ISyncTicketsResponseViewModelInternal> | null {
     // this.LogginCheck();
     return this.webServise.SyncTickets(currentState)
       .then(resoult => {
         //console.log('ok in rout servise',resoult)
-        this.localServise.SetHallState(currentState, resoult);
+        let buferData = [];
+        if(inReservePaymentBufer){
+          buferData.push(inReservePaymentBufer)
+        }
+        console.log(buferData);
+        this.localServise.SetHallState(currentState, resoult, buferData);
         this.EmitBackEndName("WEB");
         this.EmitLoginName(this.webServise.userData.userName);
         return resoult;
@@ -287,7 +297,13 @@ export class RequestRouterService {
           //// его можно запомнить в 1С и \ или отобразить 
           if (error.error.hallState) {
             console.log(' hallState in rout error ', error.error.hallState);
-            this.localServise.SetHallState(currentState, error.error.hallState);
+            let buferData = [];
+            if(inReservePaymentBufer){
+              buferData.push(inReservePaymentBufer)
+            }
+    
+            
+            this.localServise.SetHallState(currentState, error.error.hallState, buferData);
           }
           throw error
         }
@@ -295,7 +311,7 @@ export class RequestRouterService {
           this.EmitBackEndName("1C");
           this.EmitLoginName(this.localServise.getLocalUserName());
 
-          return this.localServise.SyncTickets(currentState)
+          return this.localServise.SyncTickets(currentState,inReservePaymentBufer)
         }
       });
   }

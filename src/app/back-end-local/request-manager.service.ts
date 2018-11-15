@@ -198,7 +198,7 @@ export class RequestManagerService implements IbackEnd {
   }
 
 
-  SyncTickets(currentState: ISyncTicketsRequestViewModel): Promise<ISyncTicketsResponseViewModelInternal> | null {
+  SyncTickets(currentState: ISyncTicketsRequestViewModel, inReservePaymentBufer? : IdataObject): Promise<ISyncTicketsResponseViewModelInternal> | null {
     
     if (this.LOCAL_SERVISE_BLOCED){
       let myPromise : Promise<ISyncTicketsResponseViewModelInternal>  = new Promise((resolve,reject) => {
@@ -274,11 +274,18 @@ export class RequestManagerService implements IbackEnd {
         }
         /// Сохраняем новое состояние в 1С
         /// команду на блок мест выполнять нету смысла
+        let buferData = [];
+        if(inReservePaymentBufer){
+          buferData.push(inReservePaymentBufer);
+        }
+        
         if (currentState.blockSeats.length == 0 && currentState.hallState.length == 0) {
           alert('empty currentState');
         }
         else if (currentState.blockSeats.length == 0) {
-          let buferData = { toDo: "SyncTickets", parametr: currentState };
+          buferData.push({ toDo: "SyncTickets", parametr: currentState });
+
+
           this.SetHallState(currentState, newState, buferData)
             .then(res => { resolve(newState); })
             .catch(err => {
@@ -351,7 +358,7 @@ export class RequestManagerService implements IbackEnd {
           });
 
           /// Сохраняем новое состояние в 1С
-          let buferData = { toDo: "CancelTickets", parametr: TicketsToCancel };
+          let buferData = [{ toDo: "CancelTickets", parametr: TicketsToCancel }];
           this.SetHallState(reqestForHallState, newState, buferData)
             .then(res => { resolve(200) })
             .catch(err => { reject(100) });
@@ -435,7 +442,7 @@ export class RequestManagerService implements IbackEnd {
     return myPromise
   }
 
-  SetHallState(currentState: ISyncTicketsRequestViewModel, syncTickets: ISyncTicketsResponseViewModelInternal, inBufer?: IdataObject): Promise<IDataFrom1C> {
+  SetHallState(currentState: ISyncTicketsRequestViewModel, syncTickets: ISyncTicketsResponseViewModelInternal, inBufer?: Array<IdataObject>): Promise<IDataFrom1C> {
     
     if (this.LOCAL_SERVISE_BLOCED){
       if (this.LOCAL_SERVISE_BLOCED){

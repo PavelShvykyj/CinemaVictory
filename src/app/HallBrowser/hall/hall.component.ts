@@ -81,6 +81,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
   hallStateLastSnapshot = [];
   
   chairsInWork : Array<IChairStateViewModelInternal> = [];
+  isReservePaymentOperation : boolean = false; // отметка того что выполняется операция оплаты резерва нужен для формирования списка мест с доп оплатой за резерв
 
   // определяю видимость формочек операций резерва и отмены билетов
   showHallStatus : typeof HallShowStatus = HallShowStatus;
@@ -105,8 +106,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
   }
 
   ngOnInit() {
-    this.apiServis.RoutStartHubbHallConnection();
-    this.apiServis.RoutOnHubbHallConnection();
+    this.apiServis.RoutHubbHallReconnect();
     this.chairsInWork = [];
   }
  
@@ -212,7 +212,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
   }
 
   FinishAction() : Promise<boolean> {
-   return this.SyncHallState([],this.chairsInWork)
+    return this.SyncHallState([],this.chairsInWork)
     .then(resoult => {
       console.log('finish ok', resoult);
       this.UpdateHallState(resoult);
@@ -520,7 +520,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
       element.s.isSoled = true;
       element.s.isReserved = false;
     })
-    
+    this.isReservePaymentOperation = true;
     console.log('start pay',this.chairsInWork);
     /// предварительно блокировать при оплате ранее забронированных не нужно
     this.FinishAction().then(resoult=>
@@ -736,7 +736,18 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
       blockSeats: workChairList,
       hallState: currentHallState
     };
-    return this.apiServis.RoutSyncTickets(request)
+    if(this.isReservePaymentOperation){
+      
+      let inReservePaymentBufer = {toDO : 'ReservePayment', parametr : currentHallState.filter(function(element){return element.s.iniciator != 0})}
+      this.isReservePaymentOperation = false;
+      console.log(inReservePaymentBufer);
+      return this.apiServis.RoutSyncTickets(request,inReservePaymentBufer)
+
+    } else{
+      return this.apiServis.RoutSyncTickets(request,)
+    }
+    
+    
     
   }
  

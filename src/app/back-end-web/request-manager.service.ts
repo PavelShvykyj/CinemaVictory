@@ -180,6 +180,11 @@ export class RequestManagerService implements IbackEnd {
   }
 
   HubbHallStateParse(encryptedIdSesion : string, SessionData : ISyncTicketsResponseViewModel) {
+    if(!encryptedIdSesion || !SessionData) {
+      console.log('error  HubbHallStateParse не заполнены параметры')
+      return
+    }
+
     let idSesion = this.Decrypt(encryptedIdSesion);
     let sessionDataInternal : ISyncTicketsResponseViewModelInternal = this.ConvertSisionDataToSisionDataInternal(SessionData) 
     let hubSessionInfo = {id : parseInt(idSesion) , chairsData : sessionDataInternal};
@@ -225,14 +230,17 @@ export class RequestManagerService implements IbackEnd {
     if (this.WEB_SERVISE_BLOCED){
       return;
     }
-
+    console.log('start HubbHallReconnect');
     this.signalRCloseExpected = true;
     this.OfHubbHallConnection();
     this._hubHallConnection.stop()
                            .then(resoult =>{
+                            console.log('suscs stop in reconnect'); 
                             this.signalRCloseExpected = false;
                             this._hubHallConnection.start()
-                                                    .then(res=>{this.OnHubbHallConnection()})
+                                                    .then(res=>{
+                                                      console.log('suscs start after stop in reconnect'); 
+                                                      this.OnHubbHallConnection()})
                                                     .catch(error=> {
                                                       console.log('signal start err', error)})
                                                     
@@ -243,7 +251,9 @@ export class RequestManagerService implements IbackEnd {
                              console.log('signal stop err', error)
                              this.signalRCloseExpected = false;
                              this._hubHallConnection.start()
-                                                    .then(res=>{this.OnHubbHallConnection()})
+                                                    .then(res=>{
+                                                      console.log('suscs start after error stop in reconnect'); 
+                                                      this.OnHubbHallConnection()})
                                                     .catch(error=> {
                                                       console.log('signal start in cach err', error)
                                                     }) 
