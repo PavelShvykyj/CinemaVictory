@@ -342,8 +342,6 @@ export class RequestManagerService implements IbackEnd {
       return myPromise;
     }
     
-    
-    
     /// получили текущий статус - вычистили места на удаление и сохранили обновленный
     let myPromise: Promise<number> = new Promise((resolve, reject) => {
       let reqestForHallState = {
@@ -367,7 +365,13 @@ export class RequestManagerService implements IbackEnd {
           /// Сохраняем новое состояние в 1С
           let buferData = [{ toDo: "CancelTickets", parametr: TicketsToCancel }];
           reqestForHallState.hallState = TicketsToCancel.chairs;
-          reqestForHallState.ticketOperation = TicketsToCancel.ticketOperation;
+          /// изза того что веб апи отмены не возвращает сотояния зала для отмены
+          /// кассовую операцию отмены вызываем отдельно (в самом компоненнте hall вызов SetKassOeration)
+          /// потому тут искуственно ставим пустышку 
+          /// перейти для всех операций на такую схему пока не можем :
+          /// 1С работает последовательно т.е. нужно вызвать две асинхронные функции с искуственной задежкой 
+          /// что не хорошо или не обрабатывать ошибки от 1С
+          reqestForHallState.ticketOperation = TicketOperations.Nothing;
 
           this.SetHallState(reqestForHallState, newState, buferData)
             .then(res => { resolve(200) })
