@@ -2,7 +2,9 @@ export enum TicketOperations {
     Sale,
     Reserve,
     Cansel,
-    SaleReserve
+    SaleReserve,
+    Nothing,
+    CanselPay
   }
 
   export enum HallShowStatus {

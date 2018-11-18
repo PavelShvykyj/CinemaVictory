@@ -89,7 +89,6 @@ export class RequestRouterService {
       });
   }
 
-
   RoutLoggInByLocal(): Promise<IResponseData> {
 
     // 1C логин всегда успех подумать как тут получить правильное имя юзера
@@ -196,8 +195,7 @@ export class RequestRouterService {
   }
 
   RoutHubbHallReconnect() {
-    this.webServise.HubbHallReconnect();
-    
+    this.webServise.HubbHallReconnect();    
   }
 
   RoutOnHubbHallConnection() {
@@ -218,7 +216,11 @@ export class RequestRouterService {
     return this.webServise.Encrypt(decryptedData);
   }
 
-
+  async RoutSetCassOperation(request : ISyncTicketsRequestViewModel){
+      this.localServise.SetCassOperation(request)
+      await this.delay(200);
+   }
+   
   RoutCancelTickets(TicketsToCancel: ICancelTicketRequestViewModel) {
     if (this.currentBackEndName == "1C") {
       return this.RoutLoggInByLocal().then(res => {
@@ -316,7 +318,6 @@ export class RequestRouterService {
       });
   }
 
-
   async delay(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
@@ -373,7 +374,6 @@ export class RequestRouterService {
     return this.webServise.ConvertTicketStatusToChairStatus(status)
 
   }
-
 
   RoutPrintBy1C(data: IdataObject) {
     let data1C = JSON.stringify({ point: 'PrintTickets', data: data });

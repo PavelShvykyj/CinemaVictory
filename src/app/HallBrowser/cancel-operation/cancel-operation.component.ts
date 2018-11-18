@@ -96,12 +96,12 @@ export class CancelOperationComponent implements OnInit {
     }
   }
 
-  Confirm(){
+  Confirm(WithPay : boolean){
     this.action = FormActions.confirm;
     if(!this.GetFormValidStatus()) {
       return;
     }
-    this.CancelActionCancelEmmiter.emit();
+    this.CancelActionCancelEmmiter.emit(WithPay);
     this.action = FormActions.nothing;
     this.SetConfirm('');
   }

@@ -40,7 +40,7 @@
                     ></reserving-operations>
                     <button type="button" [disabled]="showStatus == showHallStatus.StartSale " class="btn btn-secondary mb-1" (click) = "CancelOperationForm()">Отмена билетов</button>
                     <cancel-operation class="fool-wight" *ngIf="showStatus == showHallStatus.Cancel"
-                        (CancelActionCancelEmmiter) = "OnCancelActionCancel()"
+                        (CancelActionCancelEmmiter) = "OnCancelActionCancel($event)"
                         (ActionSearchEmmiter)  = "OnActionSearch($event)" 
                         (ActionSearchByPhoneEmmiter)  = "OnActionSearchByPhone($event)"
                         (CancelActionReseteEmmiter) = "OnCancelActionResete()" >

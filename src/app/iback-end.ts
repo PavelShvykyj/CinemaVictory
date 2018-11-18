@@ -143,7 +143,7 @@ export interface ISyncTicketsRequestViewModel
     starts: string, //"yyyy-MM-dd HH:mm:ss",		
     blockSeats: Array<IChairStateViewModelInternal>,
     hallState: Array<IChairStateViewModelInternal>,
-    TicketOperation? : TicketOperations
+    ticketOperation? : TicketOperations
 }
 
 export interface ISyncTicketsResponseViewModelInternal
@@ -162,7 +162,8 @@ export interface ICancelTicketRequestViewModel
 {
     idHall : number,
     starts : string, //"yyyy-MM-dd HH:mm:ss",
-    chairs : Array<IChairViewModel>
+    chairs : Array<IChairViewModel>,
+    ticketOperation? : TicketOperations 
 }
 
 export interface IDataFrom1C 

@@ -21,7 +21,7 @@ import { ISessionData,
 import { Observable } from 'rxjs/Observable';
 import printJS from 'print-js/src/index';
 import { IfObservable } from 'rxjs/observable/IfObservable';
-import { HallShowStatus, MessageSate } from '../../global_enums'
+import { HallShowStatus, MessageSate, TicketOperations } from '../../global_enums'
 
 @Component({
   selector: 'hall',
@@ -111,14 +111,12 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
   }
  
   GetParametrs(){
-    this.GLOBAL_PARAMETRS =  this.apiServis.RoutGetParametrs();
-   
+    this.GLOBAL_PARAMETRS =  this.apiServis.RoutGetParametrs();  
   }
 
   ngAfterViewInit() {
     setTimeout(() =>{this.GetParametrs();
                      this.UpdateHallInfo();},500);
-
   }
 
   ngOnDestroy() {
@@ -176,7 +174,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
   }
 
   StartAction() : Promise<boolean> {
-   return this.SyncHallState(this.chairsInWork,[])
+   return this.SyncHallState(this.chairsInWork,[],TicketOperations.Nothing)
         .then(resoult=>{
           /// заблокировали 
           this.UpdateHallState(resoult);
@@ -187,7 +185,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
           if (error.status = 406)
           {
             this.ClearSelected();
-            this.SyncHallState([],[])
+            this.SyncHallState([],[],TicketOperations.Nothing)
                 .then(resoult => {this.UpdateHallState(resoult)})
                 .catch(error=>{
                   this.AddFormateMessage('start action '+error.status,this.messageSate.Error); 
@@ -211,8 +209,8 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
         })  
   }
 
-  FinishAction() : Promise<boolean> {
-    return this.SyncHallState([],this.chairsInWork)
+  FinishAction(operation : number) : Promise<boolean> {
+    return this.SyncHallState([],this.chairsInWork,operation)
     .then(resoult => {
       console.log('finish ok', resoult);
       this.UpdateHallState(resoult);
@@ -263,11 +261,9 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
 
   StartSaleSelected(){
     // если ничего не отмечено - ничего и не делаем
-    
     if(this.chairsInWork.length==0){
       return;
     }
-    
 
     // если процесс начат повторно ничего не делаем
     let firstChairStatus = this.chairsInWork[0].s;
@@ -287,19 +283,13 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
 
     // начинаем процесс продажи
     this.StartAction().then(resoult => { if(resoult){
-      
       this.showStatus = this.showHallStatus.StartSale;
-      
       this.PrintSelected()}
     });
   }
 
   FinishSaleSelected(){
-      
-
       this.showStatus = this.showHallStatus.Defoult;
-
-
       // если ничего не отмечено - ничего и не делаем
       if(this.chairsInWork.length==0){
         return
@@ -318,13 +308,10 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
         element.s.isFree = false;
         element.s.isSoled = true;
         element.s.isReserved = false;
+        
       });
 
-      this.FinishAction().then(resoult=>{if(resoult){console.log('sucsesful Sale.')}});
-  }
-
-  StartCancel(){
-    
+      this.FinishAction(TicketOperations.Sale).then(resoult=>{if(resoult){console.log('sucsesful Sale.')}});
   }
 
   SearchOperationForm(){
@@ -360,8 +347,14 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
 
   }
 
-  OnCancelActionCancel(){
-    this.CancelTickets();
+  OnCancelActionCancel(WithPay: Boolean){
+    console.log('WithPay',WithPay);
+    if(WithPay){
+      this.CancelTickets(TicketOperations.CanselPay);
+    }
+    else{
+      this.CancelTickets(TicketOperations.Cansel);
+    }
   }
 
   OnActionSearchByPhone(ActionFormValues : IdataObject){
@@ -523,7 +516,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
     this.isReservePaymentOperation = true;
     console.log('start pay',this.chairsInWork);
     /// предварительно блокировать при оплате ранее забронированных не нужно
-    this.FinishAction().then(resoult=>
+    this.FinishAction(TicketOperations.SaleReserve).then(resoult=>
       {
         if(resoult){
           console.log('sucsesful pay.')
@@ -599,7 +592,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
                 element.s.isReserved = true;
                 element.t = t;
               });
-              this.FinishAction().then(resoult=>{
+              this.FinishAction(TicketOperations.Reserve).then(resoult=>{
                 if(resoult){
                   console.log('sucsesful reserve.')
                   this.reserveComponent.SetSecretCode(t.substr(0,6));
@@ -728,23 +721,27 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
   }
  
   /// готовит объект для запроса SyncTickets и вызывает его возвращает промис результат
-  SyncHallState(workChairList : Array<IChairStateViewModelInternal> , currentHallState :Array<IChairStateViewModelInternal>) : Promise<ISyncTicketsResponseViewModelInternal> | null {
+  SyncHallState(workChairList : Array<IChairStateViewModelInternal> , currentHallState :Array<IChairStateViewModelInternal>, operation : number ) : Promise<ISyncTicketsResponseViewModelInternal> | null {
     
     let request : ISyncTicketsRequestViewModel = {
       idHall: this.GLOBAL_PARAMETRS.HALL_ID, 
       starts: this.sessionData.currentSession.starts, //"yyyy-MM-dd HH:mm:ss",		
       blockSeats: workChairList,
-      hallState: currentHallState
+      hallState: currentHallState,
+      ticketOperation : operation
     };
+    
+
+    
     if(this.isReservePaymentOperation){
       
       let inReservePaymentBufer = {toDO : 'ReservePayment', parametr : currentHallState.filter(function(element){return element.s.iniciator != 0})}
       this.isReservePaymentOperation = false;
       console.log(inReservePaymentBufer);
-      return this.apiServis.RoutSyncTickets(request,inReservePaymentBufer)
+      return this.apiServis.RoutSyncTickets(request,inReservePaymentBufer);
 
     } else{
-      return this.apiServis.RoutSyncTickets(request,)
+      return this.apiServis.RoutSyncTickets(request);
     }
     
     
@@ -752,7 +749,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
   }
  
   /// готовит объект для запроса CancelTickets и вызывает его возвращает промис результат
-  CancelTickets(){
+  async CancelTickets(operation : number){
     let ticketsToCancel : Array<IChairViewModel> = [];
     this.chairsInWork.forEach(element => {
       let ticket : IChairViewModel = {r: element.c.r  , c: element.c.c}
@@ -766,12 +763,24 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
     let request : ICancelTicketRequestViewModel = {
       idHall: this.GLOBAL_PARAMETRS.HALL_ID, 
       starts: this.sessionData.currentSession.starts, //"yyyy-MM-dd HH:mm:ss",		
-      chairs : ticketsToCancel
-      
+      chairs : ticketsToCancel,
+      ticketOperation : operation
     };
     /// почему то этот метод не возвращает текущее состояние зала
     /// поэтому вынуждены запрашивать обновление
-    return this.apiServis.RoutCancelTickets(request)
+    /// и записывать кассовую операцию отдельно
+    let cassOperationRequest : ISyncTicketsRequestViewModel = {
+      idHall: this.GLOBAL_PARAMETRS.HALL_ID, 
+      starts: this.sessionData.currentSession.starts, //"yyyy-MM-dd HH:mm:ss",		
+      blockSeats : [],
+      hallState : this.chairsInWork,
+      ticketOperation : operation
+    };
+
+    if(operation == TicketOperations.CanselPay){
+      await this.apiServis.RoutSetCassOperation(cassOperationRequest);
+    }
+    this.apiServis.RoutCancelTickets(request)
                          .then(resoult=>{
                             this.ClearSelected();
                             this.RefreshHallState()})
@@ -825,7 +834,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
       } 
     if (sessionData.currentSession)
     {
-      this.SyncHallState([],[])
+      this.SyncHallState([],[],TicketOperations.Nothing)
           .then(resoult => {this.UpdateHallState(resoult)})
           .catch(error=>{
             this.AddFormateMessage('On sesiion data change '+error.status,this.messageSate.Error); 

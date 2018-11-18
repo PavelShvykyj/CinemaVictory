@@ -16,7 +16,7 @@ import { Observable } from 'rxjs/Observable';
 import { IdataObject } from '../HallBrowser/idata-object';
 import { Subject } from 'rxjs/Subject';
 import * as _ from 'underscore';
-import { reject } from 'q';
+import { HallShowStatus, MessageSate, TicketOperations } from '../global_enums'
 
 
 @Injectable()
@@ -45,6 +45,10 @@ export class RequestManagerService implements IbackEnd {
 
   private _subj1CBuferState = new Subject<string>();
   Observ1CBuferState$ = this._subj1CBuferState.asObservable();
+
+  private _subj1CCassOperation = new Subject<string>();
+  Observ1CCassOperation$ = this._subj1CCassOperation.asObservable();
+
 
   RESERVE_PRICE = 3;
   RESPONSE_TIME_OUT = 3000;
@@ -87,6 +91,8 @@ export class RequestManagerService implements IbackEnd {
         this._subj1CBuferState.next(data);
       case 'ClearBufer':
         this._subj1CBuferState.next(data);
+      case 'CassOperation':
+        this._subj1CCassOperation.next(data);
     }
   }
 
@@ -344,7 +350,8 @@ export class RequestManagerService implements IbackEnd {
         starts: TicketsToCancel.starts,
         idHall: TicketsToCancel.idHall,
         blockSeats: [],
-        hallState: []
+        hallState: [],
+        ticketOperation : TicketOperations.Nothing
       };
       this.GetHallState(reqestForHallState)
         .then(dataFrom1C => {
@@ -359,6 +366,9 @@ export class RequestManagerService implements IbackEnd {
 
           /// Сохраняем новое состояние в 1С
           let buferData = [{ toDo: "CancelTickets", parametr: TicketsToCancel }];
+          reqestForHallState.hallState = TicketsToCancel.chairs;
+          reqestForHallState.ticketOperation = TicketsToCancel.ticketOperation;
+
           this.SetHallState(reqestForHallState, newState, buferData)
             .then(res => { resolve(200) })
             .catch(err => { reject(100) });
@@ -442,9 +452,45 @@ export class RequestManagerService implements IbackEnd {
     return myPromise
   }
 
+  async SetCassOperation(request : ISyncTicketsRequestViewModel) {
+    if (this.LOCAL_SERVISE_BLOCED){
+      return ;
+    }
+    
+    /// запись snapshot HallInfo in 1C buffer
+    let timeRemain: number = 0;
+    let timeOut: number = this.RESPONSE_TIME_OUT;
+    let step: number = this.RESPONSE_WAIT_STEP;
+    let myPromise: Promise<IDataFrom1C> = new Promise((resolve, reject) => {
+      let stringDataFrom1C: string = '';
+      let subs = this.Observ1CCassOperation$.subscribe(resoult => {
+        stringDataFrom1C = resoult;
+      })
+      let dataTo1C: string = JSON.stringify({ point: "SetCassOperation", data: request })
+      Call1C(dataTo1C);
+      while (stringDataFrom1C == "" && timeRemain <= timeOut) {
+        timeRemain = timeRemain + step;
+        async () => { await this.delay(step) };
+        //setTimeout(()=>{},step);
+      }
+      subs.unsubscribe();
+      if (stringDataFrom1C != "") {
+        resolve(JSON.parse(stringDataFrom1C));
+      } else {
+        reject({
+          point: "SetHallInfo",
+          resoult: false,
+          data: { errorText: "time out" }
+        });
+      }
+    });
+    return myPromise
+
+  }
+
   SetHallState(currentState: ISyncTicketsRequestViewModel, syncTickets: ISyncTicketsResponseViewModelInternal, inBufer?: Array<IdataObject>): Promise<IDataFrom1C> {
     
-    if (this.LOCAL_SERVISE_BLOCED){
+    
       if (this.LOCAL_SERVISE_BLOCED){
         let myPromise : Promise<IDataFrom1C>  = new Promise((resolve,reject) => {
           let resoult : IDataFrom1C = 
@@ -457,13 +503,12 @@ export class RequestManagerService implements IbackEnd {
         });
         return myPromise;
       }
-    }
+    
     
     
     /// из  currentState вычитываем параметры зал сесиия получаем ключ и записываем syncTickets как снепшот 
     /// запись snapshot  in 1C buffer
     let currentKey = { idHall: currentState.idHall, starts: currentState.starts };
-
     let timeRemain: number = 0;
     let timeOut: number = this.RESPONSE_TIME_OUT;
     let step: number = this.RESPONSE_WAIT_STEP;
@@ -473,7 +518,9 @@ export class RequestManagerService implements IbackEnd {
         stringDataFrom1C = resoult;
       })
 
-      let obj1CData = { data: syncTickets, Bufer: { makeBuffer: false, buferData: {} } };
+      let obj1CData = { data: syncTickets, 
+                        Bufer: { makeBuffer: false, buferData: {} },
+                        operation : currentState };
 
       if (inBufer) {
         obj1CData.Bufer.makeBuffer = true;
