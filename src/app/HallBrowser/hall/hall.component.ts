@@ -81,7 +81,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
   hallStateLastSnapshot = [];
   
   chairsInWork : Array<IChairStateViewModelInternal> = [];
-  isReservePaymentOperation : boolean = false; // отметка того что выполняется операция оплаты резерва нужен для формирования списка мест с доп оплатой за резерв
+  
 
   // определяю видимость формочек операций резерва и отмены билетов
   showHallStatus : typeof HallShowStatus = HallShowStatus;
@@ -495,7 +495,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
    
     let inCorrectSelected  = _.filter(this.chairsInWork,element=>{return !element.s.isReserved });
     if (inCorrectSelected.length != 0){
-      this.reserveComponent.messagesComponent.AddMessage('Некорректные места для оплаты. Можно только забронированные',2);
+      this.reserveComponent.messagesComponent.AddMessage('Некорректные места для оплаты. Можно только забронированные',this.messageSate.Error);
       return;
     } 
 
@@ -513,7 +513,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
       element.s.isSoled = true;
       element.s.isReserved = false;
     })
-    this.isReservePaymentOperation = true;
+    
     console.log('start pay',this.chairsInWork);
     /// предварительно блокировать при оплате ранее забронированных не нужно
     this.FinishAction(TicketOperations.SaleReserve).then(resoult=>
@@ -562,7 +562,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
         
         let inCorrectSelected  = _.filter(this.chairsInWork,element=>{return element.s.isSoled || element.s.isReserved || element.s.inReserving});
         if (inCorrectSelected.length != 0){
-          this.reserveComponent.messagesComponent.AddMessage('Некорректные места для бронирования. Можно только свободные.',2);
+          this.reserveComponent.messagesComponent.AddMessage('Некорректные места для бронирования. Можно только свободные.',this.messageSate.Error);
           return;
         } 
 
@@ -733,16 +733,9 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
     
 
     
-    if(this.isReservePaymentOperation){
-      
-      let inReservePaymentBufer = {toDO : 'ReservePayment', parametr : currentHallState.filter(function(element){return element.s.iniciator != 0})}
-      this.isReservePaymentOperation = false;
-      console.log(inReservePaymentBufer);
-      return this.apiServis.RoutSyncTickets(request,inReservePaymentBufer);
 
-    } else{
       return this.apiServis.RoutSyncTickets(request);
-    }
+
     
     
     

@@ -264,25 +264,23 @@ export class RequestRouterService {
   RoutSyncTickets(currentState: ISyncTicketsRequestViewModel, inReservePaymentBufer?: IdataObject): Promise<ISyncTicketsResponseViewModelInternal> | null {
     if (this.currentBackEndName == "1C") {
       return this.RoutLoggInByLocal().then(res => {
-        return this.SyncTickets(currentState,inReservePaymentBufer);
+        return this.SyncTickets(currentState);
       }).catch(res => {
-        return this.SyncTickets(currentState,inReservePaymentBufer);
+        return this.SyncTickets(currentState);
       });
     }
     else {
-      return this.SyncTickets(currentState,inReservePaymentBufer);
+      return this.SyncTickets(currentState);
     }
   }
 
-  private SyncTickets(currentState: ISyncTicketsRequestViewModel, inReservePaymentBufer?: IdataObject): Promise<ISyncTicketsResponseViewModelInternal> | null {
+  private SyncTickets(currentState: ISyncTicketsRequestViewModel): Promise<ISyncTicketsResponseViewModelInternal> | null {
     // this.LogginCheck();
     return this.webServise.SyncTickets(currentState)
       .then(resoult => {
         //console.log('ok in rout servise',resoult)
         let buferData = [];
-        if(inReservePaymentBufer){
-          buferData.push(inReservePaymentBufer)
-        }
+       
         console.log(buferData);
         this.localServise.SetHallState(currentState, resoult, buferData);
         this.EmitBackEndName("WEB");
@@ -300,9 +298,7 @@ export class RequestRouterService {
           if (error.error.hallState) {
             console.log(' hallState in rout error ', error.error.hallState);
             let buferData = [];
-            if(inReservePaymentBufer){
-              buferData.push(inReservePaymentBufer)
-            }
+           
     
             
             this.localServise.SetHallState(currentState, error.error.hallState, buferData);
@@ -313,7 +309,7 @@ export class RequestRouterService {
           this.EmitBackEndName("1C");
           this.EmitLoginName(this.localServise.getLocalUserName());
 
-          return this.localServise.SyncTickets(currentState,inReservePaymentBufer)
+          return this.localServise.SyncTickets(currentState)
         }
       });
   }
