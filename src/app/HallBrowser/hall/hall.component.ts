@@ -259,7 +259,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
     });
   }
 
-  StartSaleSelected(){
+ async StartSaleSelected(){
     // если ничего не отмечено - ничего и не делаем
     if(this.chairsInWork.length==0){
       return;
@@ -282,9 +282,19 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
     })
 
     // начинаем процесс продажи
-    this.StartAction().then(resoult => { if(resoult){
+    this.StartAction().then(resoult =>   { if(resoult){
       this.showStatus = this.showHallStatus.StartSale;
-      this.PrintSelected()}
+      
+     let CassOperationParametr = {idHall: this.GLOBAL_PARAMETRS.HALL_ID,
+       starts: this.sessionData.currentSession.starts, 
+       blockSeats: [],
+       hallState: this.chairsInWork,
+       ticketOperation : TicketOperations.Sale}
+      
+      this.apiServis.RoutSetCassOperation(CassOperationParametr)
+      this.PrintSelected()
+      
+      }
     });
   }
 
@@ -311,7 +321,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
         
       });
 
-      this.FinishAction(TicketOperations.Sale).then(resoult=>{if(resoult){console.log('sucsesful Sale.')}});
+      this.FinishAction(TicketOperations.Nothing).then(resoult=>{if(resoult){console.log('sucsesful Sale.')}});
   }
 
   SearchOperationForm(){
@@ -349,14 +359,17 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
 
   OnCancelActionCancel(WithPay: Boolean){
     console.log('WithPay',WithPay);
-    
-    
-    
     if(WithPay){
-      this.CancelTickets(TicketOperations.CanselPay);
+      
+      if( _.filter(this.chairsInWork,element=>{return (element.s.isReserved)}).length != 0){
+        this.cancelComponent.ShowMessage('Нелья отменить выбранные с оплатой',this.messageSate.Info);
+        return;
+      }
+      this.CancelTickets(TicketOperations.CanselPay);  
+
     }
     else{
-       if( _.filter(this.chairsInWork,element=>{return !(element.s.isReserved || element.s.inReserving)}).length != 0){
+       if( _.filter(this.chairsInWork,element=>{return !(element.s.isReserved)}).length != 0){
         this.cancelComponent.ShowMessage('Нелья отменить выбранные без оплаты',this.messageSate.Info);
         return;
        }
@@ -524,12 +537,15 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
     
     console.log('start pay',this.chairsInWork);
     /// предварительно блокировать при оплате ранее забронированных не нужно
+    
     this.FinishAction(TicketOperations.SaleReserve).then(resoult=>
       {
         if(resoult){
           console.log('sucsesful pay.')
         }
     });
+    this.PrintSelected();
+
   }
 
   OnActionResete(){
@@ -744,15 +760,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
       hallState: currentHallState,
       ticketOperation : operation
     };
-    
-
-    
-
       return this.apiServis.RoutSyncTickets(request);
-
-    
-    
-    
   }
  
   /// готовит объект для запроса CancelTickets и вызывает его возвращает промис результат

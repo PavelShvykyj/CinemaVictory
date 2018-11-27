@@ -55,6 +55,7 @@
   <div class="btn-group btn-group-sm my-2" role="group" aria-label="rerserve functons">
     <button type="button" 
             class="btn"
+            disabled = true
             [ngClass]="{'btn-danger' : !GetFormValidStatus() && action == FORM_ACTIONS.print,
                         'btn-dark'   :  GetFormValidStatus() || action != FORM_ACTIONS.print}"
             (click)=Print()><i class="fa fa-print"></i></button>
