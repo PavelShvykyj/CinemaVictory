@@ -1,6 +1,7 @@
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { Component, OnInit, Input, Output, QueryList, EventEmitter} from '@angular/core';
+import { Component, OnInit, Input, Output, QueryList, EventEmitter,ViewChild} from '@angular/core';
 import { HallChairComponent } from '../hall-chair/hall-chair.component';
+import { MessagesComponent } from '../messages/messages.component';
 
 import { ISessionData,
   ISyncTicketsRequestViewModel,
@@ -31,6 +32,7 @@ export class CancelOperationComponent implements OnInit {
   @Output() ActionSearchEmmiter = new EventEmitter();
   @Output() ActionSearchByPhoneEmmiter = new EventEmitter();
   @Output() CancelActionReseteEmmiter = new EventEmitter();
+  @ViewChild(MessagesComponent) messagesComponent : MessagesComponent;
 
   FORM_ACTIONS : typeof FormActions = FormActions;  
   form : FormGroup;
@@ -126,5 +128,10 @@ export class CancelOperationComponent implements OnInit {
     this.action = FormActions.nothing;
     this.CancelActionReseteEmmiter.emit();
   }
+
+  ShowMessage(message: string, imp : number ){
+    this.messagesComponent.AddMessage(message, imp);
+  }
+
 
 }

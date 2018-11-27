@@ -349,10 +349,18 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
 
   OnCancelActionCancel(WithPay: Boolean){
     console.log('WithPay',WithPay);
+    
+    
+    
     if(WithPay){
       this.CancelTickets(TicketOperations.CanselPay);
     }
     else{
+       if( _.filter(this.chairsInWork,element=>{return !(element.s.isReserved || element.s.inReserving)}).length != 0){
+        this.cancelComponent.ShowMessage('Нелья отменить выбранные без оплаты',this.messageSate.Info);
+        return;
+       }
+      
       this.CancelTickets(TicketOperations.Cansel);
     }
   }
@@ -646,10 +654,16 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
       if (status.s.isSelected) 
         {
           let chairPrices = this.CalculateChairPrice(status); 
-          if(!status.p || status.p == 0){
+          // console.log('status.p',status.p);
+          // console.log('condition 1',(!status.p  && !(status.s.isSoled || status.s.isReserved || status.s.inReserving)));
+          // console.log('condition 2',(status.p == 0 && !(status.s.isSoled || status.s.isReserved || status.s.inReserving)));
+          if((!status.p  && !(status.s.isSoled || status.s.isReserved || status.s.inReserving)) || (status.p == 0 && !(status.s.isSoled || status.s.isReserved || status.s.inReserving)))
+          {
+            // console.log('переназначили цены');
             status.p = chairPrices[0].price;
+            status.s.idTicketCategory = chairPrices[0].idTicketCategory;
           }
-          status.s.idTicketCategory = chairPrices[0].idTicketCategory;
+          
           status.prices = chairPrices;
           
           tempChairsInWork.push(status);

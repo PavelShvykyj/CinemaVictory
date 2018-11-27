@@ -8,8 +8,8 @@
        <li class="list-group-item">
           <h6 class="card-subtitle">{{ category.categorySeatName }}    
           <span class="card-text text-right" *ngFor="let ticket of category.categoryTickets">
-              <span class="categoryTicketName"> {{ticket.categoryTicketName}} </span>
-              <span class="categoryTicketPrice"> {{ticket.categoryTicketPrice}}грн. </span>
+              <span *ngIf="ticket.categoryTicketPrice != 0" class="categoryTicketName"> {{ticket.categoryTicketName}} </span>
+              <span *ngIf="ticket.categoryTicketPrice != 0" class="categoryTicketPrice"> {{ticket.categoryTicketPrice}}грн. </span>
           </span>  
         </h6>
        </li>
