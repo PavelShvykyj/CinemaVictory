@@ -47,6 +47,7 @@
                     </cancel-operation>
                     
                     <button type="button" [disabled]="showStatus != showHallStatus.Defoult " class="btn btn-secondary mb-1" (click) = "ExecuteQueue()">Данные на сайт</button>
+                    <button type="button" [disabled]="showStatus != showHallStatus.Defoult " class="btn btn-secondary mb-1" (click) = "Refresh1CData()">Данные на 1C</button>
                     <button type="button" [disabled]="showStatus == showHallStatus.StartSale" class="btn btn-secondary mb-1" (click) = "RefreshHallState()">Обновить</button>
                     <!--<button type="button" class="btn btn-secondary btn-funk-menu">Действие 1</button>
                     <button type="button" class="btn btn-secondary btn-funk-menu">Действие 1</button>-->

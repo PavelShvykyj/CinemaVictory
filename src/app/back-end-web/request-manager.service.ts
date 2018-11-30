@@ -442,7 +442,6 @@ export class RequestManagerService implements IbackEnd {
   } 
 
   GetPakegMoviesById(){
-    
     if (this.WEB_SERVISE_BLOCED){
       let myPromise : Promise<IResponseData>  = new Promise((resolve,reject) => {
         let resoult : IResponseData = 
@@ -568,9 +567,9 @@ export class RequestManagerService implements IbackEnd {
 
   }
 
+  
   SyncTickets(currentState :  ISyncTicketsRequestViewModel) : Promise<ISyncTicketsResponseViewModelInternal> | null
   { 
-    
     if (this.WEB_SERVISE_BLOCED){
       let myPromise : Promise<ISyncTicketsResponseViewModelInternal>  = new Promise((resolve,reject) => {
         let resoult : IResponseData = 
@@ -584,9 +583,6 @@ export class RequestManagerService implements IbackEnd {
       });
       return myPromise;
     }
-
-
-
     let headers = new HttpHeaders().append('Authorization','Bearer '+this._token).append('Content-Type','text/json')
     let connection = this.BASE_URL+"/tickets/sync";  
     let postBody = {
@@ -595,9 +591,6 @@ export class RequestManagerService implements IbackEnd {
                     blockSeats: this.ConvertHallStateInternalToHallState(currentState.blockSeats),
                     hallState: this.ConvertHallStateInternalToHallState(currentState.hallState)
                    };
-    
-  
-    
     return this.http.post(connection,
                   postBody,
                   {
@@ -624,9 +617,8 @@ export class RequestManagerService implements IbackEnd {
                  
   }
 
+
   SessionsGetByDate(selectedDate : string) : Promise<string>  {
-    
-    
     if (this.WEB_SERVISE_BLOCED){
       let myPromise : Promise<string>  = new Promise((resolve,reject) => {
         let resoult : IResponseData = 
@@ -640,8 +632,6 @@ export class RequestManagerService implements IbackEnd {
       });
       return myPromise;
     }
-
-    
     
     let headers = new HttpHeaders().append('Authorization','Bearer '+this._token).append('Content-Type','text/json')
     let connection = this.BASE_URL+"/sessions/getbydate";
@@ -651,7 +641,6 @@ export class RequestManagerService implements IbackEnd {
       starts: selectedDate
       }
       
-
     return this.http.post(connection,
                   postBody,
                   {headers:headers,
@@ -681,8 +670,6 @@ export class RequestManagerService implements IbackEnd {
       return myPromise;
     }
 
-
-    
     let promiseCollection : Array<any> = [];
     promiseCollection.push(this.SessionsGetByDate(selectedDate));
     promiseCollection.push(this.GetPakegMoviesById());
@@ -695,9 +682,6 @@ export class RequestManagerService implements IbackEnd {
                                               }                                          
                                           return par_1})
                                          .catch(error => {throw error})   
-                                         
-    
-    
   }
 
   GetHallInfo(){
@@ -753,8 +737,6 @@ export class RequestManagerService implements IbackEnd {
     let headers = new HttpHeaders().append('Authorization','Bearer '+this._token).append('Content-Type','text/json')
     let connection = this.BASE_URL+"/tickets/cancel";  
     let postBody = TicketsToCancel;
-    
-  
     
     return this.http.post(connection,
                   postBody,

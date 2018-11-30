@@ -43,7 +43,7 @@ export class MovieSelectorComponent implements OnInit, AfterViewInit {
       title : itemDay.toLocaleString("ru",dayFormat)
      });
 
-    for (let index = 0; index <= 6; index++) {
+    for (let index = 0; index <= 9; index++) {
       itemDay.setDate(itemDay.getDate() + 1);
       
       this.currentDays.push({id : +itemDay, 

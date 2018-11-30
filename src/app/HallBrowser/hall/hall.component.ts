@@ -881,6 +881,23 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
       this.messageComponent.ClearMessages();  
     }, 5000);
   } 
+
+  AddLongFormateMessage(message : string, imp : number) {
+    this.messageComponent.AddMessage(new Date().toISOString()+' '+message,imp);
+  } 
+
   
+  async Refresh1CData() {
+    this.AddLongFormateMessage('Попытка пердачи двнных в 1С...',this.messageSate.Info);
+    let today = new Date();
+    let itemDay = new Date(today.getFullYear(),today.getMonth(),today.getDay()-10,0,0,0,0);
+    /// 19 = 10 дней назад + 9 дней вперед 
+    for (let index = 0; index <= 19; index++) {
+      itemDay.setDate(itemDay.getDate() + 1);
+      await this.apiServis.RoutSyncWebTo1C(this.GLOBAL_PARAMETRS.ID_HALL,TicketOperations.Nothing,itemDay);
+      this.AddLongFormateMessage('Обработано '+index ,this.messageSate.Info);
+    } 
+    this.AddFormateMessage('Завершена попытка пердачи двнных в 1С',this.messageSate.Info);
+  }
 
 }

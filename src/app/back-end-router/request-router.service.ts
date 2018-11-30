@@ -362,6 +362,49 @@ export class RequestRouterService {
       .catch(err => { throw err });
   }
 
+  async RoutSyncWebTo1C(idHall,ticketOperation,itemDay : Date) {
+    if(this.currentBackEndName == "1C") {
+      return
+    }
+    
+      let sessionData : ISessionData
+      await this.webServise.SessionsInfoGetByDate(itemDay.toISOString()).then(resoult =>{
+        sessionData = resoult;
+      });
+     
+      let currentMovies = [];
+      let uniqMoviesID = _.uniq(sessionData.sessionInfo,true,session=>{return session.idMovie});
+      uniqMoviesID.forEach(
+        ID => {
+        let found = sessionData
+                        .movieInfo
+                        .find(function(element) {return element.id ==  ID.idMovie;});
+        
+        currentMovies.push(found)                
+      });
+
+      this.localServise.SetSessionsInfoGetByDate(itemDay.toISOString(), sessionData);
+      await this.delay(300);
+
+      for (let indexMovie = 0; indexMovie < currentMovies.length; indexMovie++) {
+        let currentMovie = currentMovies[indexMovie];
+        let movieSesions = _.filter(sessionData.sessionInfo, element => { return element.idMovie == currentMovie.id && element.isVisible}); 
+        for (let indexSession = 0; indexSession < movieSesions.length; indexSession++) {
+          let currentSession = movieSesions[indexSession];
+
+          let request : ISyncTicketsRequestViewModel = {
+            idHall: idHall, 
+            starts: currentSession.starts, //"yyyy-MM-dd HH:mm:ss",		
+            blockSeats: [],
+            hallState: [],
+            ticketOperation : ticketOperation
+          };
+          await this.RoutSyncTickets(request);
+        }  
+      }
+  }
+
+  
   RoutGetBufferSize() {
     return this.localServise.GetBufferSize()
   }
