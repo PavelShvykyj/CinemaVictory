@@ -460,13 +460,16 @@ export class RequestManagerService implements IbackEnd {
       subs.unsubscribe();
       if (stringDataFrom1C != "") {
         let dataFrom1C = JSON.parse(stringDataFrom1C);
+        
         if(dataFrom1C.resoult){
           resolve(dataFrom1C);
         } 
         else {
+          
           reject(dataFrom1C);  
         }
       } else {
+        
         reject({
           point: "SetSessionsInfoGetByDate",
           resoult: false,
