@@ -382,9 +382,18 @@ export class RequestManagerService implements IbackEnd {
   SetHallInfo(hallInfo: IHallInfo) {
    
     if (this.LOCAL_SERVISE_BLOCED){
-      return ;
+      let myPromise : Promise<IDataFrom1C>  = new Promise((resolve,reject) => {
+        let resoult : IDataFrom1C = 
+        {
+          point : 'SetHallInfo',
+          resoult: false,
+          data : {}
+        }
+        reject(resoult);
+      });
+      return myPromise;
     }
-    
+   
     
     /// запись snapshot HallInfo in 1C buffer
     let timeRemain: number = 0;
@@ -419,7 +428,16 @@ export class RequestManagerService implements IbackEnd {
   SetSessionsInfoGetByDate(selectedDate: string, sessionData: ISessionData) {
     
     if (this.LOCAL_SERVISE_BLOCED){
-      return;
+      let myPromise : Promise<IDataFrom1C>  = new Promise((resolve,reject) => {
+        let resoult : IDataFrom1C = 
+        {
+          point : 'SetSessionsInfoGetByDate',
+          resoult: false,
+          data : {}
+        }
+        reject(resoult);
+      });
+      return myPromise;
     }
     
     /// запись snapshot  in 1C buffer
@@ -441,7 +459,13 @@ export class RequestManagerService implements IbackEnd {
       }
       subs.unsubscribe();
       if (stringDataFrom1C != "") {
-        resolve(JSON.parse(stringDataFrom1C));
+        let dataFrom1C = JSON.parse(stringDataFrom1C);
+        if(dataFrom1C.resoult){
+          resolve(dataFrom1C);
+        } 
+        else {
+          reject(dataFrom1C);  
+        }
       } else {
         reject({
           point: "SetSessionsInfoGetByDate",
@@ -455,7 +479,16 @@ export class RequestManagerService implements IbackEnd {
 
   async SetCassOperation(request : ISyncTicketsRequestViewModel) {
     if (this.LOCAL_SERVISE_BLOCED){
-      return ;
+      let myPromise : Promise<IDataFrom1C>  = new Promise((resolve,reject) => {
+        let resoult : IDataFrom1C = 
+        {
+          point : 'SetCassOperation',
+          resoult: false,
+          data : {}
+        }
+        reject(resoult);
+      });
+      return myPromise;
     }
     
     /// запись snapshot HallInfo in 1C buffer
@@ -476,7 +509,14 @@ export class RequestManagerService implements IbackEnd {
       }
       subs.unsubscribe();
       if (stringDataFrom1C != "") {
-        resolve(JSON.parse(stringDataFrom1C));
+        let dataFrom1C = JSON.parse(stringDataFrom1C);
+        if(dataFrom1C.resoult){
+          resolve(dataFrom1C);
+        } 
+        else {
+          reject(dataFrom1C);  
+        }
+        
       } else {
         reject({
           point: "SetHallInfo",
@@ -509,6 +549,7 @@ export class RequestManagerService implements IbackEnd {
     
     /// из  currentState вычитываем параметры зал сесиия получаем ключ и записываем syncTickets как снепшот 
     /// запись snapshot  in 1C buffer
+    
     let currentKey = { idHall: currentState.idHall, starts: currentState.starts };
     let timeRemain: number = 0;
     let timeOut: number = this.RESPONSE_TIME_OUT;
@@ -538,7 +579,13 @@ export class RequestManagerService implements IbackEnd {
       }
       subs.unsubscribe();
       if (stringDataFrom1C != "") {
-        resolve(JSON.parse(stringDataFrom1C));
+        let dataFrom1C = JSON.parse(stringDataFrom1C);
+        if(dataFrom1C.resoult){
+          resolve(dataFrom1C);
+        } 
+        else {
+          reject(dataFrom1C);  
+        }
       } else {
         reject({
           point: "SetHallState",

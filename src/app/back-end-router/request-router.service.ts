@@ -217,7 +217,7 @@ export class RequestRouterService {
   }
 
   async RoutSetCassOperation(request : ISyncTicketsRequestViewModel){
-      this.localServise.SetCassOperation(request)
+      this.localServise.SetCassOperation(request).catch(err =>{throw err})
       await this.delay(200);
    }
    
@@ -280,8 +280,8 @@ export class RequestRouterService {
       .then(resoult => {
         //console.log('ok in rout servise',resoult)
         let buferData = [];
-       
-        console.log(buferData);
+        
+        
         this.localServise.SetHallState(currentState, resoult, buferData);
         this.EmitBackEndName("WEB");
         this.EmitLoginName(this.webServise.userData.userName);
@@ -298,9 +298,6 @@ export class RequestRouterService {
           if (error.error.hallState) {
             console.log(' hallState in rout error ', error.error.hallState);
             let buferData = [];
-           
-    
-            
             this.localServise.SetHallState(currentState, error.error.hallState, buferData);
           }
           throw error
@@ -362,46 +359,62 @@ export class RequestRouterService {
       .catch(err => { throw err });
   }
 
-  async RoutSyncWebTo1C(idHall,ticketOperation,itemDay : Date) {
-    if(this.currentBackEndName == "1C") {
+  async RoutSyncWebTo1C(idHall, ticketOperation, itemDay: Date) {
+    if (this.currentBackEndName == "1C") {
       return
     }
-    
-      let sessionData : ISessionData
-      await this.webServise.SessionsInfoGetByDate(itemDay.toISOString()).then(resoult =>{
-        sessionData = resoult;
-      });
-     
-      let currentMovies = [];
-      let uniqMoviesID = _.uniq(sessionData.sessionInfo,true,session=>{return session.idMovie});
-      uniqMoviesID.forEach(
-        ID => {
+
+    let functionError = false;
+
+    let sessionData: ISessionData
+    await this.webServise.SessionsInfoGetByDate(itemDay.toISOString())
+      .then(resoult => { sessionData = resoult; })
+      .catch(err => { functionError = true });
+
+    if (functionError){
+      throw 'SessionsInfoGetByDate';
+    }  
+
+    let currentMovies = [];
+    let uniqMoviesID = _.uniq(sessionData.sessionInfo, true, session => { return session.idMovie });
+    uniqMoviesID.forEach(
+      ID => {
         let found = sessionData
-                        .movieInfo
-                        .find(function(element) {return element.id ==  ID.idMovie;});
-        
-        currentMovies.push(found)                
+          .movieInfo
+          .find(function (element) { return element.id == ID.idMovie; });
+
+        currentMovies.push(found)
       });
 
-      this.localServise.SetSessionsInfoGetByDate(itemDay.toISOString(), sessionData);
-      await this.delay(300);
+    this.localServise.SetSessionsInfoGetByDate(itemDay.toISOString(), sessionData)
+                     .catch(err => {functionError = true});
+    await this.delay(300);
 
-      for (let indexMovie = 0; indexMovie < currentMovies.length; indexMovie++) {
-        let currentMovie = currentMovies[indexMovie];
-        let movieSesions = _.filter(sessionData.sessionInfo, element => { return element.idMovie == currentMovie.id && element.isVisible}); 
-        for (let indexSession = 0; indexSession < movieSesions.length; indexSession++) {
-          let currentSession = movieSesions[indexSession];
+    if (functionError){
+      throw 'SetSessionsInfoGetByDate';
+    }  
 
-          let request : ISyncTicketsRequestViewModel = {
-            idHall: idHall, 
-            starts: currentSession.starts, //"yyyy-MM-dd HH:mm:ss",		
-            blockSeats: [],
-            hallState: [],
-            ticketOperation : ticketOperation
-          };
-          await this.RoutSyncTickets(request);
+    for (let indexMovie = 0; indexMovie < currentMovies.length; indexMovie++) {
+      let currentMovie = currentMovies[indexMovie];
+      let movieSesions = _.filter(sessionData.sessionInfo, element => { return element.idMovie == currentMovie.id && element.isVisible });
+      for (let indexSession = 0; indexSession < movieSesions.length; indexSession++) {
+        let currentSession = movieSesions[indexSession];
+
+        let request: ISyncTicketsRequestViewModel = {
+          idHall: idHall,
+          starts: currentSession.starts, //"yyyy-MM-dd HH:mm:ss",		
+          blockSeats: [],
+          hallState: [],
+          ticketOperation: ticketOperation
+        };
+        await this.RoutSyncTickets(request).catch(err=>{functionError = true});
+       
+        if (functionError){
+          throw 'RoutSyncTickets error';
         }  
+    
       }
+    }
   }
 
   

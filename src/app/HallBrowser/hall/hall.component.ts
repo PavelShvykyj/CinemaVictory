@@ -291,7 +291,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
        hallState: this.chairsInWork,
        ticketOperation : TicketOperations.Sale}
       
-      this.apiServis.RoutSetCassOperation(CassOperationParametr)
+      this.apiServis.RoutSetCassOperation(CassOperationParametr).catch(err=>{this.AddLongFormateMessage('Ошибка 1С при записи кассовой операции',this.messageSate.Error)});
       this.PrintSelected()
       
       }
@@ -793,7 +793,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
     };
 
     if(operation == TicketOperations.CanselPay){
-      await this.apiServis.RoutSetCassOperation(cassOperationRequest);
+      await this.apiServis.RoutSetCassOperation(cassOperationRequest).catch(err=>{this.AddLongFormateMessage('Ошибка 1С при записи кассовой операции',this.messageSate.Error)});
     }
     this.apiServis.RoutCancelTickets(request)
                          .then(resoult=>{
@@ -892,12 +892,23 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
     let today = new Date();
     let itemDay = new Date(today.getFullYear(),today.getMonth(),today.getDay()-10,0,0,0,0);
     /// 19 = 10 дней назад + 9 дней вперед 
+    let stopByError = false;
     for (let index = 0; index <= 19; index++) {
+      
       itemDay.setDate(itemDay.getDate() + 1);
-      await this.apiServis.RoutSyncWebTo1C(this.GLOBAL_PARAMETRS.ID_HALL,TicketOperations.Nothing,itemDay);
-      this.AddLongFormateMessage('Обработано '+index ,this.messageSate.Info);
+      
+      await this.apiServis.RoutSyncWebTo1C(this.GLOBAL_PARAMETRS.HALL_ID,TicketOperations.Nothing,itemDay)
+      .then(res=>{this.AddLongFormateMessage('Обработано '+index ,this.messageSate.Info);})
+      .catch(err => {this.AddLongFormateMessage('Ошибка на шаге '+index+' '+err ,this.messageSate.Error); stopByError = true} );
+      if(stopByError) {break};
     } 
-    this.AddFormateMessage('Завершена попытка пердачи двнных в 1С',this.messageSate.Info);
+    if(stopByError) {
+      this.AddLongFormateMessage('Ошибки при передаче данных в 1С', this.messageSate.Error);
+    } 
+    else {
+      this.AddFormateMessage('Завершена попытка пердачи данных в 1С',  this.messageSate.Info);
+    }
+    
   }
 
 }
