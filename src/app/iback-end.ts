@@ -117,6 +117,7 @@ export interface IChairStatus
     isSoled      : boolean,            
     isSelected   : boolean,            
     iniciator    : number,            
+    iniciatorFirst?    : number,            
     idTicketCategory : number            
 }
 

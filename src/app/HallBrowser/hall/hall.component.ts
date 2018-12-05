@@ -529,6 +529,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
    
     this.chairsInWork.forEach(element =>{
       element.s.inReserving = false;
+      element.s.iniciatorFirst = element.s.iniciator
       element.s.iniciator = this.GLOBAL_PARAMETRS.CASH_DESK_ID;
       element.s.isFree = false;
       element.s.isSoled = true;
