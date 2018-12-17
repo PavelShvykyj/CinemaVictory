@@ -891,7 +891,8 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
   async Refresh1CData() {
     this.AddLongFormateMessage('Попытка пердачи двнных в 1С...',this.messageSate.Info);
     let today = new Date();
-    let itemDay = new Date(today.getFullYear(),today.getMonth(),today.getDay()-10,0,0,0,0);
+    let itemDay = new Date(today.getFullYear(),today.getMonth(),today.getDate()-10,0,0,0,0);
+    console.log(itemDay);
     /// 19 = 10 дней назад + 9 дней вперед 
     let stopByError = false;
     for (let index = 0; index <= 19; index++) {
