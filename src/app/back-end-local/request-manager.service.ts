@@ -244,7 +244,7 @@ export class RequestManagerService implements IbackEnd {
             /// Нет - возвращаем 406ую ошибку
             /// сруктура имитирует стуктуру двнных обычной ошибки от веб в которой текущиее состояние зашито
             let error = {
-              staus: 406,
+              status: 406,
               error: { hallState: newState }
             };
             reject(error);

@@ -609,9 +609,11 @@ export class RequestManagerService implements IbackEnd {
                     })
                   .catch(error => 
                     {
-                      if(error.error.hallState){
-                        error.error.hallState = this.ConvertHallStateToHallStateInternal(error.error.hallState);
-                      }
+                      if (typeof error.error != 'undefined') {
+                        if(typeof error.error.hallState != 'undefined'){
+                          error.error.hallState = this.ConvertHallStateToHallStateInternal(error.error.hallState);  
+                        }
+                      } 
                       throw error
                     });
                  

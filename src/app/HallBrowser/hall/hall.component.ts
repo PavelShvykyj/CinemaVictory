@@ -182,19 +182,24 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
         })
         .catch(error=>{
           ///  ели это ошибка одновременного использования - то просто чистим рабочие и переобновим зал
-          if (error.status = 406)
+          let errorStatus = this.apiServis.RoutGetStatusError(error);
+          
+          
+          if (errorStatus = 406)
           {
             this.ClearSelected();
             this.SyncHallState([],[],TicketOperations.Nothing)
                 .then(resoult => {this.UpdateHallState(resoult)})
                 .catch(error=>{
-                  this.AddFormateMessage('start action '+error.status,this.messageSate.Error); 
-                  console.log('bad synk Tickets in start', error); return false }); /// 
+                  let errorStatus = this.apiServis.RoutGetStatusError(error);
+                  this.AddFormateMessage('bad synk Tickets in start '+errorStatus,this.messageSate.Error); 
+                  console.log('bad synk Tickets in start', error); 
+                  return false }); /// 
           }
           ///  обнулим только выбранные - остальной зал не трогаем
           else
           {
-            this.AddFormateMessage(' error '+error.status,this.messageSate.Error);
+            this.AddFormateMessage(' error '+errorStatus,this.messageSate.Error);
             this.chairsInWork.forEach(workChair=>{
               let foundChair = this.chairList.find(function(chair) {
                 return chair.chairStateInternal.c.c == workChair.c.c && chair.chairStateInternal.c.r == workChair.c.r;
@@ -219,16 +224,20 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit  {
     })
     .catch(error=>{
       console.log('bad synk Tickets in finish', error);
-      this.AddFormateMessage('finish action '+error.status,this.messageSate.Error); 
-      if(error.error.hallState){
-        let hallStateInError : ISyncTicketsResponseViewModelInternal = {
-          hallState: error.error.hallState,
-          starts : this.sessionData.currentSession.starts
+      let errorStatus = this.apiServis.RoutGetStatusError(error);
+      this.AddFormateMessage('finish actbad synk Tickets in finish '+errorStatus,this.messageSate.Error); 
+      let errorHallState = undefined;
+      if (typeof error.error != 'undefined') {
+        if(typeof error.error.hallState != 'undefined'){
+          let hallStateInError : ISyncTicketsResponseViewModelInternal = {
+            hallState: error.error.hallState,
+            starts : this.sessionData.currentSession.starts
+          }
+          this.UpdateHallState(hallStateInError);  
         }
-        this.ClearSelected();
-        this.UpdateHallState(hallStateInError);
-        return false;
-      }
+      } 
+      this.ClearSelected();
+      return false;
     });
   }
 

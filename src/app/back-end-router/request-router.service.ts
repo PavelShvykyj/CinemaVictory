@@ -23,6 +23,7 @@ import * as _ from 'underscore';
 import { IdataObject } from '../HallBrowser/idata-object';
 import { async } from '@angular/core/testing';
 import { resolve, reject } from 'q';
+import { error } from 'util';
 
 
 @Injectable()
@@ -43,7 +44,7 @@ export class RequestRouterService {
     this.changeHallState$ = Observable.merge(this.webServise.changeHallState$, this.localServise.changeHallState$);
   }
 
-  IsInternalError(status: number) {
+  IsInternalError(status) {
     let foundError = _.find(this.internalErrors, elemrnt => { return status == elemrnt })
     if (foundError) {
       return true
@@ -130,7 +131,8 @@ export class RequestRouterService {
         return resoult;
       })
       .catch(error => {
-        if (this.IsInternalError(error.status)) {
+        let statusError = this.RoutGetStatusError(error);
+        if (this.IsInternalError(statusError)) {
           throw error
         }
         else {
@@ -169,7 +171,9 @@ export class RequestRouterService {
     })
       .catch(error => {
         console.log('error in rout servise', error)
-        if (this.IsInternalError(error.status)) {
+        let statusError = this.RoutGetStatusError(error);
+
+        if (this.IsInternalError(statusError)) {
           ///// сайт на связи вернул ошибку т.е. это реальная ошибка
           ////  тут придумать лог/сообщение ахтунг
           throw error
@@ -247,8 +251,10 @@ export class RequestRouterService {
       })
       .catch(error => {
         //console.log('error in rout servise',error)
-        if (this.IsInternalError(error.status)) {
-          return error.status
+        
+        let statusError = this.RoutGetStatusError(error);
+        if (this.IsInternalError(statusError)) {
+          return statusError
         }
         else {
           this.EmitBackEndName("1C");
@@ -289,23 +295,30 @@ export class RequestRouterService {
       })
       .catch(error => {
         console.log('error in rout servise', error)
+        let statusError = this.RoutGetStatusError(error);
 
-        if (this.IsInternalError(error)) {
+        if (this.IsInternalError(statusError)) {
           //// сайт на связи вернул ошибку т.е. это реальная ошибка
           //// тут придумать лог/сообщение ахтунг
           //// здесь у нас все равно есть состояние зала 
           //// его можно запомнить в 1С и \ или отобразить 
-          if (error.error.hallState) {
-            console.log(' hallState in rout error ', error.error.hallState);
-            let buferData = [];
-            this.localServise.SetHallState(currentState, error.error.hallState, buferData);
+          let errorHallState = undefined;
+          if (typeof error.error != 'undefined') {
+            if(typeof error.error.hallState != 'undefined'){
+              errorHallState = error.error.hallState;  
+            }
+          } 
+          
+          if (errorHallState != undefined) {
+            console.log(' hallState in rout error ', errorHallState);
+            //let buferData = [];
+            this.localServise.SetHallState(currentState, errorHallState);
           }
           throw error
         }
         else {
           this.EmitBackEndName("1C");
           this.EmitLoginName(this.localServise.getLocalUserName());
-
           return this.localServise.SyncTickets(currentState)
         }
       });
@@ -483,6 +496,13 @@ export class RequestRouterService {
     }
   }
 
+  RoutGetStatusError(error){
+    let statusError = 101;
+    if (typeof error.status != 'undefined'){
+      statusError = error.status;
+    }
+    return statusError
+  } 
 }
 
 
