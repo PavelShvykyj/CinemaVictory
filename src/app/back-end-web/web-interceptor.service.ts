@@ -7,7 +7,7 @@ import { timeout } from 'rxjs/operators';
 @Injectable()
 export class WebInterceptorService implements HttpInterceptor {
 
-  DEFOULT_TIMEOUT : number = 30000;
+  DEFOULT_TIMEOUT : number = 10000;
  
   
   intercept(req : HttpRequest<any>, next : HttpHandler) : Observable<HttpEvent<any>> {
