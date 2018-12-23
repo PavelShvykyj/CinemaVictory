@@ -20,7 +20,7 @@
                     <messages [historyLenth]=4> </messages>
                     <div class="btn-group-vertical btn-block" role="group" aria-label="Function Menu">
                     <button type="button" [disabled]="showStatus != showHallStatus.Defoult" class="btn btn-secondary mb-1" (click) = "StartSaleSelected()">Начать продажу</button>
-                    <button type="button" [disabled]="showStatus == showHallStatus.Cancel || showStatus == showHallStatus.Reserving || showStatus == showHallStatus.Search" class="btn btn-secondary mb-1" (click) = "FinishSaleSelected()">Завершить продажу</button>
+                    <button type="button" [disabled]="true || showStatus == showHallStatus.Cancel || showStatus == showHallStatus.Reserving || showStatus == showHallStatus.Search" class="btn btn-secondary mb-1" (click) = "FinishSaleSelected()">Завершить продажу</button>
                     <button type="button" [disabled]="showStatus == showHallStatus.Cancel" class="btn btn-secondary mb-1" (click) = "PrintSelected()">Повторная печать</button>
                     <button type="button" [disabled]="showStatus == showHallStatus.StartSale" class="btn btn-secondary mb-1" (click) = "SearchOperationForm()">Поиск</button>
                     <searching-operations class="fool-wight my-1 py-0" *ngIf="showStatus == showHallStatus.Search"

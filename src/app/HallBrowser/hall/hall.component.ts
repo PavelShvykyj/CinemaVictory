@@ -218,15 +218,15 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
       .then(resoult => {
         console.log('finish ok', resoult);
         if(operation == TicketOperations.Sale){
-          let CassOperationParametr = {
-            idHall: this.GLOBAL_PARAMETRS.HALL_ID,
-            starts: this.sessionData.currentSession.starts,
-            blockSeats: [],
-            hallState: this.chairsInWork,
-            ticketOperation: TicketOperations.Sale
-          }
-  
-          this.apiServis.RoutSetCassOperation(CassOperationParametr).catch(err => { this.AddLongFormateMessage('Ошибка 1С при записи кассовой операции', this.messageSate.Error) });
+          /// этот кусок нужен только для отдельного вызова касс операции когда он жил на стартсаилселектед операция запишется сама в ыет холл стайт в 1С
+          // let CassOperationParametr = {
+          //   idHall: this.GLOBAL_PARAMETRS.HALL_ID,
+          //   starts: this.sessionData.currentSession.starts,
+          //   blockSeats: [],
+          //   hallState: this.chairsInWork,
+          //   ticketOperation: TicketOperations.Sale
+          // }
+          //this.apiServis.RoutSetCassOperation(CassOperationParametr).catch(err => { this.AddLongFormateMessage('Ошибка 1С при записи кассовой операции', this.messageSate.Error) });
           this.PrintSelected()
   
         }
