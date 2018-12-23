@@ -217,6 +217,20 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
     return this.SyncHallState([], this.chairsInWork, operation)
       .then(resoult => {
         console.log('finish ok', resoult);
+        if(operation == TicketOperations.Sale){
+          let CassOperationParametr = {
+            idHall: this.GLOBAL_PARAMETRS.HALL_ID,
+            starts: this.sessionData.currentSession.starts,
+            blockSeats: [],
+            hallState: this.chairsInWork,
+            ticketOperation: TicketOperations.Sale
+          }
+  
+          this.apiServis.RoutSetCassOperation(CassOperationParametr).catch(err => { this.AddLongFormateMessage('Ошибка 1С при записи кассовой операции', this.messageSate.Error) });
+          this.PrintSelected()
+  
+        }
+        
         this.UpdateHallState(resoult);
         this.ClearSelected();
         return true;
@@ -337,20 +351,9 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
 
     });
 
-    this.FinishAction(TicketOperations.Nothing).then(resoult => {
+    this.FinishAction(TicketOperations.Sale).then(resoult => {
       if (resoult) {
         console.log('sucsesful Sale.')
-        let CassOperationParametr = {
-          idHall: this.GLOBAL_PARAMETRS.HALL_ID,
-          starts: this.sessionData.currentSession.starts,
-          blockSeats: [],
-          hallState: this.chairsInWork,
-          ticketOperation: TicketOperations.Sale
-        }
-
-        this.apiServis.RoutSetCassOperation(CassOperationParametr).catch(err => { this.AddLongFormateMessage('Ошибка 1С при записи кассовой операции', this.messageSate.Error) });
-        this.PrintSelected()
-
       }
     });
   }
