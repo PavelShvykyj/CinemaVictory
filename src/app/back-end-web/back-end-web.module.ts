@@ -14,7 +14,8 @@ const DEFAULT_TIMEOUT = new InjectionToken<number>('DEFAULT_TIMEOUT');
     HttpClientModule
   ],
   providers : [RequestManagerService,
-  {
+    WebInterceptorService,
+    {
     provide  : HTTP_INTERCEPTORS,
     useClass : WebInterceptorService,
     multi : true

@@ -23,9 +23,6 @@ import * as _ from 'underscore';
 import { HubConnection, HubConnectionBuilder } from '@aspnet/signalr'
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
-import { error } from 'util';
-import { reject } from 'q';
-import { Alert } from 'selenium-webdriver';
 
 
 
@@ -39,6 +36,7 @@ export class RequestManagerService implements IbackEnd {
   CRYPTO_IV  = 'TweTnUNAAL8VMtvtMNj0Vg==';
   CASH_DESK_ID = 1;
   WEB_SERVISE_BLOCED = false;
+  LOGG_ON = false; 
 
   private _userData : ILoggInData;
   private _refreshLoginTimer : number;

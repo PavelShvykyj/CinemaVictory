@@ -8,29 +8,35 @@ import { IdataObject } from '../HallBrowser/idata-object';
 @Injectable()
 export class LoggOperatorService {
 
-  private _log = new Subject<Array<IdataObject>>();
-  log$ : Observable<Array<IdataObject>> = this._log.asObservable();
-  private logObject : Array<IdataObject> = [];
+  private _log = new Subject<IdataObject>();
+  log$ : Observable<IdataObject> = this._log.asObservable();
 
   SetLoggMessage(loggMessage : IdataObject) {
-    this.logObject = this.ReadLog();
-    this.logObject.push(loggMessage);
-    this.SaveLog();
-    this._log.next(this.logObject);
+    
+    let logObject = this.ReadLogFromStorage();
+    logObject.push(loggMessage);
+    this.LoadLogToStorage(logObject);
+    this._log.next(loggMessage);
   }
 
-  SaveLog() {
-    localStorage.setItem('logMessages',JSON.stringify(this.logObject));    
+  LoadLogToStorage(logObject : Array<IdataObject>) {
+    //localStorage.setItem('logMessages',JSON.stringify(logObject));    
   }
 
-  ReadLog() : Array<IdataObject>  {
-    let logStorage = localStorage.getItem('logMessages');
-    if (typeof logStorage == 'undefined') {
+  ReadLogFromStorage() : Array<IdataObject>  {
+    //let logStorage = localStorage.getItem('logMessages');
+    let logStorage = [];
+    if (typeof logStorage == 'undefined' ||  logStorage == null) {
       return []
     }
     else{
-      return JSON.parse(logStorage);
+      return logStorage;
+      //return JSON.parse(logStorage);
     }
   }
 
+  ClearLog(){
+    this.LoadLogToStorage([]);
+    this._log.next({action : 'Logg cleared'});
+  }
 }

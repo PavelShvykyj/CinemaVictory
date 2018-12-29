@@ -12,12 +12,13 @@ import { BackEndRouterModule } from './back-end-router/back-end-router.module';
 import { BackEndWebModule } from './back-end-web/back-end-web.module';
 import { LoggInModule } from './logg-in/logg-in.module';
 import { LogginComponent } from './logg-in/loggin/loggin.component';
-
+import { LoggModule } from './logg/logg.module'
+import { LoggBrowserComponent } from './logg/logg-browser/logg-browser.component'
 import { BackEndLocalModule } from './back-end-local/back-end-local.module'
 
 const routes = [
     {path : '' , component : LogginComponent},
-    {path : 'Ticket' , component : TicketPrintWievComponent},       
+    {path : 'Log' , component : LoggBrowserComponent},       
     {path : 'Hall' , component : HallComponent},       
 ];
 
@@ -33,6 +34,7 @@ const routes = [
     BackEndRouterModule,
     BackEndWebModule,
     BackEndLocalModule,
+    LoggModule,
     LoggInModule
   ],
   providers: [],

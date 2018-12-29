@@ -54,6 +54,7 @@ export class RequestManagerService implements IbackEnd {
   RESPONSE_TIME_OUT = 3000;
   RESPONSE_WAIT_STEP = 500;
   LOCAL_SERVISE_BLOCED = true; // по умолчанию не ясно где сайт запускается, если в окружении 1С она его включит
+  LOGG_ON = false;
 
   webUserName: string = "380662828954";
   webPassword: string = "Di4vF67KBw2T";

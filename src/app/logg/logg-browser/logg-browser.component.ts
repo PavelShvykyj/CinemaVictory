@@ -1,7 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { LoggOperatorService } from '../logg-operator.service';
-import { from } from 'rxjs/observable/from';
-import { Observable, Subscription } from 'rxjs';
+import {  Subscription } from 'rxjs';
+import { RequestRouterService } from '../../back-end-router/request-router.service';
+import { IdataObject } from '../../HallBrowser/idata-object';
 
 @Component({
   selector: 'logg-browser',
@@ -11,15 +12,28 @@ import { Observable, Subscription } from 'rxjs';
 export class LoggBrowserComponent implements OnInit, OnDestroy {
 
   loggObjSubs : Subscription;    
-  constructor(private loggServise : LoggOperatorService ) {
-      
-   }
+  loggObj : Array<IdataObject> = [];
+  
+  constructor(private loggServise : LoggOperatorService, private apiServise : RequestRouterService ) {
+  }
 
   ngOnInit() {
-    this.loggObjSubs = this.loggServise.log$.subscribe();
+    this.loggObjSubs = this.loggServise.log$.subscribe(message =>{
+      this.loggObj.push(message) 
+    });
+    this.UpdateLog();
   }
 
   ngOnDestroy() {
     this.loggObjSubs.unsubscribe()
+  }
+  
+  UpdateLog(){
+    this.loggObj = this.loggServise.ReadLogFromStorage();
+  }
+  
+  ClearLog(){
+    this.loggServise.ClearLog();
+    this.UpdateLog();
   }
 }

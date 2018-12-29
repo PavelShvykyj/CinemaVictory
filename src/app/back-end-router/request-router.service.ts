@@ -1,5 +1,6 @@
 import { Injectable, Input } from '@angular/core';
-import { RequestManagerService as webManagerServise } from '../back-end-web/request-manager.service';
+import { RequestManagerService as webManagerServise  } from '../back-end-web/request-manager.service';
+import { WebInterceptorService as WebInterceptor  } from '../back-end-web/web-interceptor.service';
 import { RequestManagerService as localManagerServise } from '../back-end-local/request-manager.service';
 
 import {
@@ -38,7 +39,7 @@ export class RequestRouterService {
   @Input() currentBackEndName: string
 
 
-  constructor(private webServise: webManagerServise, private localServise: localManagerServise) {
+  constructor(private webServise: webManagerServise, private localServise: localManagerServise, private webInterseptor : WebInterceptor) {
     this.backends.push(this.webServise);
     this.backends.push(this.localServise);
     this.changeHallState$ = Observable.merge(this.webServise.changeHallState$, this.localServise.changeHallState$);
@@ -462,6 +463,9 @@ export class RequestRouterService {
     this.localServise.RESPONSE_WAIT_STEP = +parametrs.RESPONSE_WAIT_STEP;
     this.localServise.RESERVE_PRICE = +parametrs.RESERVE_PRICE;
     
+    this.localServise.LOGG_ON = parametrs.LOGG_ON;
+    this.webServise.LOGG_ON   = parametrs.LOGG_ON;
+    this.webInterseptor.LOGG_ON   = parametrs.LOGG_ON;
   }
 
   RoutGetParametrs() {
@@ -505,6 +509,20 @@ export class RequestRouterService {
     }
     return statusError
   } 
+ 
+  /// написать функцию сохранения куска лога пока в 1С очевидно
+  RoutLoadLogToBase(logObject) {
+
+  }
+  
+  RoutChangeLoggStatus(loggStatus : boolean) {
+    this.webServise.LOGG_ON = loggStatus;
+    this.localServise.LOGG_ON = loggStatus;
+    this.webInterseptor.LOGG_ON   = loggStatus;
+  }
+
+  
+
 }
 
 
