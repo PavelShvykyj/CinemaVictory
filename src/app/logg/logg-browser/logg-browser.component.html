@@ -1,2 +1,6 @@
-<div class="mt-2 mb-2"> <button class="btn btn-dark" (click) = "ClearLog()" >Clear log </button> </div>
-<div *ngFor="let message of loggObj"> {{message}} </div>
+
+<div class="mt-2 mb-2"> 
+    <button class="btn btn-dark mx-2" (click) = "ClearLog()"> Clear log </button>
+    <button class="btn btn-dark mx-2" (click) = "SaveLog()" > Save log </button>
+</div>
+<div *ngFor="let message of loggObj"> {{ JSON.stringify(message) }} </div>

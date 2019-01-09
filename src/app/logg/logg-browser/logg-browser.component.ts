@@ -29,11 +29,16 @@ export class LoggBrowserComponent implements OnInit, OnDestroy {
   }
   
   UpdateLog(){
-    this.loggObj = this.loggServise.ReadLogFromStorage();
+    this.loggObj = this.loggServise.LoggObj;
   }
   
   ClearLog(){
     this.loggServise.ClearLog();
     this.UpdateLog();
   }
+
+  SaveLog(){
+    this.apiServise.RoutSaveLogg();
+  }
+
 }

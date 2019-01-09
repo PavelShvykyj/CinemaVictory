@@ -462,10 +462,7 @@ export class RequestRouterService {
     this.localServise.RESPONSE_TIME_OUT = +parametrs.RESPONSE_TIME_OUT;
     this.localServise.RESPONSE_WAIT_STEP = +parametrs.RESPONSE_WAIT_STEP;
     this.localServise.RESERVE_PRICE = +parametrs.RESERVE_PRICE;
-    
-    this.localServise.LOGG_ON = parametrs.LOGG_ON;
-    this.webServise.LOGG_ON   = parametrs.LOGG_ON;
-    this.webInterseptor.LOGG_ON   = parametrs.LOGG_ON;
+    this.localServise.logOperator.LOGG_ON   = parametrs.LOGG_ON;
   }
 
   RoutGetParametrs() {
@@ -511,14 +508,16 @@ export class RequestRouterService {
   } 
  
   /// написать функцию сохранения куска лога пока в 1С очевидно
-  RoutLoadLogToBase(logObject) {
-
+  RoutSaveLogg() {
+    this.localServise.SaveLogg();
   }
   
+  RoutSetLoggMessage(logMessage: IdataObject){
+    this.localServise.SetLoggMessage(logMessage);
+  }
+
   RoutChangeLoggStatus(loggStatus : boolean) {
-    this.webServise.LOGG_ON = loggStatus;
-    this.localServise.LOGG_ON = loggStatus;
-    this.webInterseptor.LOGG_ON   = loggStatus;
+    this.localServise.logOperator.LOGG_ON  = loggStatus;
   }
 
   

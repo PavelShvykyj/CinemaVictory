@@ -17,7 +17,7 @@ import { IdataObject } from '../HallBrowser/idata-object';
 import { Subject } from 'rxjs/Subject';
 import * as _ from 'underscore';
 import { HallShowStatus, MessageSate, TicketOperations } from '../global_enums'
-
+import { LoggOperatorService } from '../logg/logg-operator.service';
 
 @Injectable()
 export class RequestManagerService implements IbackEnd {
@@ -54,14 +54,24 @@ export class RequestManagerService implements IbackEnd {
   RESPONSE_TIME_OUT = 3000;
   RESPONSE_WAIT_STEP = 500;
   LOCAL_SERVISE_BLOCED = true; // по умолчанию не ясно где сайт запускается, если в окружении 1С она его включит
-  LOGG_ON = false;
 
   webUserName: string = "380662828954";
   webPassword: string = "Di4vF67KBw2T";
   localeUserName: string = "Atlantyka";
 
-  constructor() {
+  constructor(public logOperator: LoggOperatorService) {
 
+  }
+
+  SetLoggMessage(logMessage: IdataObject) {
+    this.logOperator.SetLoggMessage(logMessage);
+  }
+
+  SaveLogg(){
+    /// берем объект логг из логг-оператор ; вызываем функцию 1С ; чистим объект-логг
+    if (typeof xForm1C != 'undefined' ){
+      xForm1C.SaveLogg(JSON.stringify(this.logOperator.LoggObj));
+    }
   }
 
   async delay(ms: number) {

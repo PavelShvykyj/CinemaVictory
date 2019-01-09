@@ -10,15 +10,12 @@ import { IdataObject } from '../HallBrowser/idata-object';
 export class WebInterceptorService implements HttpInterceptor {
 
   DEFOULT_TIMEOUT: number = 10000;
-  LOGG_ON: boolean = true;
+  
 
   constructor(private logOperator: LoggOperatorService) { }
 
   SetLoggMessage(logMessage: IdataObject) {
-    
-    if (this.LOGG_ON) {
       this.logOperator.SetLoggMessage(logMessage);
-    }
   }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {

@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild,  OnDestroy } from '@angular/core';
 import { MessagesComponent } from './HallBrowser/messages/messages.component';
 //import { LogginComponent } from './logg-in/loggin/loggin.component'
 import {RequestRouterService}  from './back-end-router/request-router.service'
-import {RequestManagerService }  from './back-end-local/request-manager.service'
+import { LoggOperatorService }  from './logg/logg-operator.service'
 import { MessageSate } from './global_enums'
 import { ILoggInData } from './iback-end'
 import { Observable } from 'rxjs/Observable';
@@ -19,13 +19,14 @@ export class AppComponent implements OnInit, OnDestroy {
   subsBackEndName;
   subsUserName;
   subs1Cdata;
+  subsLoggObjs
   messageSate : typeof MessageSate = MessageSate;
 
   @ViewChild(MessagesComponent) 
   messagesComponent : MessagesComponent
 
   // зависимость нужна обязательно для оповещений
-  constructor(private apiServis : RequestRouterService, private localService : RequestManagerService){}
+  constructor(private apiServis : RequestRouterService, private logOperator : LoggOperatorService){}
 
   ngOnInit() {
     this.subsBackEndName = this.apiServis.changeEmittedBackEndName$.subscribe(text => {
@@ -41,11 +42,20 @@ export class AppComponent implements OnInit, OnDestroy {
         this.currentBackEndName = text;
       });
     this.apiServis.changeEmittedLoginName$.subscribe(text => { this.currentUserName = text});
+    this.subsLoggObjs = this.logOperator.log$.subscribe(message =>{
+       if(this.logOperator.LoggObj.length > 50) {
+         this.apiServis.RoutSaveLogg();
+         this.logOperator.ClearLog();
+       }
+    });  
+
   }
 
   ngOnDestroy() {
     this.subsBackEndName.unsubscribe();
     this.subsUserName.unsubscribe();
+    this.subsUserName.unsubscribe();
+    this.subsLoggObjs.unsubscribe();
   }
 
   ShowTemporaryMessage(message : string, duration : number, imp : number){
