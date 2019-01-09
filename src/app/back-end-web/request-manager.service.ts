@@ -13,7 +13,9 @@ import {  IbackEnd,
           IGetSessionResponseViewModel,
           ISessionData,
           IHallInfo } from '../iback-end'
-
+import { LoggMessageTypes } from '../global_enums'
+import { IloggObject } from '../ilogg';
+          
 
 import { IdataObject } from '../HallBrowser/idata-object';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
@@ -59,7 +61,7 @@ export class RequestManagerService implements IbackEnd {
     });
   }
 
-  SetLoggMessage(logMessage: IdataObject) {
+  SetLoggMessage(logMessage: IloggObject) {
     this.logOperator.SetLoggMessage(logMessage);
   }
 

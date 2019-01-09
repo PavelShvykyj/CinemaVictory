@@ -1,3 +1,10 @@
+export enum LoggMessageTypes {
+  Request,
+  Response,
+  Metod,
+  Interface
+}
+
 export enum TicketOperations {
     Sale,
     Reserve,

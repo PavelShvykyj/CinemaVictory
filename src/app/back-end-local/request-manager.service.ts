@@ -18,6 +18,8 @@ import { Subject } from 'rxjs/Subject';
 import * as _ from 'underscore';
 import { HallShowStatus, MessageSate, TicketOperations } from '../global_enums'
 import { LoggOperatorService } from '../logg/logg-operator.service';
+import { LoggMessageTypes } from '../global_enums'
+import { IloggObject } from '../ilogg';
 
 @Injectable()
 export class RequestManagerService implements IbackEnd {
@@ -63,7 +65,7 @@ export class RequestManagerService implements IbackEnd {
 
   }
 
-  SetLoggMessage(logMessage: IdataObject) {
+  SetLoggMessage(logMessage: IloggObject) {
     this.logOperator.SetLoggMessage(logMessage);
   }
 

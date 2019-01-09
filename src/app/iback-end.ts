@@ -1,4 +1,4 @@
-import {TicketOperations } from "./global_enums"
+import {TicketOperations } from "./global_enums";
 import { IdataObject } from "./HallBrowser/idata-object";
 
 export interface ILoggInData {

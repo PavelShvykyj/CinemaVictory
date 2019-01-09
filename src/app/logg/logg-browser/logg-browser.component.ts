@@ -3,6 +3,8 @@ import { LoggOperatorService } from '../logg-operator.service';
 import {  Subscription } from 'rxjs';
 import { RequestRouterService } from '../../back-end-router/request-router.service';
 import { IdataObject } from '../../HallBrowser/idata-object';
+import { LoggMessageTypes } from '../../global_enums'
+import { IloggObject } from '../../ilogg';
 
 @Component({
   selector: 'logg-browser',
@@ -12,7 +14,7 @@ import { IdataObject } from '../../HallBrowser/idata-object';
 export class LoggBrowserComponent implements OnInit, OnDestroy {
 
   loggObjSubs : Subscription;    
-  loggObj : Array<IdataObject> = [];
+  loggObj : Array<IloggObject> = [];
   
   constructor(private loggServise : LoggOperatorService, private apiServise : RequestRouterService ) {
   }

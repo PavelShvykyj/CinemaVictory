@@ -16,6 +16,8 @@ import {
   IHallInfo,
   IDataFrom1C
 } from '../iback-end'
+import { LoggMessageTypes } from '../global_enums'
+import { IloggObject } from '../ilogg';
 
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
@@ -512,7 +514,7 @@ export class RequestRouterService {
     this.localServise.SaveLogg();
   }
   
-  RoutSetLoggMessage(logMessage: IdataObject){
+  RoutSetLoggMessage(logMessage: IloggObject){
     this.localServise.SetLoggMessage(logMessage);
   }
 

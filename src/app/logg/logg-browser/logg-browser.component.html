@@ -3,4 +3,12 @@
     <button class="btn btn-dark mx-2" (click) = "ClearLog()"> Clear log </button>
     <button class="btn btn-dark mx-2" (click) = "SaveLog()" > Save log </button>
 </div>
-<div *ngFor="let message of loggObj"> {{ JSON.stringify(message) }} </div>
+<div *ngFor="let logg of loggObj"> 
+        <span class="mx-2"> {{ logg.message_date }} </span>
+        <span class="mx-2"> {{ logg.message_type }} </span>
+        <span class="mx-2"> {{ logg.message_name }} </span>
+        <p> 
+        <span *ngFor="let p of logg.message_parametr" class="mx-2"> {{ p.name }} - {{ p.body }}  </span>
+        </p>    
+
+</div>
