@@ -15,7 +15,8 @@ export class LoggBrowserComponent implements OnInit, OnDestroy {
 
   loggObjSubs : Subscription;    
   loggObj : Array<IloggObject> = [];
-  
+  LoggMessageTypes: typeof LoggMessageTypes = LoggMessageTypes;
+
   constructor(private loggServise : LoggOperatorService, private apiServise : RequestRouterService ) {
   }
 

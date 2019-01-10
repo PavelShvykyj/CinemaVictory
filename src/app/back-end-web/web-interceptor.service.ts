@@ -23,7 +23,9 @@ export class WebInterceptorService implements HttpInterceptor {
         message_date: new Date().toLocaleDateString()+"_"+new Date().toLocaleTimeString(),
         message_name: req.url,
         message_type: LoggMessageTypes.Response,
-        message_parametr: [{ name: req.status.toString() }]
+        message_parametr: [{ name: req.status.toString()}]
+        // очень большой объем
+        //message_parametr: [{ name: req.status.toString(), body: {ans : JSON.stringify(req.body) }  }]
       }
     } else if (req instanceof HttpRequest) {
       loggMessage = {

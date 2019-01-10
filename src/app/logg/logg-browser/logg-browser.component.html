@@ -5,10 +5,14 @@
 </div>
 <div *ngFor="let logg of loggObj"> 
         <span class="mx-2"> {{ logg.message_date }} </span>
-        <span class="mx-2"> {{ logg.message_type }} </span>
+        <span class="mx-2"> {{ LoggMessageTypes[logg.message_type] }} </span>
         <span class="mx-2"> {{ logg.message_name }} </span>
-        <p> 
-        <span *ngFor="let p of logg.message_parametr" class="mx-2"> {{ p.name }} - {{ p.body }}  </span>
-        </p>    
-
+        <div *ngFor="let p of logg.message_parametr" class="mx-2"> 
+            {{ p.name }} 
+            <ul>
+                <li *ngFor="let pair of p.body | mapToIterable ">
+                     {{ pair.key }} {{ pair.value }}
+                </li>    
+            </ul>
+        </div>    
 </div>
