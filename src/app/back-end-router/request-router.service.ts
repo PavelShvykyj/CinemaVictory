@@ -25,8 +25,8 @@ import 'rxjs/add/observable/merge';
 import * as _ from 'underscore';
 import { IdataObject } from '../HallBrowser/idata-object';
 import { async } from '@angular/core/testing';
-import { resolve, reject } from 'q';
-import { error } from 'util';
+
+
 
 
 @Injectable()

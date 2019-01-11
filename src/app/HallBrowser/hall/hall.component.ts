@@ -20,10 +20,14 @@ import {
   IGetHallResponseViewModel,
   ITicketCategoryPriceViewModel
 } from '../../iback-end';
+
+import { IloggObject, IloggParametr } from '../../ilogg';
+
 import { Observable } from 'rxjs/Observable';
 import printJS from 'print-js/src/index';
 import { IfObservable } from 'rxjs/observable/IfObservable';
-import { HallShowStatus, MessageSate, TicketOperations } from '../../global_enums'
+import { HallShowStatus, MessageSate, TicketOperations, LoggMessageTypes } from '../../global_enums'
+
 
 @Component({
   selector: 'hall',
@@ -255,6 +259,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   PrintSelected(toPrint?: Array<IChairStateViewModelInternal>) {
+    this.SetLoggMessageButtonPress('Повторная печать');
     if (!toPrint) {
       toPrint = this.chairsInWork;
     }
@@ -282,6 +287,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   async StartSaleSelected() {
+    this.SetLoggMessageButtonPress('Начать продажу')
     // если ничего не отмечено - ничего и не делаем
     if (this.chairsInWork.length == 0) {
       return;
@@ -329,6 +335,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   FinishSaleSelected() {
+    this.SetLoggMessageButtonPress('Завершить продажу')
     this.showStatus = this.showHallStatus.Defoult;
     // если ничего не отмечено - ничего и не делаем
     if (this.chairsInWork.length == 0) {
@@ -359,6 +366,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   SearchOperationForm() {
+    this.SetLoggMessageButtonPress('Поиск');
     this.ClearSelected();
     if (this.showStatus == this.showHallStatus.Search) {
       this.showStatus = this.showHallStatus.Defoult;
@@ -368,6 +376,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ReserveOperationForm() {
+    this.SetLoggMessageButtonPress('Бронь');
     this.ClearSelected();
 
     if (this.showStatus == this.showHallStatus.Reserving) {
@@ -379,6 +388,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   CancelOperationForm() {
+    this.SetLoggMessageButtonPress('Отмена билетов');
     this.ClearSelected();
     if (this.showStatus == this.showHallStatus.Cancel) {
       this.showStatus = this.showHallStatus.Defoult;
@@ -392,6 +402,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   OnCancelActionCancel(WithPay: Boolean) {
+    this.SetLoggMessageMetod('OnCancelActionCancel',[{name : 'WithPay', body: {value :  WithPay}}]);
     console.log('WithPay', WithPay);
     if (WithPay) {
 
@@ -413,6 +424,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   OnActionSearchByPhone(ActionFormValues: IdataObject) {
+    this.SetLoggMessageMetod('OnActionSearchByPhone',[]);
     /// почистили
     this.ClearSelected();
 
@@ -471,6 +483,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   OnActionSearch(ActionFormValues: IdataObject) {
+    this.SetLoggMessageMetod('OnActionSearch',[]);
     /// почистили
     this.ClearSelected();
 
@@ -530,7 +543,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   OnReserveActionPrint(ActionFormValues: IdataObject) {
-
+    this.SetLoggMessageMetod('OnReserveActionPrint',[]);
     if (this.chairsInWork.length == 0) {
       return;
     }
@@ -539,6 +552,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   OnReserveActionPay(ActionFormValues: IdataObject) {
+    this.SetLoggMessageMetod('OnReserveActionPay',[]);
     // если ничего не отмечено - ничего и не делаем
     if (this.chairsInWork.length == 0) {
       return;
@@ -579,6 +593,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   OnActionResete() {
+    this.SetLoggMessageMetod('OnActionResete',[]);
     this.ClearSelected();
 
 
@@ -602,10 +617,12 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   OnCancelActionResete() {
+    this.SetLoggMessageMetod('OnCancelActionResete',[]);
     this.OnActionResete();
   }
 
   OnReserveActionReserve(ActionFormValues: IdataObject) {
+    this.SetLoggMessageMetod('OnReserveActionReserve',[]);
     // если ничего не отмечено - ничего и не делаем
     if (this.chairsInWork.length == 0) {
       return;
@@ -886,6 +903,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   async  ExecuteQueue() {
+    this.SetLoggMessageButtonPress('Данные на сайт');
     let size = await this.apiServis.RoutGetBufferSize();
     this.AddFormateMessage('Отправляю данные ( всего ' + size + ')', this.messageSate.Info);
     try {
@@ -914,8 +932,34 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
     this.messageComponent.AddMessage(new Date().toISOString() + ' ' + message, imp);
   }
 
+  SetLoggMessageButtonPress(buttonName : string) {
+    let logMessage: IloggObject = {
+      message_date : new Date(),
+      message_type : LoggMessageTypes.Interface,
+      message_name : buttonName,
+      message_parametr : []
+    }
+    this.SetLoggMessage(logMessage)
+  }
 
+  SetLoggMessageMetod(metodName : string, metodParams : Array<IloggParametr>) {
+    let logMessage: IloggObject = {
+      message_date : new Date(),
+      message_type : LoggMessageTypes.Metod,
+      message_name : metodName,
+      message_parametr : metodParams
+    }
+    this.SetLoggMessage(logMessage)
+  }
+
+
+  SetLoggMessage(logMessage: IloggObject) {
+    this.apiServis.RoutSetLoggMessage(logMessage)
+  }
+
+  
   async Refresh1CData() {
+    this.SetLoggMessageButtonPress('Данные на 1С');
     this.AddLongFormateMessage('Попытка пердачи двнных в 1С...', this.messageSate.Info);
     let today = new Date();
     let itemDay = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 10, 0, 0, 0, 0);

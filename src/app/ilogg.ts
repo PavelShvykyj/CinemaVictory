@@ -10,5 +10,5 @@ export interface IloggObject {
     message_type : LoggMessageTypes;
     message_name : string;
     message_parametr : Array<IloggParametr>;
-    message_date : string;
+    message_date : Date;
 }

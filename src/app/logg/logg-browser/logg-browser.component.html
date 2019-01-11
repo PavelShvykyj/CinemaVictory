@@ -4,7 +4,7 @@
     <button class="btn btn-dark mx-2" (click) = "SaveLog()" > Save log </button>
 </div>
 <div *ngFor="let logg of loggObj"> 
-        <span class="mx-2"> {{ logg.message_date }} </span>
+        <span class="mx-2"> {{ logg.message_date  | date:'fullTime' }} </span>
         <span class="mx-2"> {{ LoggMessageTypes[logg.message_type] }} </span>
         <span class="mx-2"> {{ logg.message_name }} </span>
         <div *ngFor="let p of logg.message_parametr" class="mx-2"> 

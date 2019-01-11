@@ -20,7 +20,7 @@ export class WebInterceptorService implements HttpInterceptor {
     let loggMessage: IloggObject;
     if (req instanceof HttpResponse) {
       loggMessage = {
-        message_date: new Date().toLocaleDateString()+"_"+new Date().toLocaleTimeString(),
+        message_date: new Date(),
         message_name: req.url,
         message_type: LoggMessageTypes.Response,
         message_parametr: [{ name: req.status.toString()}]
@@ -29,14 +29,14 @@ export class WebInterceptorService implements HttpInterceptor {
       }
     } else if (req instanceof HttpRequest) {
       loggMessage = {
-        message_date: new Date().toLocaleDateString()+"_"+new Date().toLocaleTimeString(),
+        message_date: new Date(),
         message_name: req.url,
         message_type: LoggMessageTypes.Request,
         message_parametr: [{ name: req.method, body: req.body }]
       } 
     } else {
       loggMessage = {
-        message_date: new Date().toLocaleDateString()+"_"+new Date().toLocaleTimeString(),
+        message_date: new Date(),
         message_name: "101",
         message_type: LoggMessageTypes.Response,
         message_parametr: [{ name: "time out" }]
