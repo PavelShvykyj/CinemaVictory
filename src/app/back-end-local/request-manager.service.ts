@@ -1,3 +1,4 @@
+
 import { Injectable } from '@angular/core';
 import {
   IbackEnd,
@@ -73,6 +74,26 @@ export class RequestManagerService implements IbackEnd {
     /// берем объект логг из логг-оператор ; вызываем функцию 1С ; чистим объект-логг
     if (typeof xForm1C != 'undefined' ){
       xForm1C.SaveLogg(JSON.stringify(this.logOperator.LoggObj));
+    }
+  }
+
+  async TakeLoggFiles(takeLogFiles,skipLogFiles){
+    let logStrings : any = await xForm1C.TakeLoggFiles(takeLogFiles,skipLogFiles);
+    
+    
+    this.logOperator.LoggObj = [];
+    
+    // logStrings - это массив от 1С не типовый массив typescript
+    // но унего есть методы Count() и Get()
+    // это можно выяснить положив в лог сам logStrings 
+    // оно нам свойсва его покажет там для этого пайп есть
+    let MaxArray : number = logStrings.Count()-1;
+    for (let index = 0; index <= MaxArray; index++) {
+      let element = logStrings.Get(index);
+      let logMessages : Array<IloggObject> = JSON.parse(element);
+      logMessages.forEach(message => {
+        this.logOperator.SetLoggMessage(message);
+      });
     }
   }
 

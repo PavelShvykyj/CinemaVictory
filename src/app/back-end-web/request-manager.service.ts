@@ -14,7 +14,7 @@ import {  IbackEnd,
           ISessionData,
           IHallInfo } from '../iback-end'
 import { LoggMessageTypes } from '../global_enums'
-import { IloggObject } from '../ilogg';
+import { IloggObject, IloggParametr } from '../ilogg';
           
 
 import { IdataObject } from '../HallBrowser/idata-object';
@@ -571,6 +571,19 @@ export class RequestManagerService implements IbackEnd {
 
   }
 
+  SetBodySyncTicketsLogMessage(blockSeats, hallState, typeMessage : LoggMessageTypes){
+    let body : Array<IloggParametr> = [];
+    body.push({name : 'blockSeats', body : {data :  JSON.stringify(blockSeats)}  });
+    body.push({name : 'hallState', body :  {data :  JSON.stringify(hallState)}});
+    
+    let message : IloggObject = {
+      message_type  : typeMessage,
+      message_name  : 'SyncTickets',
+      message_parametr : body,
+      message_date :  new Date()
+    }
+    this.SetLoggMessage(message);
+  }
   
   SyncTickets(currentState :  ISyncTicketsRequestViewModel) : Promise<ISyncTicketsResponseViewModelInternal> | null
   { 
@@ -589,6 +602,7 @@ export class RequestManagerService implements IbackEnd {
     }
     let headers = new HttpHeaders().append('Authorization','Bearer '+this._token).append('Content-Type','text/json')
     let connection = this.BASE_URL+"/tickets/sync";  
+    this.SetBodySyncTicketsLogMessage(currentState.blockSeats,currentState.hallState,LoggMessageTypes.RequestBody);
     let postBody = {
                     idHall: this.HALL_ID,
                     starts: currentState.starts, 
@@ -609,6 +623,7 @@ export class RequestManagerService implements IbackEnd {
                     {
                       console.log('ok in web serveice',response);
                       let resoult : ISyncTicketsResponseViewModelInternal  =  this.ConvertSisionDataToSisionDataInternal(response);
+                      this.SetBodySyncTicketsLogMessage([],resoult.hallState,LoggMessageTypes.ResponseBody);
                       return resoult;
                     })
                   .catch(error => 
@@ -616,8 +631,10 @@ export class RequestManagerService implements IbackEnd {
                       if (typeof error.error != 'undefined') {
                         if(typeof error.error.hallState != 'undefined'){
                           error.error.hallState = this.ConvertHallStateToHallStateInternal(error.error.hallState);  
+                          this.SetBodySyncTicketsLogMessage([],error.error.hallState,LoggMessageTypes.ErrorResponseBody);  
                         }
                       } 
+                      this.SetBodySyncTicketsLogMessage([],[],LoggMessageTypes.ErrorResponseBody);  
                       throw error
                     });
                  

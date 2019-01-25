@@ -43,7 +43,7 @@ export class AppComponent implements OnInit, OnDestroy {
       });
     this.apiServis.changeEmittedLoginName$.subscribe(text => { this.currentUserName = text});
     this.subsLoggObjs = this.logOperator.log$.subscribe(message =>{
-       if(this.logOperator.LoggObj.length > 50) {
+       if(this.logOperator.LoggObj.length > 50 && this.logOperator.AVTO_SAVE) {
          this.apiServis.RoutSaveLogg();
          this.logOperator.ClearLog();
        }

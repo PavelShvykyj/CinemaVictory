@@ -13,7 +13,8 @@ export class LoggOperatorService {
   private _logObject :  Array<IloggObject> = []; 
 
   log$ : Observable<IloggObject> = this._log.asObservable();
-  LOGG_ON: boolean = true;
+  LOGG_ON : boolean = true;
+  AVTO_SAVE : boolean = true;
 
   SetLoggMessage(loggMessage : IloggObject) {
     if (!this.LOGG_ON) { return }

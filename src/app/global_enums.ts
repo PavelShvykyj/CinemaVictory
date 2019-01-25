@@ -2,7 +2,10 @@ export enum LoggMessageTypes {
   Request,
   Response,
   Metod,
-  Interface
+  Interface,
+  RequestBody,
+  ResponseBody,
+  ErrorResponseBody
 }
 
 export enum TicketOperations {

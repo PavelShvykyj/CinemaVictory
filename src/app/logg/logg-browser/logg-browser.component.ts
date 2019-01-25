@@ -13,6 +13,8 @@ import { IloggObject } from '../../ilogg';
 })
 export class LoggBrowserComponent implements OnInit, OnDestroy {
 
+  takeLogFiles : number = 1;
+  skipLogFiles : number = 0;
   loggObjSubs : Subscription;    
   loggObj : Array<IloggObject> = [];
   LoggMessageTypes: typeof LoggMessageTypes = LoggMessageTypes;
@@ -28,6 +30,7 @@ export class LoggBrowserComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.loggServise.AVTO_SAVE = true;
     this.loggObjSubs.unsubscribe()
   }
   
@@ -36,12 +39,38 @@ export class LoggBrowserComponent implements OnInit, OnDestroy {
   }
   
   ClearLog(){
+    this.loggServise.AVTO_SAVE = true;
     this.loggServise.ClearLog();
     this.UpdateLog();
   }
 
   SaveLog(){
-    this.apiServise.RoutSaveLogg();
+    if (this.loggServise.AVTO_SAVE)
+    {
+      this.apiServise.RoutSaveLogg()
+      this.ClearLog();
+    }
   }
 
+  GetLastLogFiles(){
+    this.loggServise.AVTO_SAVE = false;
+    this.apiServise.RoutTakeLoggFiles(this.takeLogFiles,this.skipLogFiles)
+  }
+
+  PreviousFile(){
+    
+    if(this.skipLogFiles == 0){
+      return
+    }
+
+    this.ClearLog();
+    this.skipLogFiles = this.skipLogFiles-1;
+    this.GetLastLogFiles()
+  }
+
+  NextFile(){
+    this.ClearLog();
+    this.skipLogFiles = this.skipLogFiles+1;
+    this.GetLastLogFiles()
+  }
 }

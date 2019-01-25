@@ -518,6 +518,10 @@ export class RequestRouterService {
     this.localServise.SetLoggMessage(logMessage);
   }
 
+  RoutTakeLoggFiles(takeLogFiles,skipLogFiles){
+    this.localServise.TakeLoggFiles(takeLogFiles,skipLogFiles);
+  }
+
   RoutChangeLoggStatus(loggStatus : boolean) {
     this.localServise.logOperator.LOGG_ON  = loggStatus;
   }
