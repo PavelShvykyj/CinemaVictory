@@ -959,6 +959,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
 
   
   async Refresh1CData() {
+    this.apiServis.RoutStopAutoSaveLogg();
     this.SetLoggMessageButtonPress('Данные на 1С');
     this.AddLongFormateMessage('Попытка пердачи двнных в 1С...', this.messageSate.Info);
     let today = new Date();
@@ -981,7 +982,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
     else {
       this.AddFormateMessage('Завершена попытка пердачи данных в 1С', this.messageSate.Info);
     }
-
+    this.apiServis.RoutStartAutoSaveLogg();
   }
 
 }

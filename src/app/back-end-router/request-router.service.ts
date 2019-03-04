@@ -526,7 +526,13 @@ export class RequestRouterService {
     this.localServise.logOperator.LOGG_ON  = loggStatus;
   }
 
-  
+  RoutStopAutoSaveLogg() {
+    this.localServise.logOperator.AVTO_SAVE = false;
+  }
+
+  RoutStartAutoSaveLogg() {
+    this.localServise.logOperator.AVTO_SAVE = true;
+  }
 
 }
 

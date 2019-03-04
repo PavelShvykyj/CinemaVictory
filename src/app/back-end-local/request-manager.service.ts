@@ -73,9 +73,30 @@ export class RequestManagerService implements IbackEnd {
   SaveLogg(){
     /// берем объект логг из логг-оператор ; вызываем функцию 1С ; чистим объект-логг
     if (typeof xForm1C != 'undefined' ){
-      xForm1C.SaveLogg(JSON.stringify(this.logOperator.LoggObj));
+      let LoggString = this.GetJsonString(this.logOperator.LoggObj,'SaveLogg');
+      xForm1C.SaveLogg(LoggString);
     }
   }
+
+  GetLoggMassageMetod(message : string) : IloggObject {
+    let logMessage: IloggObject = {
+      message_date : new Date(),
+      message_type : LoggMessageTypes.Metod,
+      message_name : message,
+      message_parametr : []
+    }
+    return logMessage
+  }
+
+  /// пробуем конвертировать с логированием
+  GetJsonString(object : IdataObject , message : string  ) : string {
+    let LogMessage = this.GetLoggMassageMetod(message);
+    this.SetLoggMessage(LogMessage);
+    let result = JSON.stringify(object);
+    this.SetLoggMessage(this.GetLoggMassageMetod('sucsess'));
+    return result;
+  }
+
 
   async TakeLoggFiles(takeLogFiles,skipLogFiles){
     let logStrings : any = await xForm1C.TakeLoggFiles(takeLogFiles,skipLogFiles);
@@ -173,7 +194,8 @@ export class RequestManagerService implements IbackEnd {
       let subs = this.Observ1CSessionsInfo$.subscribe(resoult => {
         stringDataFrom1C = resoult;
       })
-      let dataTo1C: string = JSON.stringify({ point: "SessionsInfoGetByDate", key: selectedDate })
+      //let dataTo1C: string = JSON.stringify({ point: "SessionsInfoGetByDate", key: selectedDate })
+      let dataTo1C: string = this.GetJsonString({ point: "SessionsInfoGetByDate", key: selectedDate },'SessionsInfoGetByDate');
       Call1C(dataTo1C);
       while (stringDataFrom1C == "" && timeRemain <= timeOut) {
         this.IncrWithdelay(timeRemain, step, step).then(res => { timeRemain = res });
@@ -438,7 +460,9 @@ export class RequestManagerService implements IbackEnd {
       let subs = this.Observ1CHallInfo$.subscribe(resoult => {
         stringDataFrom1C = resoult;
       })
-      let dataTo1C: string = JSON.stringify({ point: "SetHallInfo", data: hallInfo })
+      //let dataTo1C: string = JSON.stringify({ point: "SetHallInfo", data: hallInfo })
+      let dataTo1C: string = this.GetJsonString({ point: "SetHallInfo", data: hallInfo },'SetHallInfo');
+      
       Call1C(dataTo1C);
       while (stringDataFrom1C == "" && timeRemain <= timeOut) {
         timeRemain = timeRemain + step;
@@ -483,7 +507,8 @@ export class RequestManagerService implements IbackEnd {
       let subs = this.Observ1CSessionsInfo$.subscribe(resoult => {
         stringDataFrom1C = resoult;
       })
-      let dataTo1C: string = JSON.stringify({ point: "SetSessionsInfoGetByDate", data: sessionData, key: selectedDate })
+      //let dataTo1C: string = JSON.stringify({ point: "SetSessionsInfoGetByDate", data: sessionData, key: selectedDate })
+      let dataTo1C: string = this.GetJsonString({ point: "SetSessionsInfoGetByDate", data: sessionData, key: selectedDate },'SetSessionsInfoGetByDate');
       Call1C(dataTo1C);
 
       while (stringDataFrom1C == "" && timeRemain <= timeOut) {
@@ -606,7 +631,8 @@ export class RequestManagerService implements IbackEnd {
         obj1CData.Bufer.buferData = inBufer;
       }
 
-      let dataTo1C: string = JSON.stringify({ point: "SetHallState", data: obj1CData, key: currentKey })
+      //let dataTo1C: string = JSON.stringify({ point: "SetHallState", data: obj1CData, key: currentKey })
+      let dataTo1C: string = this.GetJsonString({ point: "SetHallState", data: obj1CData, key: currentKey },'SetHallState');
       Call1C(dataTo1C);
 
       while (stringDataFrom1C == "" && timeRemain <= timeOut) {

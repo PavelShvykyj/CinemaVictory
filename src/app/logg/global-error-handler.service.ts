@@ -26,7 +26,7 @@ export class GlobalErrorHandlerService implements ErrorHandler {
       message_date: new Date(),
       message_name: 'global error handler',
       message_type: LoggMessageTypes.GlobalError,
-      message_parametr: [{ name: 'error_content', body: error }]
+      message_parametr: [{ name: 'error_content', body: {description : error.description, stack : error.stack }  }]
     } 
 
     
