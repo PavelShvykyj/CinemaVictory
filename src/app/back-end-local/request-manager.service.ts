@@ -73,8 +73,10 @@ export class RequestManagerService implements IbackEnd {
   SaveLogg(){
     /// берем объект логг из логг-оператор ; вызываем функцию 1С ; чистим объект-логг
     if (typeof xForm1C != 'undefined' ){
+      this.logOperator.AVTO_SAVE = false;
       let LoggString = this.GetJsonString(this.logOperator.LoggObj,'SaveLogg');
       xForm1C.SaveLogg(LoggString);
+      this.logOperator.AVTO_SAVE = true;
     }
   }
 
