@@ -14,18 +14,19 @@ import {  IbackEnd,
           ISessionData,
           IHallInfo } from '../iback-end'
 import { LoggMessageTypes } from '../global_enums'
+import { LoggOperatorService } from '../logg/logg-operator.service';
 import { IloggObject, IloggParametr } from '../ilogg';
-          
-
 import { IdataObject } from '../HallBrowser/idata-object';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
+
+
 /// <reference types="crypto-js" />
 import * as CryptoJS from 'crypto-js';
 import * as _ from 'underscore';
 import { HubConnection, HubConnectionBuilder } from '@aspnet/signalr'
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
-import { LoggOperatorService } from '../logg/logg-operator.service';
+
 
 
 @Injectable()

@@ -1,3 +1,4 @@
+import { SmsManagerService } from './../back-end-web/sms-manager.service';
 import { Injectable, Input } from '@angular/core';
 import { RequestManagerService as webManagerServise  } from '../back-end-web/request-manager.service';
 import { WebInterceptorService as WebInterceptor  } from '../back-end-web/web-interceptor.service';
@@ -41,7 +42,7 @@ export class RequestRouterService {
   @Input() currentBackEndName: string
 
 
-  constructor(private webServise: webManagerServise, private localServise: localManagerServise, private webInterseptor : WebInterceptor) {
+  constructor(private webServise: webManagerServise, private localServise: localManagerServise, private smsSevise : SmsManagerService) {
     this.backends.push(this.webServise);
     this.backends.push(this.localServise);
     this.changeHallState$ = Observable.merge(this.webServise.changeHallState$, this.localServise.changeHallState$);
@@ -465,6 +466,11 @@ export class RequestRouterService {
     this.localServise.RESPONSE_WAIT_STEP = +parametrs.RESPONSE_WAIT_STEP;
     this.localServise.RESERVE_PRICE = +parametrs.RESERVE_PRICE;
     this.localServise.logOperator.LOGG_ON   = parametrs.LOGG_ON;
+    this.localServise.SMS_LOGIN = parametrs.SMS_LOGIN;
+    this.localServise.SMS_PASSWORD = parametrs.SMS_PASSWORD;
+    this.smsSevise.SMS_LOGIN = parametrs.SMS_LOGIN;
+    this.smsSevise.SMS_PASSWORD = parametrs.SMS_PASSWORD;
+
   }
 
   RoutGetParametrs() {
@@ -533,6 +539,12 @@ export class RequestRouterService {
   RoutStartAutoSaveLogg() {
     this.localServise.logOperator.AVTO_SAVE = true;
   }
+
+  async RoutSendSMS(smsContent: string , recipient : string ) {
+    this.localServise.SendSMS(smsContent, recipient);
+    await this.delay(300);
+  }
+
 
 }
 

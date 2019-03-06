@@ -169,7 +169,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
     }
     else {
       if (currentLenth > maxLenth) {
-        prefix = prefix.substr(0, maxLenth - 1);
+        prefix = prefix.substr(0, maxLenth);
       }
     }
     //console.log('prefix', prefix);
@@ -646,6 +646,38 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
       element.t = t;
     })
 
+    // данные для СМС номер телефона всегда в формате 38хххххххххх
+    let phoneForSMS = (ActionFormValues.phone as string).replace(RegExp(/\+/, 'g'), "")
+                                                        .replace(RegExp("-", 'g'), "")
+                                                        .replace(RegExp(" ", 'g'), "")
+                                                        .replace(RegExp(/\)/, 'g'), "")
+                                                        .replace(RegExp(/\(/, 'g'), "");
+    if(phoneForSMS.substr(0,2) != "38") {
+      let firstChar = phoneForSMS.charAt(0);
+      let prefix = '';
+      switch (firstChar) {
+        case "0":
+          prefix = '38'
+          break;
+        case "8":
+          prefix = '3'
+          break;
+      }
+
+      phoneForSMS = prefix+phoneForSMS;
+
+    }  
+    
+    let SMSdata : IdataObject = {
+      phone : phoneForSMS,
+      count : this.chairsInWork.length,
+      code  : t.substr(0, 6),
+      starts : this.sessionData.currentSession.starts.substr(0,16)
+    }; 
+    
+
+
+
     // начинаем процесс продажи
 
     this.StartAction().then(resoult => {
@@ -663,6 +695,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
           if (resoult) {
             console.log('sucsesful reserve.')
             this.reserveComponent.SetSecretCode(t.substr(0, 6));
+            this.SendSMS(`код : ${SMSdata.code}, квитків : ${SMSdata.count}, ${SMSdata.starts}`,SMSdata.phone);
           }
         });
       }
@@ -985,4 +1018,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
     this.apiServis.RoutStartAutoSaveLogg();
   }
 
+  async SendSMS(messege: string, recipient : string ) {
+    await this.apiServis.RoutSendSMS(messege,recipient);
+  }
 }

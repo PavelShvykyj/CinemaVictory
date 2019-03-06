@@ -20,7 +20,7 @@ import * as _ from 'underscore';
 import { HallShowStatus, MessageSate, TicketOperations } from '../global_enums'
 import { LoggOperatorService } from '../logg/logg-operator.service';
 import { LoggMessageTypes } from '../global_enums'
-import { IloggObject } from '../ilogg';
+import { IloggObject, IloggParametr } from '../ilogg';
 
 @Injectable()
 export class RequestManagerService implements IbackEnd {
@@ -57,6 +57,10 @@ export class RequestManagerService implements IbackEnd {
   RESPONSE_TIME_OUT = 3000;
   RESPONSE_WAIT_STEP = 500;
   LOCAL_SERVISE_BLOCED = true; // по умолчанию не ясно где сайт запускается, если в окружении 1С она его включит
+  SMS_LOGIN = '380662828954';
+  SMS_PASSWORD = 'peremogasms123';
+
+
 
   webUserName: string = "380662828954";
   webPassword: string = "Di4vF67KBw2T";
@@ -89,6 +93,20 @@ export class RequestManagerService implements IbackEnd {
     }
     return logMessage
   }
+
+  GetRequstFormatedMessage(messageContent : string) : IloggObject  {
+    let par : IloggParametr =  {name : 'sms content ', body : {content :  messageContent} };
+    let message : IloggObject = {
+      message_type  : LoggMessageTypes.Metod,
+      message_name  : 'send sms',
+      message_parametr : [par],
+      message_date :  new Date()
+    };
+   
+    return message;
+    
+  }
+
 
   /// пробуем конвертировать с логированием
   GetJsonString(object : IdataObject , message : string  ) : string {
@@ -464,7 +482,6 @@ export class RequestManagerService implements IbackEnd {
       })
       //let dataTo1C: string = JSON.stringify({ point: "SetHallInfo", data: hallInfo })
       let dataTo1C: string = this.GetJsonString({ point: "SetHallInfo", data: hallInfo },'SetHallInfo');
-      
       Call1C(dataTo1C);
       while (stringDataFrom1C == "" && timeRemain <= timeOut) {
         timeRemain = timeRemain + step;
@@ -930,6 +947,40 @@ export class RequestManagerService implements IbackEnd {
 
   }
 
+
+  
+
+ 
+ private GetSMSFormated(smscontent : string ,smsrecipient : string) : string {
+  let SmsFormatedString : string = `<?xml version='1.0' encoding='utf-8'?>
+  <request>
+  <operation>SENDSMS</operation>
+  <message start_time=' AUTO ' end_time=' AUTO ' lifetime='4' rate='120' desc='' source='Peremoga'>
+  <body>${smscontent}</body> 
+  <recipient>${smsrecipient}</recipient>
+  </message>
+  </request>`;
+  
+  //`<?xml version="1.0" encoding="utf-8"?><request><operation>SENDSMS</operation><message start_time="AUTO" end_time="AUTO" lifetime="4" rate="60" desc='' source='InfoCentr' "><recipient>${smsrecipient}</recipient><body>${smscontent}</body></message></request>`;
+  return SmsFormatedString;
+ }
+
+  SendSMS(smscontent : string ,smsrecipient : string ) {
+
+    let CredentialEncoded = btoa(this.SMS_LOGIN +":"+this.SMS_PASSWORD);
+    let PostBody = this.GetSMSFormated(smscontent,smsrecipient)
+    let LogMessage =  this.GetRequstFormatedMessage(PostBody);
+    this.SetLoggMessage(LogMessage);
+
+    let dataTo1C: string = JSON.stringify({ point: "sendSMS", data: {login : CredentialEncoded, message :  PostBody} });
+    Call1C(dataTo1C);
+
+
+  }
+
+
+
+
   //// Пустышки под Сигнал Р аналог
   StartHubbHallConnection() {
   }
@@ -942,5 +993,8 @@ export class RequestManagerService implements IbackEnd {
 
   OfHubbHallConnection() {
   }
+
+
+
 
 }
