@@ -11,7 +11,7 @@ import { LoggMessageTypes } from '../global_enums'
 @Injectable()
 export class WebInterceptorService implements HttpInterceptor {
 
-  DEFOULT_TIMEOUT: number = 10000;
+  DEFOULT_TIMEOUT: number = 5000;
   
 
   constructor(private logOperator: LoggOperatorService) { }

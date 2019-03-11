@@ -695,7 +695,10 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
           if (resoult) {
             console.log('sucsesful reserve.')
             this.reserveComponent.SetSecretCode(t.substr(0, 6));
-            this.SendSMS(`код : ${SMSdata.code}, квитків : ${SMSdata.count}, ${SMSdata.starts}`,SMSdata.phone);
+            if(this.apiServis.currentBackEndName != "1C") {
+              this.SendSMS(`код : ${SMSdata.code}, квитків : ${SMSdata.count}, ${SMSdata.starts}`,SMSdata.phone);
+            }
+            
           }
         });
       }

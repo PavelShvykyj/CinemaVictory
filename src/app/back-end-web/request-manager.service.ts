@@ -375,7 +375,7 @@ export class RequestManagerService implements IbackEnd {
 
 
     this._token = "";
-    let headers = new HttpHeaders().append('Authorization','none').append('Content-Type','text/json')
+    let headers = new HttpHeaders().append('Authorization','none').append('Content-Type','text/json').append('timeout','1000')
     let connection = this.BASE_URL+"/account/login";
     
     
@@ -435,7 +435,7 @@ export class RequestManagerService implements IbackEnd {
 
 
 
-    let headers = new HttpHeaders().append('Authorization','Bearer '+this._token).append('Content-Type','text/json')
+    let headers = new HttpHeaders().append('Authorization','Bearer '+this._token).append('Content-Type','text/json').append('timeout','1000')
     let connection = this.BASE_URL+"/movies/get/"+idMovie;
     return this.http.get(connection,
                         {headers:headers,
@@ -461,7 +461,7 @@ export class RequestManagerService implements IbackEnd {
       return myPromise;
     }
 
-    let headers = new HttpHeaders().append('Authorization','Bearer '+this._token).append('Content-Type','text/json')
+    let headers = new HttpHeaders().append('Authorization','Bearer '+this._token).append('Content-Type','text/json').append('timeout','1000')
     let connection = this.BASE_URL+"/movies/getall/0/"+this.PACKAGE_MOVIES_SIZE.toString();  
     return this.http.get(connection,
                         {headers:headers,
@@ -491,7 +491,7 @@ export class RequestManagerService implements IbackEnd {
     }
 
     // /ticketcategories/getall
-    let headers = new HttpHeaders().append('Authorization','Bearer '+this._token).append('Content-Type','text/json')
+    let headers = new HttpHeaders().append('Authorization','Bearer '+this._token).append('Content-Type','text/json').append('timeout','1000')
     let connection = this.BASE_URL+"/ticketcategories/getall";  
     return this.http.get(connection,
                         {headers:headers,
@@ -524,7 +524,7 @@ export class RequestManagerService implements IbackEnd {
 
 
     // /ticketcategories/getall
-    let headers = new HttpHeaders().append('Authorization','Bearer '+this._token).append('Content-Type','text/json')
+    let headers = new HttpHeaders().append('Authorization','Bearer '+this._token).append('Content-Type','text/json').append('timeout','1000')
     let connection = this.BASE_URL+"/seatcategories/getall";  
     return this.http.get(connection,
                         {headers:headers,
@@ -557,7 +557,7 @@ export class RequestManagerService implements IbackEnd {
 
     
     // /ticketcategories/getall
-    let headers = new HttpHeaders().append('Authorization','Bearer '+this._token).append('Content-Type','text/json')
+    let headers = new HttpHeaders().append('Authorization','Bearer '+this._token).append('Content-Type','text/json').append('timeout','1000')
     let connection = this.BASE_URL+"/hall/get/"+this.HALL_ID;  
     return this.http.get(connection,
                         {headers:headers,
@@ -657,7 +657,7 @@ export class RequestManagerService implements IbackEnd {
       return myPromise;
     }
     
-    let headers = new HttpHeaders().append('Authorization','Bearer '+this._token).append('Content-Type','text/json')
+    let headers = new HttpHeaders().append('Authorization','Bearer '+this._token).append('Content-Type','text/json').append('timeout','1000')
     let connection = this.BASE_URL+"/sessions/getbydate";
    
     let postBody = {
