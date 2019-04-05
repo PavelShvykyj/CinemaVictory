@@ -154,7 +154,7 @@ export interface ISyncTicketsResponseViewModelInternal
 }
 
 export interface ICurrentSessionInfo{
-    currentDate : string, 
+    currentDate : Date, 
     currentMovie : IGetMovieResponseViewModel,
     currentSession : IGetSessionResponseViewModel
 }

@@ -1,3 +1,5 @@
+
+import { ActionType } from './../../global_enums';
 import { Component, OnInit, OnDestroy, ViewChildren, QueryList, ViewChild, ChangeDetectorRef, AfterViewInit } from '@angular/core';
 import { HallChairComponent } from '../hall-chair/hall-chair.component';
 import { MessagesComponent } from '../messages/messages.component';
@@ -27,7 +29,7 @@ import { Observable } from 'rxjs/Observable';
 import printJS from 'print-js/src/index';
 import { IfObservable } from 'rxjs/observable/IfObservable';
 import { HallShowStatus, MessageSate, TicketOperations, LoggMessageTypes } from '../../global_enums'
-
+import { PermissionsService, Action } from "../permissions.service";
 
 @Component({
   selector: 'hall',
@@ -97,7 +99,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
 
   GLOBAL_PARAMETRS;
 
-  constructor(private apiServis: RequestRouterService, private changeDetector: ChangeDetectorRef) {
+  constructor(private apiServis: RequestRouterService, private changeDetector: ChangeDetectorRef, private permissionServise : PermissionsService) {
     this.hallState$ = apiServis.changeHallState$;
     this.hallStateSubscription = this.hallState$.subscribe(resoult => {
       //console.log('signal starts ',resoult.chairsData.starts);
@@ -287,6 +289,13 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   async StartSaleSelected() {
+    
+    let accept  = this.permissionServise.CheckPermission(new Action({name : 'state', value : this.sessionData}, ActionType.StartSale));
+    if (!accept) {
+      this.AddFormateMessage('Доступ запрещен', this.messageSate.Error);
+      return
+    }
+
     this.SetLoggMessageButtonPress('Начать продажу')
     // если ничего не отмечено - ничего и не делаем
     if (this.chairsInWork.length == 0) {
@@ -610,7 +619,6 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     else if (this.showStatus == this.showHallStatus.Search) {
-
       this.searchComponent.SetPhone('');
       this.searchComponent.SetSecretCode('');
     }
@@ -705,7 +713,6 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-
   CalculateChairPrice(status: IChairStateViewModelInternal): Array<ITicketCategoryPriceViewModel> {
 
     //let chairsCategoty : IGetHallResponseViewModel =  _.find(this.hallInfo.chairsCateoryInfo,element=>{return element.idHall == 1});
@@ -718,6 +725,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   SelectPriceChairInWork(price: number, idTicketCategory: number, chairInWork: IChairStateViewModelInternal) {
+    
     this.chairsInWork[this.chairsInWork.indexOf(chairInWork)].p = price;
     this.chairsInWork[this.chairsInWork.indexOf(chairInWork)].s.idTicketCategory = idTicketCategory;
     //this.chairsInWork.forEach(element => {
@@ -741,6 +749,18 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   OnChairSelectStatusChange(status: IChairStateViewModelInternal) {
+
+    let accept  = this.permissionServise.CheckPermission(new Action({name : 'state', value : this.sessionData}, ActionType.StartSale));
+    if (!accept) {
+      this.AddFormateMessage('Доступ запрещен', this.messageSate.Error);
+      return
+    }  
+
+    this.SetLoggMessageMetod('CheckPermissionResult',[
+      {name : 'result',
+       body : {res : accept} }
+    ]);
+  
 
     if (this.sessionData.currentSession) {
       // массив без обрабатываемого елемента
@@ -888,7 +908,6 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
       });
   }
 
-
   ClearSelected() {
     this.chairsInWork = [];
     let foundComponents = this.chairList.filter(function (chair) {
@@ -988,12 +1007,10 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
     this.SetLoggMessage(logMessage)
   }
 
-
   SetLoggMessage(logMessage: IloggObject) {
     this.apiServis.RoutSetLoggMessage(logMessage)
   }
-
-  
+ 
   async Refresh1CData() {
     this.apiServis.RoutStopAutoSaveLogg();
     this.SetLoggMessageButtonPress('Данные на 1С');
