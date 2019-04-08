@@ -46,7 +46,7 @@ class UserAccessChecker implements IUserAccess {
     return CurrDate < MaxDate;
   }
 
-  private CheckAction(permission: IPermission, action: IAction): boolean {
+   CheckAction(permission: IPermission, action: IAction): boolean {
     switch (permission.name) {
       case 'AfterSessionStart':
         return this.AfterSessionStart(permission, action);
@@ -58,6 +58,13 @@ class UserAccessChecker implements IUserAccess {
 
   CheckPermission(action: IAction): boolean {
     let Passed = true;
+    // если запускаем не из 1С то неоткуда взять параметры и права 
+    // т.е. пропускаем любое действие
+    if(this.localServise.LOCAL_SERVISE_BLOCED) {
+      return Passed;
+    }
+    
+    
     this.userPermissions.forEach(permission => {
       let CanCheck: boolean = permission.actions.filter(element => { return element == action.type }).length > 0;
       this.SetLoggMessageMetod('CanCheck',[{name: permission.name, body :{actiontype : action.type, result : CanCheck , value: permission.value }}])

@@ -20,4 +20,5 @@ export interface IPermission {
 export interface IUserAccess {
     userPermissions : Array<IPermission>
     CheckPermission(action : IAction) : boolean
+    CheckAction(permission: IPermission, action: IAction): boolean
 }
