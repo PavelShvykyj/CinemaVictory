@@ -411,7 +411,16 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   OnCancelActionCancel(WithPay: Boolean) {
+    //Логирование
     this.SetLoggMessageMetod('OnCancelActionCancel',[{name : 'WithPay', body: {value :  WithPay}}]);
+    //Доступы 
+    let accept  = this.permissionServise.CheckPermission(new Action({name : 'state', value : this.sessionData}, ActionType.Cancel));
+    if (!accept) {
+      this.AddFormateMessage('Доступ запрещен', this.messageSate.Error);
+      return
+    }  
+    //Доступы 
+
     console.log('WithPay', WithPay);
     if (WithPay) {
 
@@ -562,6 +571,16 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
 
   OnReserveActionPay(ActionFormValues: IdataObject) {
     this.SetLoggMessageMetod('OnReserveActionPay',[]);
+    
+    //Доступы 
+    let accept  = this.permissionServise.CheckPermission(new Action({name : 'state', value : this.sessionData}, ActionType.StartSale));
+    if (!accept) {
+      this.AddFormateMessage('Доступ запрещен', this.messageSate.Error);
+      return
+    }  
+    //Доступы 
+    
+    
     // если ничего не отмечено - ничего и не делаем
     if (this.chairsInWork.length == 0) {
       return;
@@ -631,6 +650,16 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
 
   OnReserveActionReserve(ActionFormValues: IdataObject) {
     this.SetLoggMessageMetod('OnReserveActionReserve',[]);
+    
+      //Доступы 
+      let accept  = this.permissionServise.CheckPermission(new Action({name : 'state', value : this.sessionData}, ActionType.Cancel));
+      if (!accept) {
+        this.AddFormateMessage('Доступ запрещен', this.messageSate.Error);
+        return
+      }  
+      //Доступы 
+    
+    
     // если ничего не отмечено - ничего и не делаем
     if (this.chairsInWork.length == 0) {
       return;
