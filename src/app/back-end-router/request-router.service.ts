@@ -508,9 +508,10 @@ export class RequestRouterService {
   }
 
   RoutGetStatusError(error){
-    let statusError = 0; // undefined 
+    let statusError = 0; // undefined считается что сервер на связи
     if (typeof error.status != 'undefined'){
-      statusError = error.status;
+      // все ошибки считаем undefined т.е сервер 
+      // statusError = error.status;
     } else if(Object.getOwnPropertyNames(error).find(e=>e=="name")) {
       if(error.name = 'TimeoutError')
       statusError = 101; 
