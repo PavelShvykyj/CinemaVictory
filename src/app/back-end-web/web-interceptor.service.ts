@@ -1,17 +1,18 @@
 import { Injectable } from '@angular/core';
-import { HttpInterceptor, HttpHandler, HttpEvent, HttpRequest, HttpResponse } from '@angular/common/http';
+import { HttpInterceptor, HttpHandler, HttpEvent, HttpRequest, HttpResponse, HttpErrorResponse } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
 import { timeout, tap, catchError } from 'rxjs/operators';
 import { LoggOperatorService } from '../logg/logg-operator.service';
 import { IdataObject } from '../HallBrowser/idata-object';
 import { IloggObject } from '../ilogg';
 import { LoggMessageTypes } from '../global_enums'
+import { IfObservable } from 'rxjs/observable/IfObservable';
 
 
 @Injectable()
 export class WebInterceptorService implements HttpInterceptor {
 
-  DEFOULT_TIMEOUT: number = 5000;
+  DEFOULT_TIMEOUT: number = 15000;
   
 
   constructor(private logOperator: LoggOperatorService) { }
@@ -34,12 +35,32 @@ export class WebInterceptorService implements HttpInterceptor {
         message_type: LoggMessageTypes.Request,
         message_parametr: [{ name: req.method, body: req.body }]
       } 
-    } else {
+    } 
+    else if (req instanceof HttpErrorResponse) {
       loggMessage = {
         message_date: new Date(),
-        message_name: "101",
+        message_name: req.url,
+        message_type: LoggMessageTypes.Request,
+        message_parametr: [{ name: ` ${req.status}` , body: {err : req.error} }]}
+    }
+    else {
+     let nameProp : string ;
+     let message_name : string ;
+      if(Object.getOwnPropertyNames(req).find(e=>e=="name")) {
+        nameProp = req.name
+        message_name = "101";
+     } 
+     else{
+      message_name = "0";
+      nameProp = 'unknown'
+     }
+      
+      
+      loggMessage = {
+        message_date: new Date(),
+        message_name:  message_name,
         message_type: LoggMessageTypes.Response,
-        message_parametr: [{ name: "time out" }]
+        message_parametr: [{ name:  nameProp}]
     }
   }
   this.logOperator.SetLoggMessage(loggMessage);
@@ -71,6 +92,11 @@ export class WebInterceptorService implements HttpInterceptor {
       }),
       timeout(resoultTimeout),
       catchError(err => {
+        console.log(err);
+        console.log(err.Status);
+        console.log(typeof err);
+
+
         this.SetLoggMessage(err); 
         return Observable.throw(err);
       }));

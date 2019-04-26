@@ -38,7 +38,7 @@ export class RequestRouterService {
   changeHallState$: Observable<IChairsStatusInSessionInfo>;
   changeEmittedLoginName$ = this.emitChangeLoginName.asObservable();
   changeEmittedBackEndName$ = this.emitChangeBackEndName.asObservable();
-  internalErrors = [400, 401, 403, 406];
+  internalErrors = [400, 401, 403, 406, 0];
   @Input() currentBackEndName: string
 
 
@@ -508,10 +508,14 @@ export class RequestRouterService {
   }
 
   RoutGetStatusError(error){
-    let statusError = 101;
+    let statusError = 0; // undefined 
     if (typeof error.status != 'undefined'){
       statusError = error.status;
+    } else if(Object.getOwnPropertyNames(error).find(e=>e=="name")) {
+      if(error.name = 'TimeoutError')
+      statusError = 101; 
     }
+    
     return statusError
   } 
  

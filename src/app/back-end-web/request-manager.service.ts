@@ -39,7 +39,7 @@ export class RequestManagerService implements IbackEnd {
   CRYPTO_IV  = 'TweTnUNAAL8VMtvtMNj0Vg==';
   CASH_DESK_ID = 1;
   WEB_SERVISE_BLOCED = false;
-  SHORT_REQUEST_TIMEOUT = '2000';
+  SHORT_REQUEST_TIMEOUT = '5000';
 
   private _userData : ILoggInData;
   private _refreshLoginTimer : number;
