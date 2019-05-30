@@ -20,7 +20,7 @@
                     <messages [historyLenth]=4> </messages>
                     <div class="btn-group-vertical btn-block" role="group" aria-label="Function Menu">
                     <button type="button" [disabled]="showStatus != showHallStatus.Defoult" class="btn btn-secondary mb-1" (click) = "StartSaleSelected()">Начать продажу</button>
-                    <button type="button" [disabled]="true || showStatus == showHallStatus.Cancel || showStatus == showHallStatus.Reserving || showStatus == showHallStatus.Search" class="btn btn-secondary mb-1" (click) = "FinishSaleSelected()">Завершить продажу</button>
+                    <!--<button type="button" [disabled]="true || showStatus == showHallStatus.Cancel || showStatus == showHallStatus.Reserving || showStatus == showHallStatus.Search" class="btn btn-secondary mb-1" (click) = "FinishSaleSelected()">Завершить продажу</button>-->
                     <button type="button" [disabled]="showStatus == showHallStatus.Cancel" class="btn btn-secondary mb-1" (click) = "PrintSelected()">Повторная печать</button>
                     <button type="button" [disabled]="showStatus == showHallStatus.StartSale" class="btn btn-secondary mb-1" (click) = "SearchOperationForm()">Поиск</button>
                     <searching-operations class="fool-wight my-1 py-0" *ngIf="showStatus == showHallStatus.Search"
@@ -101,8 +101,8 @@
             <tbody>
               <tr>
                   <td class="table-hall-column-empty table-hall-column side-column" [ngClass]="{'side-column-oninternalhower': mouseStatusCoverByRow[1] }"  colspan=2>1</td>
-                  <td class="table-hall-column-empty table-hall-column"></td>
-                  <td *ngFor="let key of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]" 
+                  <!--<td class="table-hall-column-empty table-hall-column"></td>-->
+                  <td *ngFor="let key of [1,2,3,4,5,6,7,8,9,10]" 
                       class="table-hall-column-color1 table-hall-column" colspan=2
                       (mouseenter) = "OnmouseoverHallColumn(1)"
                       (mouseleave) = "OnmouseoutHallColumn(1)"
@@ -114,7 +114,8 @@
               
               <tr>
                   <td class="table-hall-column-empty table-hall-column side-column" [ngClass]="{'side-column-oninternalhower': mouseStatusCoverByRow[2] }" colspan=2>2</td>
-                  <td *ngFor="let key of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]" 
+                  <td class="table-hall-column-empty table-hall-column"></td>
+                  <td *ngFor="let key of [1,2,3,4,5,6,7,8,9]" 
                       class="table-hall-column-color1 table-hall-column" colspan=2
                       (mouseenter) = "OnmouseoverHallColumn(2)"
                       (mouseleave) = "OnmouseoutHallColumn(2)"
@@ -127,8 +128,8 @@
               
               <tr>
                   <td class="table-hall-column-empty table-hall-column side-column" [ngClass]="{'side-column-oninternalhower': mouseStatusCoverByRow[3] }" colspan=2>3</td>
-                  <td class="table-hall-column-empty table-hall-column"></td>
-                  <td *ngFor="let key of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]" 
+                  
+                  <td *ngFor="let key of [1,2,3,4,5,6,7,8,9,10]" 
                       class="table-hall-column-color1 table-hall-column" colspan=2
                       (mouseenter) = "OnmouseoverHallColumn(3)"
                       (mouseleave) = "OnmouseoutHallColumn(3)"
@@ -138,40 +139,72 @@
                   <td class="table-hall-column-empty table-hall-column side-column" [ngClass]="{'side-column-oninternalhower': mouseStatusCoverByRow[3] }" colspan=2>3</td>
               </tr>
               
-              <tr *ngFor="let rowKey of [4,5,6,7,8,9,10,11,12,13]">
+              <tr>
+                <td class="table-hall-column-empty table-hall-column side-column" [ngClass]="{'side-column-oninternalhower': mouseStatusCoverByRow[2] }" colspan=2>4</td>
+                <td class="table-hall-column-empty table-hall-column"></td>
+                <td *ngFor="let key of [1,2,3,4,5,6,7,8,9]" 
+                    class="table-hall-column-color1 table-hall-column" colspan=2
+                    (mouseenter) = "OnmouseoverHallColumn(4)"
+                    (mouseleave) = "OnmouseoutHallColumn(4)"
+                >
+                    <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]= "4" ></hall-chair>
+                </td>
+                <td class="table-hall-column-empty table-hall-column"></td>
+                <td class="table-hall-column-empty table-hall-column side-column" [ngClass]="{'side-column-oninternalhower': mouseStatusCoverByRow[4] }" colspan=2>4</td>
+            </tr>
+
+
+              <tr *ngFor="let rowKey of [5,6,7,8,9,10,11,12]">
                 <td class="table-hall-column-empty table-hall-column side-column" [ngClass]="{'side-column-oninternalhower': mouseStatusCoverByRow[rowKey] }" colspan=2>{{ rowKey }}</td>
                 
-                <ng-container *ngIf="rowKey == 4 || rowKey == 6 || rowKey == 8 || rowKey == 10 || rowKey == 12">
-                    <td *ngFor="let key of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]" 
+                <ng-container *ngIf="rowKey == 5 || rowKey == 7 || rowKey == 9 || rowKey == 11 ">
+                    <td *ngFor="let key of [1,2,3,4,5,6,7,8,9,10]" 
                          class="table-hall-column-color2 table-hall-column" colspan=2
                          (mouseenter) = "OnmouseoverHallColumn(rowKey)"
                          (mouseleave) = "OnmouseoutHallColumn(rowKey)"
                          >
                       <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="rowKey" ></hall-chair>
                     </td>
-                    <td class="able-hall-column-empty table-hall-column"></td>
                 </ng-container>
-                <ng-container *ngIf="rowKey == 5 || rowKey == 7 || rowKey == 9 || rowKey == 11 || rowKey == 13">
-                    <td class="able-hall-column-empty table-hall-column"></td>
-                    <td *ngFor="let key of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]" 
+                
+                <ng-container *ngIf="rowKey == 6 || rowKey == 8 || rowKey == 10 || rowKey == 12">
+                    <td class="table-hall-column-empty table-hall-column"></td>
+                    <td *ngFor="let key of [1,2,3,4,5,6,7,8,9]" 
                          class="table-hall-column-color2 table-hall-column" colspan=2
                          (mouseenter) = "OnmouseoverHallColumn(rowKey)"
                          (mouseleave) = "OnmouseoutHallColumn(rowKey)"
                          >
                       <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="rowKey" ></hall-chair>
                     </td>
+                    <td class="table-hall-column-empty table-hall-column"></td>
                 </ng-container>
                 <td class="table-hall-column-empty table-hall-column side-column" [ngClass]="{'side-column-oninternalhower': mouseStatusCoverByRow[rowKey] }" colspan=2>{{ rowKey }}</td>
               </tr>
               
               <tr>
-                <td  class="table-hall-column" id="TableHallColBalcony" colspan=43>БАЛКОН</td>
+                <td  class="table-hall-column" id="TableHallColBalcony" colspan=24>VIP</td>
               </tr>
               
+              <tr>
+                <td class="table-hall-column-empty table-hall-column side-column" [ngClass]="{'side-column-oninternalhower': mouseStatusCoverByRow[13] }" colspan=2>13</td>
+                <td class="table-hall-column-empty table-hall-column" colspan=2></td>
+                <td *ngFor="let key of [1,2,3,4,5,6,7,8]" 
+                    class="table-hall-column-color3 table-hall-column" colspan=2
+                    (mouseenter) = "OnmouseoverHallColumn(13)"
+                    (mouseleave) = "OnmouseoutHallColumn(13)"
+                >
+                    <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]= "13" ></hall-chair>
+                </td>
+                <td class="table-hall-column-empty table-hall-column" colspan=2></td>
+                <td class="table-hall-column-empty table-hall-column side-column" [ngClass]="{'side-column-oninternalhower': mouseStatusCoverByRow[13] }" colspan=2>13</td>
+            </tr>
+
+
+
             </tbody>
           </table>
           <!-- Разметка балкон -->
-          <table  class="table-hall">
+          <!--<table  class="table-hall">
             <tbody>     
               <tr>
                     <td class="table-hall-column-empty table-hall-column-b2 side-column" [ngClass]="{'side-column-oninternalhower': mouseStatusCoverByRow[14] }" colspan=2 rowspan=2>14</td>
@@ -238,7 +271,7 @@
               </tr>
                 
               <tr>
-                <!--<td class="table-hall-column-empty table-hall-column-b2 side-column" [ngClass]="{'side-column-oninternalhower': mouseStatusCoverByRow[15] }" colspan=2>Б2</td>-->  
+                
                 <td  class="table-hall-column-empty table-hall-column-b2" colspan=2></td>
                 <td  class="table-hall-column-empty table-hall-column-b2" ></td>
                     
@@ -277,7 +310,7 @@
                 </td>
                 
                 <td *ngFor="let key of [1,2]" class="able-hall-column-empty table-hall-column-b2" colspan=2></td>
-                <!--<td class="table-hall-column-empty table-hall-column-b2 side-column" [ngClass]="{'side-column-oninternalhower': mouseStatusCoverByRow[15] }" colspan=2>14</td>-->
+                
               </tr>
 
               <tr>
@@ -592,7 +625,7 @@
                   <td class="table-hall-column-empty table-hall-column-b2 side-column" [ngClass]="{'side-column-oninternalhower': mouseStatusCoverByRow[18]}" colspan=2>18</td>
               </tr>
             </tbody>
-          </table>
+          </table>-->
           
           <div class="table-hall-legend">
             <div class="table-hall-legend-text">
