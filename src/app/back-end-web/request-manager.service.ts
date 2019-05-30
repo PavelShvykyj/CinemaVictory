@@ -33,7 +33,8 @@ import { Subject } from 'rxjs/Subject';
 @Injectable()
 export class RequestManagerService implements IbackEnd {
   
-  BASE_URL = "https://kino-peremoga.com.ua/api/1.0"//"https://kino-peremoga.com.ua/api/1.0";
+  
+  BASE_URL = "https://dev.kino-sky.com.ua/api/1.0";//"https://kino-peremoga.com.ua/api/1.0"//"https://kino-peremoga.com.ua/api/1.0";
   HALL_ID  = 1;
   PACKAGE_MOVIES_SIZE = 80;
   CRYPTO_KEY = 'xm5POGDda6o1SiZMfuNSvXbV8r0+uyBF7BMdAYh+f5Q=';
