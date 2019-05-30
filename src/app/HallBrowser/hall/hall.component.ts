@@ -161,7 +161,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
     
     this.mouseStatusCoverByChair = {};
     
-    if (!hallchair.chairStateInternal.s.isReserved || !(this.showStatus == this.showHallStatus.Search || this.showStatus == this.showHallStatus.Reserving)) {
+    if (!hallchair.chairStateInternal.s.isSoled || !hallchair.chairStateInternal.s.isReserved || !(this.showStatus == this.showHallStatus.Search || this.showStatus == this.showHallStatus.Reserving)) {
       return;
     }
     this.mouseStatusCoverByChair[id] = true;
