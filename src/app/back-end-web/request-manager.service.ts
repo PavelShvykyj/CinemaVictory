@@ -38,7 +38,8 @@ export class RequestManagerService implements IbackEnd {
   CRYPTO_KEY = 'xm5POGDda6o1SiZMfuNSvXbV8r0+uyBF7BMdAYh+f5Q=';
   CRYPTO_IV  = 'TweTnUNAAL8VMtvtMNj0Vg==';
   CASH_DESK_ID = 1;
-  WEB_SERVISE_BLOCED = false;
+  WEB_SERVISE_BLOCED = false
+  ;
   SHORT_REQUEST_TIMEOUT = '5000';
 
   private _userData : ILoggInData;
@@ -412,8 +413,8 @@ export class RequestManagerService implements IbackEnd {
                         token : 'badToken',
                         expired : 0
                         }
-                        
-                        return resoult;
+                        throw error;
+                        //return resoult;
 
                       }); // конвертируем response в строку. Дешифруем?
   }

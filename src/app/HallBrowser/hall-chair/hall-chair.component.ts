@@ -43,27 +43,27 @@ export class HallChairComponent implements OnInit, OnChanges {
   OnClick(){
     if (this.chairStateInternal.s.isFree && !(this.showStatus == HallShowStatus.Cancel  || this.showStatus == HallShowStatus.StartSale || this.showStatus == HallShowStatus.Search))
     {
-      console.log(1);
+      
       this.chairStateInternal.s.isFree = false;
       this.chairStateInternal.s.isSelected = !this.chairStateInternal.s.isSelected;
       this.chairSelectStatusChange.emit(this.chairStateInternal);
       
     }
     else if(this.showStatus == HallShowStatus.Cancel  && !this.chairStateInternal.s.isFree) {
-      console.log(2);
+      
       this.chairStateInternal.s.isFree = false;
       this.chairStateInternal.s.isSelected = !this.chairStateInternal.s.isSelected;
       this.chairSelectStatusChange.emit(this.chairStateInternal);
     }  
     else if(this.showStatus == HallShowStatus.Search  && !this.chairStateInternal.s.isFree) {
-      console.log(3);
+      
       this.chairStateInternal.s.isFree = false;
       this.chairStateInternal.s.isSelected = !this.chairStateInternal.s.isSelected;
       this.chairSelectStatusChange.emit(this.chairStateInternal);
     }  
     
     else if(this.showStatus == HallShowStatus.Reserving && this.chairStateInternal.s.isReserved) {
-      console.log(4);
+      
       this.chairStateInternal.s.isFree = false;
       this.chairStateInternal.s.isSelected = !this.chairStateInternal.s.isSelected;
       this.chairSelectStatusChange.emit(this.chairStateInternal);
@@ -73,7 +73,7 @@ export class HallChairComponent implements OnInit, OnChanges {
       this.chairStateInternal.s.isReserved || 
       this.chairStateInternal.s.inReserving))
     {
-      console.log(5);
+      
       this.chairStateInternal.s.isFree = true;
       this.chairStateInternal.s.isSelected = false;
       this.chairSelectStatusChange.emit(this.chairStateInternal);

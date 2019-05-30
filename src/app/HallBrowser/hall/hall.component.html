@@ -20,7 +20,7 @@
                     <messages [historyLenth]=4> </messages>
                     <div class="btn-group-vertical btn-block" role="group" aria-label="Function Menu">
                     <button type="button" [disabled]="showStatus != showHallStatus.Defoult" class="btn btn-secondary mb-1" (click) = "StartSaleSelected()">Начать продажу</button>
-                    <button type="button" [disabled]="true || showStatus == showHallStatus.Cancel || showStatus == showHallStatus.Reserving || showStatus == showHallStatus.Search" class="btn btn-secondary mb-1" (click) = "FinishSaleSelected()">Завершить продажу</button>
+                    <!--<button type="button" [disabled]="true || showStatus == showHallStatus.Cancel || showStatus == showHallStatus.Reserving || showStatus == showHallStatus.Search" class="btn btn-secondary mb-1" (click) = "FinishSaleSelected()">Завершить продажу</button>-->
                     <button type="button" [disabled]="showStatus == showHallStatus.Cancel" class="btn btn-secondary mb-1" (click) = "PrintSelected()">Повторная печать</button>
                     <button type="button" [disabled]="showStatus == showHallStatus.StartSale" class="btn btn-secondary mb-1" (click) = "SearchOperationForm()">Поиск</button>
                     <searching-operations class="fool-wight my-1 py-0" *ngIf="showStatus == showHallStatus.Search"
@@ -107,7 +107,7 @@
                       (mouseenter) = "OnmouseoverHallColumn(1)"
                       (mouseleave) = "OnmouseoutHallColumn(1)"
                   >
-                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]= "1"   ></hall-chair>
+                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" (chairSelectStatusChange) = "OnChairSelectStatusChange($event)"   [chairID]="key" [rowID]= "1" [id]="hallchair.chairID+'r'+hallchair.rowID" #hallchair (mouseenter) = "OnmouseoverHallChair(hallchair)" (mouseleave) = "OnmouseleaveHallChair(hallchair)">  </hall-chair>
                   </td>
                   <td class="table-hall-column-empty table-hall-column side-column" [ngClass]="{'side-column-oninternalhower': mouseStatusCoverByRow[1] }" colspan=2>1</td>
               </tr>
@@ -119,7 +119,7 @@
                       (mouseenter) = "OnmouseoverHallColumn(2)"
                       (mouseleave) = "OnmouseoutHallColumn(2)"
                   >
-                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]= "2" ></hall-chair>
+                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]= "2" [id]="hallchair.chairID+'r'+hallchair.rowID" #hallchair (mouseenter) = "OnmouseoverHallChair(hallchair)" (mouseleave) = "OnmouseleaveHallChair(hallchair)"></hall-chair>
                   </td>
                   <td class="table-hall-column-empty table-hall-column"></td>
                   <td class="table-hall-column-empty table-hall-column side-column" [ngClass]="{'side-column-oninternalhower': mouseStatusCoverByRow[2] }" colspan=2>2</td>
@@ -133,7 +133,7 @@
                       (mouseenter) = "OnmouseoverHallColumn(3)"
                       (mouseleave) = "OnmouseoutHallColumn(3)"
                   >
-                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]= "3" ></hall-chair>
+                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]= "3" [id]="hallchair.chairID+'r'+hallchair.rowID" #hallchair (mouseenter) = "OnmouseoverHallChair(hallchair)" (mouseleave) = "OnmouseleaveHallChair(hallchair)"></hall-chair>
                   </td>
                   <td class="table-hall-column-empty table-hall-column side-column" [ngClass]="{'side-column-oninternalhower': mouseStatusCoverByRow[3] }" colspan=2>3</td>
               </tr>
@@ -147,7 +147,7 @@
                          (mouseenter) = "OnmouseoverHallColumn(rowKey)"
                          (mouseleave) = "OnmouseoutHallColumn(rowKey)"
                          >
-                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="rowKey" ></hall-chair>
+                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="rowKey" [id]="hallchair.chairID+'r'+hallchair.rowID" #hallchair (mouseenter) = "OnmouseoverHallChair(hallchair)" (mouseleave) = "OnmouseleaveHallChair(hallchair)"></hall-chair>
                     </td>
                     <td class="able-hall-column-empty table-hall-column"></td>
                 </ng-container>
@@ -158,7 +158,7 @@
                          (mouseenter) = "OnmouseoverHallColumn(rowKey)"
                          (mouseleave) = "OnmouseoutHallColumn(rowKey)"
                          >
-                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="rowKey" ></hall-chair>
+                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="rowKey" [id]="hallchair.chairID+'r'+hallchair.rowID" #hallchair (mouseenter) = "OnmouseoverHallChair(hallchair)" (mouseleave) = "OnmouseleaveHallChair(hallchair)"></hall-chair>
                     </td>
                 </ng-container>
                 <td class="table-hall-column-empty table-hall-column side-column" [ngClass]="{'side-column-oninternalhower': mouseStatusCoverByRow[rowKey] }" colspan=2>{{ rowKey }}</td>
@@ -185,7 +185,7 @@
                         (mouseenter) = "OnmouseoverHallColumn(14)"
                         (mouseleave) = "OnmouseoutHallColumn(14)"
                      >
-                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="14" ></hall-chair>
+                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="14" [id]="hallchair.chairID+'r'+hallchair.rowID" #hallchair (mouseenter) = "OnmouseoverHallChair(hallchair)" (mouseleave) = "OnmouseleaveHallChair(hallchair)"></hall-chair>
                     </td>
                     <td class="table-hall-column-empty table-hall-column-b2" colspan=2></td> 
                     
@@ -194,7 +194,7 @@
                         (mouseenter) = "OnmouseoverHallColumn(14)"
                         (mouseleave) = "OnmouseoutHallColumn(14)"
                      >
-                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="14" ></hall-chair>
+                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="14" [id]="hallchair.chairID+'r'+hallchair.rowID" #hallchair (mouseenter) = "OnmouseoverHallChair(hallchair)" (mouseleave) = "OnmouseleaveHallChair(hallchair)"></hall-chair>
                     </td>
                     <td class="table-hall-column-empty table-hall-column-b2" colspan=2></td> 
                     
@@ -203,7 +203,7 @@
                         (mouseenter) = "OnmouseoverHallColumn(14)"
                         (mouseleave) = "OnmouseoutHallColumn(14)"
                      >
-                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="14" ></hall-chair>
+                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="14" [id]="hallchair.chairID+'r'+hallchair.rowID" #hallchair (mouseenter) = "OnmouseoverHallChair(hallchair)" (mouseleave) = "OnmouseleaveHallChair(hallchair)"></hall-chair>
                     </td>
                     <td class="table-hall-column-empty table-hall-column-b2" colspan=2></td> 
   
@@ -212,7 +212,7 @@
                         (mouseenter) = "OnmouseoverHallColumn(14)"
                         (mouseleave) = "OnmouseoutHallColumn(14)"
                      >
-                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="14" ></hall-chair>
+                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="14" [id]="hallchair.chairID+'r'+hallchair.rowID" #hallchair (mouseenter) = "OnmouseoverHallChair(hallchair)" (mouseleave) = "OnmouseleaveHallChair(hallchair)"></hall-chair>
                     </td>
                     <td class="table-hall-column-empty table-hall-column-b2" colspan=2></td> 
 
@@ -221,7 +221,7 @@
                         (mouseenter) = "OnmouseoverHallColumn(14)"
                         (mouseleave) = "OnmouseoutHallColumn(14)"
                      >
-                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="14" ></hall-chair>
+                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="14" [id]="hallchair.chairID+'r'+hallchair.rowID" #hallchair (mouseenter) = "OnmouseoverHallChair(hallchair)" (mouseleave) = "OnmouseleaveHallChair(hallchair)"></hall-chair>
                     </td>
                     <td class="table-hall-column-empty table-hall-column-b2" ></td> 
 
@@ -230,7 +230,7 @@
                         (mouseenter) = "OnmouseoverHallColumn(14)"
                         (mouseleave) = "OnmouseoutHallColumn(14)"
                      >
-                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="14" ></hall-chair>
+                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="14" [id]="hallchair.chairID+'r'+hallchair.rowID" #hallchair (mouseenter) = "OnmouseoverHallChair(hallchair)" (mouseleave) = "OnmouseleaveHallChair(hallchair)"></hall-chair>
                     </td>
                     <td *ngFor="let key of [1,2,3]" class="able-hall-column-empty table-hall-column-b2" colspan=2></td>
 
@@ -246,14 +246,14 @@
                 (mouseenter) = "OnmouseoverHallColumn(14)"
                 (mouseleave) = "OnmouseoutHallColumn(14)"
                 >
-                    <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="1" [rowID]="14" ></hall-chair>
+                    <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="1" [rowID]="14" [id]="hallchair.chairID+'r'+hallchair.rowID" #hallchair (mouseenter) = "OnmouseoverHallChair(hallchair)" (mouseleave) = "OnmouseleaveHallChair(hallchair)"></hall-chair>
                 </td>
                 
                 <td  class="table-hall-column-color3 table-hall-column-b2" colspan=2
                 (mouseenter) = "OnmouseoverHallColumn(14)"
                 (mouseleave) = "OnmouseoutHallColumn(14)"
                 >
-                    <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="2" [rowID]="14" ></hall-chair>
+                    <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="2" [rowID]="14" [id]="hallchair.chairID+'r'+hallchair.rowID" #hallchair (mouseenter) = "OnmouseoverHallChair(hallchair)" (mouseleave) = "OnmouseleaveHallChair(hallchair)"></hall-chair>
                 </td>
                 
                 <td *ngFor="let key of [1,2,3]" class="able-hall-column-empty table-hall-column-b2" colspan=2></td>
@@ -267,13 +267,13 @@
                 (mouseenter) = "OnmouseoverHallColumn(14)"
                 (mouseleave) = "OnmouseoutHallColumn(14)"
                 >
-                    <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="19" [rowID]="14" ></hall-chair>
+                    <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="19" [rowID]="14" [id]="hallchair.chairID+'r'+hallchair.rowID" #hallchair (mouseenter) = "OnmouseoverHallChair(hallchair)" (mouseleave) = "OnmouseleaveHallChair(hallchair)"></hall-chair>
                 </td>
                 <td  class="table-hall-column-color3 table-hall-column-b2" colspan=2
                 (mouseenter) = "OnmouseoverHallColumn(14)"
                 (mouseleave) = "OnmouseoutHallColumn(14)"
                 >
-                    <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="20" [rowID]="14" ></hall-chair>
+                    <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="20" [rowID]="14" [id]="hallchair.chairID+'r'+hallchair.rowID" #hallchair (mouseenter) = "OnmouseoverHallChair(hallchair)" (mouseleave) = "OnmouseleaveHallChair(hallchair)"></hall-chair>
                 </td>
                 
                 <td *ngFor="let key of [1,2]" class="able-hall-column-empty table-hall-column-b2" colspan=2></td>
@@ -291,7 +291,7 @@
                       (mouseenter) = "OnmouseoverHallColumn(15)"
                       (mouseleave) = "OnmouseoutHallColumn(15)"
                   >
-                    <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="15" ></hall-chair>  
+                    <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="15" [id]="hallchair.chairID+'r'+hallchair.rowID" #hallchair (mouseenter) = "OnmouseoverHallChair(hallchair)" (mouseleave) = "OnmouseleaveHallChair(hallchair)"></hall-chair>  
                   </td>
                   <td  class="able-hall-column-empty table-hall-column-b2" colspan=2></td>
 
@@ -300,7 +300,7 @@
                       (mouseenter) = "OnmouseoverHallColumn(15)"
                       (mouseleave) = "OnmouseoutHallColumn(15)"
                   >
-                    <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="15" ></hall-chair>  
+                    <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="15" [id]="hallchair.chairID+'r'+hallchair.rowID" #hallchair (mouseenter) = "OnmouseoverHallChair(hallchair)" (mouseleave) = "OnmouseleaveHallChair(hallchair)"></hall-chair>  
                   </td>
                   <td  class="able-hall-column-empty table-hall-column-b2" colspan=2></td>
 
@@ -309,7 +309,7 @@
                       (mouseenter) = "OnmouseoverHallColumn(15)"
                       (mouseleave) = "OnmouseoutHallColumn(15)"
                   >
-                    <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="15" ></hall-chair>  
+                    <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="15" [id]="hallchair.chairID+'r'+hallchair.rowID" #hallchair (mouseenter) = "OnmouseoverHallChair(hallchair)" (mouseleave) = "OnmouseleaveHallChair(hallchair)"></hall-chair>  
                   </td>
                   <td  class="able-hall-column-empty table-hall-column-b2" colspan=2></td>
 
@@ -318,7 +318,7 @@
                       (mouseenter) = "OnmouseoverHallColumn(15)"
                       (mouseleave) = "OnmouseoutHallColumn(15)"
                   >
-                    <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="15" ></hall-chair>  
+                    <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="15" [id]="hallchair.chairID+'r'+hallchair.rowID" #hallchair (mouseenter) = "OnmouseoverHallChair(hallchair)" (mouseleave) = "OnmouseleaveHallChair(hallchair)"></hall-chair>  
                   </td>
                   <td  class="able-hall-column-empty table-hall-column-b2" colspan=2></td>
 
@@ -327,7 +327,7 @@
                       (mouseenter) = "OnmouseoverHallColumn(15)"
                       (mouseleave) = "OnmouseoutHallColumn(15)"
                   >
-                    <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="15" ></hall-chair>  
+                    <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="15" [id]="hallchair.chairID+'r'+hallchair.rowID" #hallchair (mouseenter) = "OnmouseoverHallChair(hallchair)" (mouseleave) = "OnmouseleaveHallChair(hallchair)"></hall-chair>  
                   </td>
                   <td  class="able-hall-column-empty table-hall-column-b2" colspan=2></td>
 
@@ -344,7 +344,7 @@
                       (mouseenter) = "OnmouseoverHallColumn(16)"
                       (mouseleave) = "OnmouseoutHallColumn(16)"
                   >
-                    <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="16" ></hall-chair>  
+                    <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="16" [id]="hallchair.chairID+'r'+hallchair.rowID" #hallchair (mouseenter) = "OnmouseoverHallChair(hallchair)" (mouseleave) = "OnmouseleaveHallChair(hallchair)"></hall-chair>  
                   </td>
                   <td  class="able-hall-column-empty table-hall-column-b2"></td>
 
@@ -353,7 +353,7 @@
                       (mouseenter) = "OnmouseoverHallColumn(16)"
                       (mouseleave) = "OnmouseoutHallColumn(16)"
                   >
-                    <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="16" ></hall-chair>  
+                    <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="16" [id]="hallchair.chairID+'r'+hallchair.rowID" #hallchair (mouseenter) = "OnmouseoverHallChair(hallchair)" (mouseleave) = "OnmouseleaveHallChair(hallchair)"></hall-chair>  
                   </td>
                   <td  class="able-hall-column-empty table-hall-column-b2" colspan=2></td>
 
@@ -362,7 +362,7 @@
                        (mouseenter) = "OnmouseoverHallColumn(16)"
                        (mouseleave) = "OnmouseoutHallColumn(16)"
                   >
-                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="16" ></hall-chair>  
+                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="16" [id]="hallchair.chairID+'r'+hallchair.rowID" #hallchair (mouseenter) = "OnmouseoverHallChair(hallchair)" (mouseleave) = "OnmouseleaveHallChair(hallchair)"></hall-chair>  
                   </td>
                   <td class="able-hall-column-empty table-hall-column-b2" colspan=2></td> 
 
@@ -371,7 +371,7 @@
                        (mouseenter) = "OnmouseoverHallColumn(16)"
                        (mouseleave) = "OnmouseoutHallColumn(16)"
                   >
-                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="16" ></hall-chair>  
+                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="16" [id]="hallchair.chairID+'r'+hallchair.rowID" #hallchair (mouseenter) = "OnmouseoverHallChair(hallchair)" (mouseleave) = "OnmouseleaveHallChair(hallchair)"></hall-chair>  
                   </td>
                   <td class="able-hall-column-empty table-hall-column-b2" colspan=2></td> 
                   
@@ -380,7 +380,7 @@
                        (mouseenter) = "OnmouseoverHallColumn(16)"
                        (mouseleave) = "OnmouseoutHallColumn(16)"
                   >
-                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="16" ></hall-chair>  
+                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="16" [id]="hallchair.chairID+'r'+hallchair.rowID" #hallchair (mouseenter) = "OnmouseoverHallChair(hallchair)" (mouseleave) = "OnmouseleaveHallChair(hallchair)"></hall-chair>  
                   </td>
                   <td class="able-hall-column-empty table-hall-column-b2" colspan=2></td> 
 
@@ -389,7 +389,7 @@
                        (mouseenter) = "OnmouseoverHallColumn(16)"
                        (mouseleave) = "OnmouseoutHallColumn(16)"
                   >
-                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="16" ></hall-chair>  
+                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="16" [id]="hallchair.chairID+'r'+hallchair.rowID" #hallchair (mouseenter) = "OnmouseoverHallChair(hallchair)" (mouseleave) = "OnmouseleaveHallChair(hallchair)"></hall-chair>  
                   </td>
                   <td class="able-hall-column-empty table-hall-column-b2" colspan=2></td>                   
                 
@@ -398,7 +398,7 @@
                        (mouseenter) = "OnmouseoverHallColumn(16)"
                        (mouseleave) = "OnmouseoutHallColumn(16)"
                   >
-                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="16" ></hall-chair>  
+                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="16" [id]="hallchair.chairID+'r'+hallchair.rowID" #hallchair (mouseenter) = "OnmouseoverHallChair(hallchair)" (mouseleave) = "OnmouseleaveHallChair(hallchair)"></hall-chair>  
                   </td>
                   <td class="able-hall-column-empty table-hall-column-b2" colspan=2></td> 
                   
@@ -407,7 +407,7 @@
                        (mouseenter) = "OnmouseoverHallColumn(16)"
                        (mouseleave) = "OnmouseoutHallColumn(16)"
                   >
-                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="16" ></hall-chair>  
+                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="16" [id]="hallchair.chairID+'r'+hallchair.rowID" #hallchair (mouseenter) = "OnmouseoverHallChair(hallchair)" (mouseleave) = "OnmouseleaveHallChair(hallchair)"></hall-chair>  
                   </td>
                   <td class="able-hall-column-empty table-hall-column-b2"></td> 
 
@@ -416,7 +416,7 @@
                        (mouseenter) = "OnmouseoverHallColumn(16)"
                        (mouseleave) = "OnmouseoutHallColumn(16)"
                   >
-                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="16" ></hall-chair>  
+                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="16" [id]="hallchair.chairID+'r'+hallchair.rowID" #hallchair (mouseenter) = "OnmouseoverHallChair(hallchair)" (mouseleave) = "OnmouseleaveHallChair(hallchair)"></hall-chair>  
                   </td>
                   
                   <td class="able-hall-column-empty table-hall-column-b2" colspan=2></td> 
@@ -430,7 +430,7 @@
                       (mouseenter) = "OnmouseoverHallColumn(17)"
                       (mouseleave) = "OnmouseoutHallColumn(17)"
                   >
-                    <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="17" ></hall-chair>  
+                    <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="17" [id]="hallchair.chairID+'r'+hallchair.rowID" #hallchair (mouseenter) = "OnmouseoverHallChair(hallchair)" (mouseleave) = "OnmouseleaveHallChair(hallchair)"></hall-chair>  
                   </td>
                   <td  class="able-hall-column-empty table-hall-column-b2"></td>
 
@@ -439,7 +439,7 @@
                       (mouseenter) = "OnmouseoverHallColumn(17)"
                       (mouseleave) = "OnmouseoutHallColumn(17)"
                   >
-                    <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="17" ></hall-chair>  
+                    <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="17" [id]="hallchair.chairID+'r'+hallchair.rowID" #hallchair (mouseenter) = "OnmouseoverHallChair(hallchair)" (mouseleave) = "OnmouseleaveHallChair(hallchair)"></hall-chair>  
                   </td>
                   <td  class="able-hall-column-empty table-hall-column-b2" colspan=2></td>
 
@@ -448,7 +448,7 @@
                        (mouseenter) = "OnmouseoverHallColumn(17)"
                        (mouseleave) = "OnmouseoutHallColumn(17)"
                   >
-                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="17" ></hall-chair>  
+                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="17" [id]="hallchair.chairID+'r'+hallchair.rowID" #hallchair (mouseenter) = "OnmouseoverHallChair(hallchair)" (mouseleave) = "OnmouseleaveHallChair(hallchair)"></hall-chair>  
                   </td>
                   <td class="able-hall-column-empty table-hall-column-b2" colspan=2></td> 
 
@@ -457,7 +457,7 @@
                        (mouseenter) = "OnmouseoverHallColumn(17)"
                        (mouseleave) = "OnmouseoutHallColumn(17)"
                   >
-                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="17" ></hall-chair>  
+                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="17" [id]="hallchair.chairID+'r'+hallchair.rowID" #hallchair (mouseenter) = "OnmouseoverHallChair(hallchair)" (mouseleave) = "OnmouseleaveHallChair(hallchair)"></hall-chair>  
                   </td>
                   <td class="able-hall-column-empty table-hall-column-b2" colspan=2></td> 
                   
@@ -466,7 +466,7 @@
                        (mouseenter) = "OnmouseoverHallColumn(17)"
                        (mouseleave) = "OnmouseoutHallColumn(17)"
                   >
-                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="17" ></hall-chair>  
+                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="17" [id]="hallchair.chairID+'r'+hallchair.rowID" #hallchair (mouseenter) = "OnmouseoverHallChair(hallchair)" (mouseleave) = "OnmouseleaveHallChair(hallchair)"></hall-chair>  
                   </td>
                   <td class="able-hall-column-empty table-hall-column-b2" colspan=2></td> 
 
@@ -475,7 +475,7 @@
                        (mouseenter) = "OnmouseoverHallColumn(17)"
                        (mouseleave) = "OnmouseoutHallColumn(17)"
                   >
-                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="17" ></hall-chair>  
+                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="17" [id]="hallchair.chairID+'r'+hallchair.rowID" #hallchair (mouseenter) = "OnmouseoverHallChair(hallchair)" (mouseleave) = "OnmouseleaveHallChair(hallchair)"></hall-chair>  
                   </td>
                   <td class="able-hall-column-empty table-hall-column-b2" colspan=2></td>                   
                 
@@ -484,7 +484,7 @@
                        (mouseenter) = "OnmouseoverHallColumn(17)"
                        (mouseleave) = "OnmouseoutHallColumn(17)"
                   >
-                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="17" ></hall-chair>  
+                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="17" [id]="hallchair.chairID+'r'+hallchair.rowID" #hallchair (mouseenter) = "OnmouseoverHallChair(hallchair)" (mouseleave) = "OnmouseleaveHallChair(hallchair)"></hall-chair>  
                   </td>
                   <td class="able-hall-column-empty table-hall-column-b2" colspan=2></td> 
                   
@@ -493,7 +493,7 @@
                        (mouseenter) = "OnmouseoverHallColumn(17)"
                        (mouseleave) = "OnmouseoutHallColumn(17)"
                   >
-                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="17" ></hall-chair>  
+                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="17" [id]="hallchair.chairID+'r'+hallchair.rowID" #hallchair (mouseenter) = "OnmouseoverHallChair(hallchair)" (mouseleave) = "OnmouseleaveHallChair(hallchair)"></hall-chair>  
                   </td>
                   <td class="able-hall-column-empty table-hall-column-b2" ></td> 
 
@@ -502,7 +502,7 @@
                        (mouseenter) = "OnmouseoverHallColumn(17)"
                        (mouseleave) = "OnmouseoutHallColumn(17)"
                   >
-                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="17" ></hall-chair>  
+                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="17" [id]="hallchair.chairID+'r'+hallchair.rowID" #hallchair (mouseenter) = "OnmouseoverHallChair(hallchair)" (mouseleave) = "OnmouseleaveHallChair(hallchair)"></hall-chair>  
                   </td>
                   
                   <td class="able-hall-column-empty table-hall-column-b2" colspan=2></td> 
@@ -516,7 +516,7 @@
                       (mouseenter) = "OnmouseoverHallColumn(18)"
                       (mouseleave) = "OnmouseoutHallColumn(18)"
                   >
-                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="18" ></hall-chair>  
+                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="18" [id]="hallchair.chairID+'r'+hallchair.rowID" #hallchair (mouseenter) = "OnmouseoverHallChair(hallchair)" (mouseleave) = "OnmouseleaveHallChair(hallchair)"></hall-chair>  
                   </td>
                   <td class="able-hall-column-empty table-hall-column-b2" ></td> 
 
@@ -525,7 +525,7 @@
                       (mouseenter) = "OnmouseoverHallColumn(18)"
                       (mouseleave) = "OnmouseoutHallColumn(18)"
                   >
-                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="18" ></hall-chair>  
+                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="18" [id]="hallchair.chairID+'r'+hallchair.rowID" #hallchair (mouseenter) = "OnmouseoverHallChair(hallchair)" (mouseleave) = "OnmouseleaveHallChair(hallchair)"></hall-chair>  
                   </td>
                   <td class="able-hall-column-empty table-hall-column-b2" colspan=2></td> 
                   
@@ -537,7 +537,7 @@
                       (mouseenter) = "OnmouseoverHallColumn(18)"
                       (mouseleave) = "OnmouseoutHallColumn(18)"
                   >
-                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="18" ></hall-chair>  
+                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="18" [id]="hallchair.chairID+'r'+hallchair.rowID" #hallchair (mouseenter) = "OnmouseoverHallChair(hallchair)" (mouseleave) = "OnmouseleaveHallChair(hallchair)"></hall-chair>  
                   </td>
                   <td class="able-hall-column-empty table-hall-column-b2" colspan=2></td> 
 
@@ -546,7 +546,7 @@
                       (mouseenter) = "OnmouseoverHallColumn(18)"
                       (mouseleave) = "OnmouseoutHallColumn(18)"
                   >
-                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="18" ></hall-chair>  
+                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="18" [id]="hallchair.chairID+'r'+hallchair.rowID" #hallchair (mouseenter) = "OnmouseoverHallChair(hallchair)" (mouseleave) = "OnmouseleaveHallChair(hallchair)"></hall-chair>  
                   </td>
                   <td class="able-hall-column-empty table-hall-column-b2" colspan=2></td> 
 
@@ -555,7 +555,7 @@
                       (mouseenter) = "OnmouseoverHallColumn(18)"
                       (mouseleave) = "OnmouseoutHallColumn(18)"
                   >
-                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="18" ></hall-chair>  
+                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="18" [id]="hallchair.chairID+'r'+hallchair.rowID" #hallchair (mouseenter) = "OnmouseoverHallChair(hallchair)" (mouseleave) = "OnmouseleaveHallChair(hallchair)"></hall-chair>  
                   </td>
                   <td class="able-hall-column-empty table-hall-column-b2" colspan=2></td> 
 
@@ -564,7 +564,7 @@
                       (mouseenter) = "OnmouseoverHallColumn(18)"
                       (mouseleave) = "OnmouseoutHallColumn(18)"
                   >
-                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="18" ></hall-chair>  
+                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="18" [id]="hallchair.chairID+'r'+hallchair.rowID" #hallchair (mouseenter) = "OnmouseoverHallChair(hallchair)" (mouseleave) = "OnmouseleaveHallChair(hallchair)"></hall-chair>  
                   </td>
                   
                   <td class="able-hall-column-empty table-hall-column-b2"></td> 
@@ -576,7 +576,7 @@
                       (mouseenter) = "OnmouseoverHallColumn(18)"
                       (mouseleave) = "OnmouseoutHallColumn(18)"
                   >
-                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="18" ></hall-chair>  
+                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="18" [id]="hallchair.chairID+'r'+hallchair.rowID" #hallchair (mouseenter) = "OnmouseoverHallChair(hallchair)" (mouseleave) = "OnmouseleaveHallChair(hallchair)"></hall-chair>  
                   </td>
                   <td class="able-hall-column-empty table-hall-column-b2" ></td> 
 
@@ -585,7 +585,7 @@
                       (mouseenter) = "OnmouseoverHallColumn(18)"
                       (mouseleave) = "OnmouseoutHallColumn(18)"
                   >
-                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="18" ></hall-chair>  
+                      <hall-chair [showStatus] = showStatus (chairSelectStatusChange) = "OnChairSelectStatusChange($event)" [chairID]="key" [rowID]="18" [id]="hallchair.chairID+'r'+hallchair.rowID" #hallchair (mouseenter) = "OnmouseoverHallChair(hallchair)" (mouseleave) = "OnmouseleaveHallChair(hallchair)"></hall-chair>  
                   </td>
                   
                   <td class="able-hall-column-empty table-hall-column-b2" colspan=2></td> 
@@ -660,3 +660,5 @@
 <div class="printable" id="forprint">    
     <ticket-print-wiev></ticket-print-wiev>
 </div>
+
+
