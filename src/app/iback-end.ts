@@ -79,8 +79,20 @@ export interface IGetSessionResponseViewModel {
     prices: Array<ISessionPriceViewModel>
 }
 
+export interface IGetSessionWithMovieResponseViewModel
+{ 
+    id: number ; 
+	isVisible: boolean ;
+	idHall: number ; 
+	starts: string ;
+	movie: IGetMovieResponseViewModel ;
+    prices: Array<ISessionPriceViewModel>
+}    
+
+
+
 export interface ISessionData {
-    sessionInfo : Array<IGetSessionResponseViewModel>;
+    sessionInfo : Array<IGetSessionWithMovieResponseViewModel>;
     movieInfo : Array<IGetMovieResponseViewModel>;
 }
 

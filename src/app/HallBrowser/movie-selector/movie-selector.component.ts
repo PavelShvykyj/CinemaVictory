@@ -5,6 +5,7 @@ import { ISessionData, IGetMovieResponseViewModel, IGetSessionResponseViewModel 
 import { IdataObject } from '../idata-object';
 import 'jquery'; 
 import 'jquery-ui/ui/widgets/datepicker.js';
+import { Session } from 'protractor';
 
 
 const ONE_DAY = 24*60*60*1000;
@@ -95,7 +96,7 @@ export class MovieSelectorComponent implements OnInit, AfterViewInit {
     this.currentSession = null;
     this.currentSessions = [];
     this.currentMovie = _.find(this.currentMovies,element => {return element.id == id})
-    this.currentSessions = _.filter(this.sessionData.sessionInfo, element => { return element.idMovie == id && element.isVisible});
+    this.currentSessions = _.filter(this.sessionData.sessionInfo, element => { return element.movie.id == id && element.isVisible});
     
     this.sessionDataChange.emit(
       {'currentDate' : this.currentDate, 
@@ -114,15 +115,9 @@ export class MovieSelectorComponent implements OnInit, AfterViewInit {
   }
 
   SessionDataParse(){
-    
-    let uniqMoviesID = _.uniq(this.sessionData.sessionInfo,true,session=>{return session.idMovie});
-    uniqMoviesID.forEach(
-      ID => {
-      let found = this.sessionData
-                      .movieInfo
-                      .find(function(element) {return element.id ==  ID.idMovie;});
-      
-      this.currentMovies.push(found)                
+    this.sessionData.movieInfo.forEach(
+      movie => {
+        this.currentMovies.push(movie)                
     });
     
   }
