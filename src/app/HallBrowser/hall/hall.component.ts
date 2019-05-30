@@ -25,8 +25,9 @@ import { IloggObject, IloggParametr } from '../../ilogg';
 
 import { Observable } from 'rxjs/Observable';
 import printJS from 'print-js/src/index';
-import { IfObservable } from 'rxjs/observable/IfObservable';
 import { HallShowStatus, MessageSate, TicketOperations, LoggMessageTypes } from '../../global_enums'
+
+import 'jquery'; 
 
 
 @Component({
@@ -74,6 +75,8 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
       19: false,
     };
 
+  mouseStatusCoverByChair: IdataObject = {}
+    
   sessionData: ICurrentSessionInfo =
     {
       currentDate: null,
@@ -112,6 +115,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnInit() {
     this.apiServis.RoutHubbHallReconnect();
     this.chairsInWork = [];
+     
   }
 
   GetParametrs() {
@@ -119,10 +123,21 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit() {
+    
+    let options = {
+      container : 'body',
+      placement : 'top',
+      trigger : 'manual'
+    };
+    ($('hall-chair') as any).popover(options);
+    
+
     setTimeout(() => {
       this.GetParametrs();
       this.UpdateHallInfo();
+      
     }, 500);
+    
   }
 
   ngOnDestroy() {
@@ -137,6 +152,32 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
 
   OnmouseoutHallColumn(row) {
     this.mouseStatusCoverByRow[row] = false
+  }
+
+  OnmouseoverHallChair(hallchair) {
+
+
+    let id: string =  ''+hallchair.chairID +'r'+ hallchair.rowID;
+    
+    this.mouseStatusCoverByChair = {};
+    
+    if (hallchair.chairStateInternal.s.isFree  ||  !(this.showStatus == this.showHallStatus.Search || this.showStatus == this.showHallStatus.Reserving)) {
+      return;
+    }
+    this.mouseStatusCoverByChair[id] = true;
+    let popoverdata : IdataObject = {title : `Ряд : ${hallchair.chairStateInternal.c.r} Место : ${hallchair.chairStateInternal.c.c}`,
+                                     content : this.GetContentTemplate(hallchair.chairStateInternal)}
+    setTimeout(() => {
+      this.ShowPopMessage(popoverdata, id);
+    }, 500);
+
+  }
+
+  OnmouseleaveHallChair(hallchair) {
+    let id : string = ''+hallchair.chairID+'r'+hallchair.rowID;
+    this.mouseStatusCoverByChair[id] = false;
+    this.HidePopMessage(id);
+
   }
 
   CreateSaleCode(element: IChairStateViewModelInternal): string {
@@ -180,15 +221,17 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
     return this.SyncHallState(this.chairsInWork, [], TicketOperations.Nothing)
       .then(resoult => {
         /// заблокировали 
+        this.SetLoggMessageButtonPress('StartAction ответ положитьельный');
         this.UpdateHallState(resoult);
         return true
       })
       .catch(error => {
+        this.SetLoggMessageButtonPress('StartAction ответ ошибка');
         ///  ели это ошибка одновременного использования - то просто чистим рабочие и переобновим зал
         let errorStatus = this.apiServis.RoutGetStatusError(error);
+        this.SetLoggMessageButtonPress(`StartAction ответ ошибка ${errorStatus}`);
 
-
-        if (errorStatus = 406) {
+        if (errorStatus = 406 ) {
           this.AddLongFormateMessage('места уже заняты', this.messageSate.Info);
           this.ClearSelected();
           this.SyncHallState([], [], TicketOperations.Nothing)
@@ -311,9 +354,10 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // начинаем процесс продажи
     this.StartAction().then(resoult => {
+      this.SetLoggMessageButtonPress(`StartSaleSelected ответ  ${resoult}`);
       if (resoult) {
         this.showStatus = this.showHallStatus.StartSale;
-        console.log('sucsessfull start');
+        this.SetLoggMessageButtonPress(`вызвали завершение`);
         this.FinishSaleSelected();
         ////// преренесли на окончание продажи
         //  let CassOperationParametr = {idHall: this.GLOBAL_PARAMETRS.HALL_ID,
@@ -328,7 +372,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
       } else
       {
         this.showStatus = this.showHallStatus.Defoult;
-        console.log('sucsessfull start');
+        console.log('error start');
         this.AddFormateMessage('error in StartSaleSelected',this.messageSate.Error);
       }
     });
@@ -1023,5 +1067,53 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
 
   async SendSMS(messege: string, recipient : string ) {
     await this.apiServis.RoutSendSMS(messege,recipient);
+  }
+
+  ShowPopMessage( popoverdata : IdataObject, Id : string) {
+    
+      if(! this.mouseStatusCoverByChair[Id]) {
+        return
+      }
+
+      let options = {
+        container : 'body',
+        html : true,
+        content : popoverdata.content,
+        placement : 'top',
+        title : popoverdata.title, 
+        trigger : 'manual'
+      };
+
+      let element = ($('#'+Id) as any);
+      element.popover(options);
+      
+      setTimeout(() => {
+        element.popover('show');
+      },20);
+
+      
+      //setTimeout(() => {
+      //  this.HidePopMessage(Id);
+      //}, 2000);
+  }
+
+  HidePopMessage(Id) {
+    ($('#'+Id) as any).popover('dispose');
+    ($('.popover') as any).remove();
+  }
+
+  GetContentTemplate(parametr : IChairStateViewModelInternal) : string {
+    return `
+    <div class="card p-0 m-0">
+      <p class="card-header  text-white bg-danger "> ${parametr.t} 
+    </div>`;
+  }
+
+  GetTitleTemplate(parametr : string) : string {
+    return `<div class="card">
+    <div class="card-header">
+      ${parametr}
+    </div>
+    </div>`;
   }
 }
