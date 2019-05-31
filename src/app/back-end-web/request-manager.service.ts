@@ -53,7 +53,7 @@ export class RequestManagerService implements IbackEnd {
   private signalRCloseExpected : boolean = false;
 
   constructor(private http : HttpClient, private logOperator: LoggOperatorService) { 
-    this._hubHallConnection = new HubConnectionBuilder().withUrl('https://kino-peremoga.com.ua/hallHub').build();   //'https://kino-peremoga.com.ua/hallHub'
+    this._hubHallConnection = new HubConnectionBuilder().withUrl('https://dev.kino-sky.com.ua/hallHub').build();   //'https://kino-peremoga.com.ua/hallHub'
     this._hubHallConnection.serverTimeoutInMilliseconds = 60*60*1000; // час - это с запасом жизнь токега - пол часа с токеном делаем реконнект
     this._hubHallConnection.onclose(error=>{
       //alert('signal error'+error.message)

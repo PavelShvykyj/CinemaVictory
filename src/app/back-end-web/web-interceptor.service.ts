@@ -2,11 +2,14 @@ import { Injectable } from '@angular/core';
 import { HttpInterceptor, HttpHandler, HttpEvent, HttpRequest, HttpResponse, HttpErrorResponse } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
 import { timeout, tap, catchError } from 'rxjs/operators';
+import { _throw } from 'rxjs/observable/throw';
+
 import { LoggOperatorService } from '../logg/logg-operator.service';
 import { IdataObject } from '../HallBrowser/idata-object';
 import { IloggObject } from '../ilogg';
 import { LoggMessageTypes } from '../global_enums'
 import { IfObservable } from 'rxjs/observable/IfObservable';
+import { from } from 'rxjs/observable/from';
 
 
 @Injectable()
@@ -37,6 +40,7 @@ export class WebInterceptorService implements HttpInterceptor {
       } 
     } 
     else if (req instanceof HttpErrorResponse) {
+      
       loggMessage = {
         message_date: new Date(),
         message_name: req.url,
@@ -92,13 +96,8 @@ export class WebInterceptorService implements HttpInterceptor {
       }),
       timeout(resoultTimeout),
       catchError(err => {
-        console.log(err);
-        console.log(err.Status);
-        console.log(typeof err);
-
-
         this.SetLoggMessage(err); 
-        return Observable.throw(err);
+        return _throw(err);
       }));
   }
 }
