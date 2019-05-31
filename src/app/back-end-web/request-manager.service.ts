@@ -55,6 +55,8 @@ export class RequestManagerService implements IbackEnd {
   constructor(private http : HttpClient, private logOperator: LoggOperatorService) { 
     this._hubHallConnection = new HubConnectionBuilder().withUrl('https://dev.kino-sky.com.ua/hallHub').build();   //'https://kino-peremoga.com.ua/hallHub'
     this._hubHallConnection.serverTimeoutInMilliseconds = 60*60*1000; // час - это с запасом жизнь токега - пол часа с токеном делаем реконнект
+    this.OnHubbHallConnection();
+    
     this._hubHallConnection.onclose(error=>{
       //alert('signal error'+error.message)
       console.log('signal error',error);
@@ -239,7 +241,7 @@ export class RequestManagerService implements IbackEnd {
     }
     console.log('start HubbHallReconnect');
     this.signalRCloseExpected = true;
-    this.OfHubbHallConnection();
+    //this.OfHubbHallConnection();
     this._hubHallConnection.stop()
                            .then(resoult =>{
                             console.log('suscs stop in reconnect'); 
@@ -247,7 +249,8 @@ export class RequestManagerService implements IbackEnd {
                             this._hubHallConnection.start()
                                                     .then(res=>{
                                                       console.log('suscs start after stop in reconnect'); 
-                                                      this.OnHubbHallConnection()})
+                                                      //this.OnHubbHallConnection()
+                                                    })
                                                     .catch(error=> {
                                                       console.log('signal start err', error)})
                                                     
@@ -260,7 +263,8 @@ export class RequestManagerService implements IbackEnd {
                              this._hubHallConnection.start()
                                                     .then(res=>{
                                                       console.log('suscs start after error stop in reconnect'); 
-                                                      this.OnHubbHallConnection()})
+                                                      //this.OnHubbHallConnection()
+                                                    })
                                                     .catch(error=> {
                                                       console.log('signal start in cach err', error)
                                                     }) 
