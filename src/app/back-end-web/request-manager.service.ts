@@ -53,18 +53,32 @@ export class RequestManagerService implements IbackEnd {
   private signalRCloseExpected : boolean = false;
 
   constructor(private http : HttpClient, private logOperator: LoggOperatorService) { 
+    this.SetHubHallConnection();
+    this.StartHubbHallConnection();
+  }
+
+  SetHubHallConnection() {
+    console.log('signal set');
+    this._hubHallConnection = undefined;
     this._hubHallConnection = new HubConnectionBuilder().withUrl('https://kino-sky.com.ua/hallHub').build();   //'https://kino-peremoga.com.ua/hallHub'
     this._hubHallConnection.serverTimeoutInMilliseconds = 60*60*1000; // час - это с запасом жизнь токега - пол часа с токеном делаем реконнект
     this.OnHubbHallConnection();
-    
     this._hubHallConnection.onclose(error=>{
-      //alert('signal error'+error.message)
-      console.log('signal error',error);
-      if (!this.signalRCloseExpected) {
-        setTimeout(()=>{this.HubbHallReconnect()},200);
-      }
+        console.log('signal error',error);
+        this.HubbHallRestart();
+      
     });
+
+
   }
+
+  HubbHallRestart() {
+    console.log('restart');
+    this.SetHubHallConnection();
+    this.StartHubbHallConnection();
+  }
+
+
 
   SetLoggMessage(logMessage: IloggObject) {
     this.logOperator.SetLoggMessage(logMessage);
@@ -202,11 +216,17 @@ export class RequestManagerService implements IbackEnd {
   }
 
   StartHubbHallConnection()  {  
+    console.log('start');
     if (this.WEB_SERVISE_BLOCED){
       return;
     }
+    
 
-    return this._hubHallConnection.start();//.catch(error => {console.log('start error',error)});   
+    return this._hubHallConnection.start()
+    .then(res => console.log('start sucsess '))
+    .catch(err => {
+      console.log('start fail'); this.StartHubbHallConnection();
+    } );//.catch(error => {console.log('start error',error)});   
   }
 
   StopHubbHallConnection() {
@@ -239,36 +259,37 @@ export class RequestManagerService implements IbackEnd {
     if (this.WEB_SERVISE_BLOCED){
       return;
     }
-    console.log('start HubbHallReconnect');
-    this.signalRCloseExpected = true;
-    //this.OfHubbHallConnection();
-    this._hubHallConnection.stop()
-                           .then(resoult =>{
-                            console.log('suscs stop in reconnect'); 
-                            this.signalRCloseExpected = false;
-                            this._hubHallConnection.start()
-                                                    .then(res=>{
-                                                      console.log('suscs start after stop in reconnect'); 
-                                                      //this.OnHubbHallConnection()
-                                                    })
-                                                    .catch(error=> {
-                                                      console.log('signal start err', error)})
+    console.log('Reconnect');
+    this.SetHubHallConnection();
+    this.StartHubbHallConnection();
+    // this.signalRCloseExpected = true;
+    // this._hubHallConnection.stop()
+    //                        .then(resoult =>{
+    //                         console.log('suscs stop in reconnect'); 
+    //                         this.signalRCloseExpected = false;
+    //                         this._hubHallConnection.start()
+    //                                                 .then(res=>{
+    //                                                   console.log('suscs start after stop in reconnect'); 
+                                                      
+    //                                                 })
+    //                                                 .catch(error=> {
+    //                                                   console.log('signal start err', error)})
                                                     
                                                     
                                                     
-                                                    })
-                           .catch(error=> { 
-                             console.log('signal stop err', error)
-                             this.signalRCloseExpected = false;
-                             this._hubHallConnection.start()
-                                                    .then(res=>{
-                                                      console.log('suscs start after error stop in reconnect'); 
-                                                      //this.OnHubbHallConnection()
-                                                    })
-                                                    .catch(error=> {
-                                                      console.log('signal start in cach err', error)
-                                                    }) 
-                            });  
+    //                                                 })
+    //                        .catch(error=> { 
+    //                          console.log('signal stop err', error)
+    //                          this.signalRCloseExpected = false;
+    //                          this._hubHallConnection.start()
+    //                                                 .then(res=>{
+    //                                                   console.log('suscs start after error stop in reconnect'); 
+                                                      
+    //                                                 })
+    //                                                 .catch(error=> {
+    //                                                   console.log('signal start in cach err', error)
+    //                                                 }) 
+    //                         });  
  }
 
   RefreshToken() {
