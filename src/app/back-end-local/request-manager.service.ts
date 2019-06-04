@@ -62,8 +62,8 @@ export class RequestManagerService implements IbackEnd {
 
 
 
-  webUserName: string = "380662828954";
-  webPassword: string = "Di4vF67KBw2T";
+  webUserName: string = "380675111997";
+  webPassword: string = "$pzeMXEmZdU6CbH#AzhR";
   localeUserName: string = "Atlantyka";
 
   constructor(public logOperator: LoggOperatorService) {
