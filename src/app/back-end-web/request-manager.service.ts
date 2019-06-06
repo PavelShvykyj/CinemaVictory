@@ -59,6 +59,7 @@ export class RequestManagerService implements IbackEnd {
       console.log('signal error',error);
       if (!this.signalRCloseExpected) {
         setTimeout(()=>{this.HubbHallReconnect()},200);
+        
       }
     });
   }
