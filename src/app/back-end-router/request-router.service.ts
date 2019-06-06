@@ -299,7 +299,7 @@ export class RequestRouterService {
         return resoult;
       })
       .catch(error => {
-        console.log('error in rout servise', error)
+        
         let statusError = this.RoutGetStatusError(error);
         let isInternalError = this.IsInternalError(statusError);
         this.SetLoggMessageButtonPress(`Rout SyncTickets Web ошибка ${statusError} это внутренняя ${isInternalError} `);  
