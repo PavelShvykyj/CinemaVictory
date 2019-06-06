@@ -91,7 +91,8 @@ export class RequestRouterService {
           this.EmitLoginName(userdata.userName);
         }
         return resoult
-      });
+      }).catch(err => { throw err;
+      } );
   }
 
   RoutLoggInByLocal(): Promise<IResponseData> {
@@ -298,10 +299,12 @@ export class RequestRouterService {
         return resoult;
       })
       .catch(error => {
-        console.log('error in rout servise', error)
+        
         let statusError = this.RoutGetStatusError(error);
+        let isInternalError = this.IsInternalError(statusError);
+        this.SetLoggMessageButtonPress(`Rout SyncTickets Web ошибка ${statusError} это внутренняя ${isInternalError} `);  
 
-        if (this.IsInternalError(statusError)) {
+        if (isInternalError) {
           //// сайт на связи вернул ошибку т.е. это реальная ошибка
           //// тут придумать лог/сообщение ахтунг
           //// здесь у нас все равно есть состояние зала 
@@ -511,13 +514,20 @@ export class RequestRouterService {
     let statusError = 0; // undefined считается что сервер на связи
     if (typeof error.status != 'undefined'){
       // все ошибки считаем undefined т.е сервер 
-      // statusError = error.status;
+      statusError = error.status;
+      
     } else if(Object.getOwnPropertyNames(error).find(e=>e=="name")) {
       if(error.name = 'TimeoutError')
       statusError = 101; 
     }
     
-    return statusError
+    if(typeof statusError == 'string' && statusError != "406") {
+      statusError = 0;
+    } else if(statusError != 406 ) {
+      statusError = 0
+    }
+
+    return statusError;
   } 
  
   /// написать функцию сохранения куска лога пока в 1С очевидно
@@ -528,6 +538,17 @@ export class RequestRouterService {
   RoutSetLoggMessage(logMessage: IloggObject){
     this.localServise.SetLoggMessage(logMessage);
   }
+
+  SetLoggMessageButtonPress(buttonName : string) {
+    let logMessage: IloggObject = {
+      message_date : new Date(),
+      message_type : LoggMessageTypes.Interface,
+      message_name : buttonName,
+      message_parametr : []
+    }
+    this.RoutSetLoggMessage(logMessage)
+  }
+
 
   RoutTakeLoggFiles(takeLogFiles,skipLogFiles){
     this.localServise.TakeLoggFiles(takeLogFiles,skipLogFiles);
