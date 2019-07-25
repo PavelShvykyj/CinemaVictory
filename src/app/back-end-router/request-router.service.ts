@@ -38,8 +38,7 @@ export class RequestRouterService {
   changeHallState$: Observable<IChairsStatusInSessionInfo>;
   changeEmittedLoginName$ = this.emitChangeLoginName.asObservable();
   changeEmittedBackEndName$ = this.emitChangeBackEndName.asObservable();
-  internalErrors = [400, 401, 403, 406, 0  ];
-  
+  internalErrors = [400, 401, 403, 406, 0];
   @Input() currentBackEndName: string
 
 
@@ -50,10 +49,8 @@ export class RequestRouterService {
   }
 
   IsInternalError(status) {
-    
     let foundError = _.find(this.internalErrors, elemrnt => { return status == elemrnt })
-    
-    if (foundError ) {
+    if (foundError) {
       return true
     }
     else {
@@ -302,10 +299,8 @@ export class RequestRouterService {
       .catch(error => {
         
         let statusError = this.RoutGetStatusError(error);
-        let isInternalError = this.IsInternalError(statusError);
-        this.SetLoggMessageButtonPress(`Rout SyncTickets Web ошибка ${statusError} это внутренняя ${isInternalError} `);  
 
-        if (isInternalError) {
+        if (this.IsInternalError(statusError)) {
           //// сайт на связи вернул ошибку т.е. это реальная ошибка
           //// тут придумать лог/сообщение ахтунг
           //// здесь у нас все равно есть состояние зала 
@@ -396,16 +391,16 @@ export class RequestRouterService {
       throw 'SessionsInfoGetByDate';
     }  
 
-    let currentMovies = [];
-    let uniqMoviesID = _.uniq(sessionData.sessionInfo, true, session => { return session.idMovie });
-    uniqMoviesID.forEach(
-      ID => {
-        let found = sessionData
-          .movieInfo
-          .find(function (element) { return element.id == ID.idMovie; });
+    let currentMovies = sessionData.movieInfo;
+    // let uniqMoviesID = _.uniq(sessionData.sessionInfo, true, session => { return session.idMovie });
+    // uniqMoviesID.forEach(
+    //   ID => {
+    //     let found = sessionData
+    //       .movieInfo
+    //       .find(function (element) { return element.id == ID.idMovie; });
 
-        currentMovies.push(found)
-      });
+    //     currentMovies.push(found)
+    //   });
 
     this.localServise.SetSessionsInfoGetByDate(itemDay.toISOString(), sessionData)
                      .catch(err => {functionError = true});
@@ -417,7 +412,7 @@ export class RequestRouterService {
 
     for (let indexMovie = 0; indexMovie < currentMovies.length; indexMovie++) {
       let currentMovie = currentMovies[indexMovie];
-      let movieSesions = _.filter(sessionData.sessionInfo, element => { return element.idMovie == currentMovie.id && element.isVisible });
+      let movieSesions = _.filter(sessionData.sessionInfo, element => { return element.movie.id == currentMovie.id && element.isVisible });
       for (let indexSession = 0; indexSession < movieSesions.length; indexSession++) {
         let currentSession = movieSesions[indexSession];
 

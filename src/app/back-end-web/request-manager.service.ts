@@ -10,6 +10,7 @@ import {  IbackEnd,
           ISyncTicketsResponseViewModel,
           ISyncTicketsRequestViewModel,
           ICancelTicketRequestViewModel,
+          IGetMovieResponseViewModel,
           IGetSessionResponseViewModel,
           ISessionData,
           IHallInfo } from '../iback-end'
@@ -38,8 +39,7 @@ export class RequestManagerService implements IbackEnd {
   CRYPTO_KEY = 'xm5POGDda6o1SiZMfuNSvXbV8r0+uyBF7BMdAYh+f5Q=';
   CRYPTO_IV  = 'TweTnUNAAL8VMtvtMNj0Vg==';
   CASH_DESK_ID = 1;
-  WEB_SERVISE_BLOCED = false
-  ;
+  WEB_SERVISE_BLOCED = false;
   SHORT_REQUEST_TIMEOUT = '5000';
 
   private _userData : ILoggInData;
@@ -660,7 +660,7 @@ export class RequestManagerService implements IbackEnd {
     }
     
     let headers = new HttpHeaders().append('Authorization','Bearer '+this._token).append('Content-Type','text/json').append('timeout',this.SHORT_REQUEST_TIMEOUT)
-    let connection = this.BASE_URL+"/sessions/getbydate";
+    let connection = this.BASE_URL+"/sessions/getbydatewithmovies";
    
     let postBody = {
       idHall: this.HALL_ID,
@@ -698,15 +698,24 @@ export class RequestManagerService implements IbackEnd {
 
     let promiseCollection : Array<any> = [];
     promiseCollection.push(this.SessionsGetByDate(selectedDate));
-    promiseCollection.push(this.GetPakegMoviesById());
+    //promiseCollection.push(this.GetPakegMoviesById());
  
     return Promise.all(promiseCollection).then(resoult => {
-                                          let par_1 = JSON.parse(resoult[0]);
-                                          for (let i = 1; i <= resoult.length-1; i++) {
-                                                let par = JSON.parse(resoult[i]);
-                                                Object.assign(par_1,par);     
-                                              }                                          
-                                          return par_1})
+                                          let sessiondata = JSON.parse(resoult[0]);
+                                          // for (let i = 1; i <= resoult.length-1; i++) {
+                                          //       let par = JSON.parse(resoult[i]);
+                                          //       Object.assign(par_1,par);     
+                                          //     }                                          
+                                          
+                                          let movies : Array<IGetMovieResponseViewModel> = []
+                                          sessiondata.sessionInfo.forEach(session => {
+                                            movies.push(session.movie);
+                                          });
+
+                                          let uniqMovies = _.uniq(movies,false,movie=>{return movie.id});
+
+                                          Object.assign(sessiondata,{movieInfo : uniqMovies});
+                                          return sessiondata})
                                          .catch(error => {throw error})   
   }
 
