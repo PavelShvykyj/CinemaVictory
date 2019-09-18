@@ -955,7 +955,7 @@ export class RequestManagerService implements IbackEnd {
   let SmsFormatedString : string = `<?xml version='1.0' encoding='utf-8'?>
   <request>
   <operation>SENDSMS</operation>
-  <message start_time=' AUTO ' end_time=' AUTO ' lifetime='4' rate='120' desc='' source='Peremoga'>
+  <message start_time=' AUTO ' end_time=' AUTO ' lifetime='4' rate='120' desc='' source='kino-scala'>
   <body>${smscontent}</body> 
   <recipient>${smsrecipient}</recipient>
   </message>
