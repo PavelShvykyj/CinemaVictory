@@ -1,3 +1,5 @@
+
+import { ActionType } from './../../global_enums';
 import { Component, OnInit, OnDestroy, ViewChildren, QueryList, ViewChild, ChangeDetectorRef, AfterViewInit } from '@angular/core';
 import { HallChairComponent } from '../hall-chair/hall-chair.component';
 import { MessagesComponent } from '../messages/messages.component';
@@ -27,7 +29,8 @@ import { Observable } from 'rxjs/Observable';
 import printJS from 'print-js/src/index';
 import { HallShowStatus, MessageSate, TicketOperations, LoggMessageTypes } from '../../global_enums'
 
-import 'jquery'; 
+import 'jquery';
+import { PermissionsService, Action } from "../permissions.service";
 
 
 @Component({
@@ -100,7 +103,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
 
   GLOBAL_PARAMETRS;
 
-  constructor(private apiServis: RequestRouterService, private changeDetector: ChangeDetectorRef) {
+  constructor(private apiServis: RequestRouterService, private changeDetector: ChangeDetectorRef, private permissionServise : PermissionsService) {
     this.hallState$ = apiServis.changeHallState$;
     this.hallStateSubscription = this.hallState$.subscribe(resoult => {
       //console.log('signal starts ',resoult.chairsData.starts);
@@ -330,6 +333,13 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   async StartSaleSelected() {
+    
+    let accept  = this.permissionServise.CheckPermission(new Action({name : 'state', value : this.sessionData}, ActionType.StartSale));
+    if (!accept) {
+      this.AddFormateMessage('Доступ запрещен', this.messageSate.Error);
+      return
+    }
+
     this.SetLoggMessageButtonPress('Начать продажу')
     // если ничего не отмечено - ничего и не делаем
     if (this.chairsInWork.length == 0) {
@@ -446,7 +456,16 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   OnCancelActionCancel(WithPay: Boolean) {
+    //Логирование
     this.SetLoggMessageMetod('OnCancelActionCancel',[{name : 'WithPay', body: {value :  WithPay}}]);
+    //Доступы 
+    let accept  = this.permissionServise.CheckPermission(new Action({name : 'state', value : this.sessionData}, ActionType.Cancel));
+    if (!accept) {
+      this.AddFormateMessage('Доступ запрещен', this.messageSate.Error);
+      return
+    }  
+    //Доступы 
+
     console.log('WithPay', WithPay);
     if (WithPay) {
 
@@ -597,6 +616,16 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
 
   OnReserveActionPay(ActionFormValues: IdataObject) {
     this.SetLoggMessageMetod('OnReserveActionPay',[]);
+    
+    //Доступы 
+    let accept  = this.permissionServise.CheckPermission(new Action({name : 'state', value : this.sessionData}, ActionType.StartSale));
+    if (!accept) {
+      this.AddFormateMessage('Доступ запрещен', this.messageSate.Error);
+      return
+    }  
+    //Доступы 
+    
+    
     // если ничего не отмечено - ничего и не делаем
     if (this.chairsInWork.length == 0) {
       return;
@@ -667,6 +696,16 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
 
   OnReserveActionReserve(ActionFormValues: IdataObject) {
     this.SetLoggMessageMetod('OnReserveActionReserve',[]);
+    
+      //Доступы 
+      let accept  = this.permissionServise.CheckPermission(new Action({name : 'state', value : this.sessionData}, ActionType.Cancel));
+      if (!accept) {
+        this.AddFormateMessage('Доступ запрещен', this.messageSate.Error);
+        return
+      }  
+      //Доступы 
+    
+    
     // если ничего не отмечено - ничего и не делаем
     if (this.chairsInWork.length == 0) {
       return;
@@ -785,6 +824,18 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   OnChairSelectStatusChange(status: IChairStateViewModelInternal) {
+
+    let accept  = this.permissionServise.CheckPermission(new Action({name : 'state', value : this.sessionData}, ActionType.StartSale));
+    if (!accept) {
+      this.AddFormateMessage('Доступ запрещен', this.messageSate.Error);
+      return
+    }  
+
+    this.SetLoggMessageMetod('CheckPermissionResult',[
+      {name : 'result',
+       body : {res : accept} }
+    ]);
+  
 
     if (this.sessionData.currentSession) {
       // массив без обрабатываемого елемента

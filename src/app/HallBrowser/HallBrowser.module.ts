@@ -12,6 +12,7 @@ import { ReservingOperationsComponent } from './reserving-operations/reserving-o
 import { CancelOperationComponent } from './cancel-operation/cancel-operation.component';
 import { MessagesComponent } from './messages/messages.component';
 import { SearchingOperationsComponent } from './searching-operations/searching-operations.component'
+import { PermissionsService } from "./permissions.service";
 
 @NgModule({
   imports: [
@@ -21,6 +22,7 @@ import { SearchingOperationsComponent } from './searching-operations/searching-o
     ReactiveFormsModule
   ],
   declarations: [HallComponent, HallChairComponent, MovieSelectorComponent, MovieComponent, MoviePriceComponent, TicketPrintWievComponent, ReservingOperationsComponent, CancelOperationComponent, MessagesComponent, SearchingOperationsComponent],
-  exports: [HallComponent,MessagesComponent]
+  exports: [HallComponent,MessagesComponent],
+  providers : [PermissionsService]
 })
 export class HallBrowserModule { }

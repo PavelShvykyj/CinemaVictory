@@ -31,3 +31,11 @@ export enum TicketOperations {
     Info,
     Sucsess
   }
+
+  export enum ActionType {
+    StartSale,
+    Reserve,
+    Cancel,
+    Select
+
+  }
