@@ -43,7 +43,7 @@ export class RequestRouterService {
   @Input() currentBackEndName: string
 
 
-  constructor(private webServise: webManagerServise, private localServise: localManagerServise, private smsSevise : SmsManagerService) {
+  constructor(private webServise: webManagerServise, private localServise: localManagerServise, private smsSevise : SmsManagerService, private permissionServise : PermissionsService ) {
     this.backends.push(this.webServise);
     this.backends.push(this.localServise);
     this.changeHallState$ = Observable.merge(this.webServise.changeHallState$, this.localServise.changeHallState$);
