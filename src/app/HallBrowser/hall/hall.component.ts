@@ -698,7 +698,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
     this.SetLoggMessageMetod('OnReserveActionReserve',[]);
     
       //Доступы 
-      let accept  = this.permissionServise.CheckPermission(new Action({name : 'state', value : this.sessionData}, ActionType.Cancel));
+      let accept  = this.permissionServise.CheckPermission(new Action({name : 'state', value : this.sessionData}, ActionType.Reserve));
       if (!accept) {
         this.AddFormateMessage('Доступ запрещен', this.messageSate.Error);
         return
