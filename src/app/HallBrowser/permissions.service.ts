@@ -16,66 +16,71 @@ class UserAccessChecker implements IUserAccess {
     if (permission.value) { // если доступ разрешен то не важно выполнилось условие или нет
       return true
     }
-
     let TimeLenth: number = permission.parametrs.find(element => { return element.name == 'MinutesLeft' }).value;
     let context: ICurrentSessionInfo = action.context.value;
     let SessionStart =  context.currentSession.starts;
-    let Minutes : number = +SessionStart.slice(14,15);
-    let EndMinutes : number = Minutes + TimeLenth;
+    let Minutes : number = +SessionStart.slice(14,16);
+    
+    let EndMinutes : number = Minutes + TimeLenth*1;
 
     let MaxDate = new Date(
       +SessionStart.slice(0,4),
       +SessionStart.slice(5,7)-1,
       +SessionStart.slice(8,10),
       +SessionStart.slice(11,13),
-      EndMinutes 
-   )
+      EndMinutes , 0);
+  
     let CurrDate = new Date();
  
     // this.SetLoggMessageMetod('DatePart',[{
     //   name: 'DatePart', body :{
-    //    y:  +SessionStart.slice(0,4),
-    //    m:  +SessionStart.slice(5,7),
+    //    y: +SessionStart.slice(0,4),
+    //    m: +SessionStart.slice(5,7),
     //    d: +SessionStart.slice(8,10),
     //    h: +SessionStart.slice(11,13),
-    //    min: EndMinutes 
+    //    min: +SessionStart.slice(14,16),
+    //    tl : TimeLenth,
+    //    EndMinutes : EndMinutes 
     //     }}])  
  
-    // this.SetLoggMessageMetod('AfterSessionStart',[{name: permission.name, body :{CurrDate : CurrDate, MaxDate : MaxDate , TimeLenth: SessionStart }}])
+    //  this.SetLoggMessageMetod('AfterSessionStart',[{name: permission.name, body :{CurrDate : CurrDate, MaxDate : MaxDate , SessionStart: SessionStart }}])
     
     return CurrDate < MaxDate;
+
   }
 
   private AfterSessionStartReserve(permission: IPermission, action: IAction): boolean {
     if (permission.value) { // если доступ разрешен то не важно выполнилось условие или нет
       return true
     }
-
     let TimeLenth: number = permission.parametrs.find(element => { return element.name == 'MinutesLeft' }).value;
     let context: ICurrentSessionInfo = action.context.value;
     let SessionStart =  context.currentSession.starts;
-    let Minutes : number = +SessionStart.slice(14,15);
-    let EndMinutes : number = Minutes + TimeLenth;
+    let Minutes : number = +SessionStart.slice(14,16);
+    
+    let EndMinutes : number = Minutes + TimeLenth*1;
 
     let MaxDate = new Date(
       +SessionStart.slice(0,4),
       +SessionStart.slice(5,7)-1,
       +SessionStart.slice(8,10),
       +SessionStart.slice(11,13),
-      EndMinutes 
-   )
+      EndMinutes , 0);
+  
     let CurrDate = new Date();
  
     // this.SetLoggMessageMetod('DatePart',[{
     //   name: 'DatePart', body :{
-    //    y:  +SessionStart.slice(0,4),
-    //    m:  +SessionStart.slice(5,7),
+    //    y: +SessionStart.slice(0,4),
+    //    m: +SessionStart.slice(5,7),
     //    d: +SessionStart.slice(8,10),
     //    h: +SessionStart.slice(11,13),
-    //    min: EndMinutes 
+    //    min: +SessionStart.slice(14,16),
+    //    tl : TimeLenth,
+    //    EndMinutes : EndMinutes 
     //     }}])  
  
-    // this.SetLoggMessageMetod('AfterSessionStart',[{name: permission.name, body :{CurrDate : CurrDate, MaxDate : MaxDate , TimeLenth: SessionStart }}])
+    //  this.SetLoggMessageMetod('AfterSessionStart',[{name: permission.name, body :{CurrDate : CurrDate, MaxDate : MaxDate , SessionStart: SessionStart }}])
     
     return CurrDate < MaxDate;
   }
@@ -84,32 +89,34 @@ class UserAccessChecker implements IUserAccess {
     if (permission.value) { // если доступ разрешен то не важно выполнилось условие или нет
       return true
     }
-
     let TimeLenth: number = permission.parametrs.find(element => { return element.name == 'MinutesLeft' }).value;
     let context: ICurrentSessionInfo = action.context.value;
     let SessionStart =  context.currentSession.starts;
-    let Minutes : number = +SessionStart.slice(14,15);
-    let EndMinutes : number = Minutes + TimeLenth;
+    let Minutes : number = +SessionStart.slice(14,16);
+    
+    let EndMinutes : number = Minutes + TimeLenth*1;
 
     let MaxDate = new Date(
       +SessionStart.slice(0,4),
       +SessionStart.slice(5,7)-1,
       +SessionStart.slice(8,10),
       +SessionStart.slice(11,13),
-      EndMinutes 
-   )
+      EndMinutes , 0);
+  
     let CurrDate = new Date();
  
     // this.SetLoggMessageMetod('DatePart',[{
     //   name: 'DatePart', body :{
-    //    y:  +SessionStart.slice(0,4),
-    //    m:  +SessionStart.slice(5,7),
+    //    y: +SessionStart.slice(0,4),
+    //    m: +SessionStart.slice(5,7),
     //    d: +SessionStart.slice(8,10),
     //    h: +SessionStart.slice(11,13),
-    //    min: EndMinutes 
+    //    min: +SessionStart.slice(14,16),
+    //    tl : TimeLenth,
+    //    EndMinutes : EndMinutes 
     //     }}])  
  
-    // this.SetLoggMessageMetod('AfterSessionStart',[{name: permission.name, body :{CurrDate : CurrDate, MaxDate : MaxDate , TimeLenth: SessionStart }}])
+    //  this.SetLoggMessageMetod('AfterSessionStart',[{name: permission.name, body :{CurrDate : CurrDate, MaxDate : MaxDate , SessionStart: SessionStart }}])
     
     return CurrDate < MaxDate;
   }
