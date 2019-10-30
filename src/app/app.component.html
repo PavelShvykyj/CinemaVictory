@@ -2,7 +2,7 @@
 <!--<app-loggin (loggOn) = "loggOnTrigger($event)"></app-loggin> 
 событие использовалось для запуска обновления токена -перенесли в сервис-->
 
-<div class="container-fluid unprintable">
+<div class="container-fluid  unprintable">
     <div class="row">
         <div class="col">
             <nav class="navbar-nav navbar-expand-sm navbar-dark bg-dark">
@@ -21,9 +21,13 @@
                     </div>
                     
                 </div>
-                <span class="navbar-text" id="messageText" >
+                
+                <clock class="navbar-text nav-item"></clock>
+
+                <span class=" navbar-text" id="messageText" >
                     <messages  [historyLenth]=1 > </messages>
                 </span>
+
 
                 <span id="loggDataText"
                       class="navbar-text"

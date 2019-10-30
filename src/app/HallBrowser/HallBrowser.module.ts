@@ -1,3 +1,4 @@
+import { ClockModule } from './../clock/clock.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HallComponent } from './hall/hall.component';
@@ -19,7 +20,8 @@ import { PermissionsService } from "./permissions.service";
     CommonModule,
     AngularFontAwesomeModule,
     FormsModule, 
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    ClockModule
   ],
   declarations: [HallComponent, HallChairComponent, MovieSelectorComponent, MovieComponent, MoviePriceComponent, TicketPrintWievComponent, ReservingOperationsComponent, CancelOperationComponent, MessagesComponent, SearchingOperationsComponent],
   exports: [HallComponent,MessagesComponent],

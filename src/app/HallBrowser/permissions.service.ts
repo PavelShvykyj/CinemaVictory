@@ -206,6 +206,8 @@ export class PermissionsService {
     this.SetLoggMessage(logMessage)
   }
 
-  constructor(private localServise: localManagerServise) { }
+  constructor(private localServise: localManagerServise) {
+    this.userPermissions = [];
+   }
 
 }

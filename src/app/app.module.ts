@@ -1,3 +1,4 @@
+import { ClockModule } from './clock/clock.module';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router'
@@ -35,7 +36,8 @@ const routes = [
     BackEndWebModule,
     BackEndLocalModule,
     LoggModule,
-    LoggInModule
+    LoggInModule,
+    ClockModule
   ],
   providers: [],
   bootstrap: [AppComponent]

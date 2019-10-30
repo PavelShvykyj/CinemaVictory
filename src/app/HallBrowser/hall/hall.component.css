@@ -188,5 +188,17 @@
         align-content: center;
     }
 
+
+
+.h-10 {
+    height: 10%;
+}
+
+.h-95 {
+    height: 90%;
+}
+
+
 .tooltip > .tooltip-inner {background-color: #f00;}
 .tooltip > .tooltip-arrow { border-bottom-color:#f00; }
+

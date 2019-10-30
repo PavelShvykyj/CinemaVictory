@@ -1,11 +1,11 @@
 
 <div  class="container-fluid container-main unprintable">
-  <div class="row unprintable"> <!-- гланое меню  -->
+  <div class="row unprintable "> <!-- гланое меню  -->
     <div class="col" id="MainMenuCol">
         <movie-selector (sessionDataChange) = "OnSessionDataChange($event)"></movie-selector>
     </div>
   </div>
-  <div class="row unprintable"> <!-- основная область  -->
+  <div class="row unprintable "> <!-- основная область  -->
     <!--  функциональные кнопки и билеты  -->
     <div class="col align-self-start justify-content-center " id="FuncMenuCol">
       <!-- кнопки функционального меню  -->
@@ -615,20 +615,20 @@
     </div>
   
     <!-- легенда - цвета - цены инфо о фильме  -->
-    <div class="col align-self-start justify-content-center px-3 " id="LegendMovieCol">
-        <div class="row"> 
+    <div class="col  align-self-start justify-content-center px-3 h-100" id="LegendMovieCol">
+       <div class="row "> 
             <div class="col align-self-start justify-content-center px-0">
                 <movie  *ngIf="sessionData.currentMovie" [movieInfo] = "sessionData.currentMovie"></movie>
             </div>    
-        </div>    
+       </div>    
 
-        <div class="row"> 
+       <div class="row " > 
             <div class="col align-self-start justify-content-center px-0">
                 <movie-price *ngIf="sessionData.currentSession" [hallInfo]="hallInfo" [sessionInfo]="sessionData.currentSession" > </movie-price>
             </div>    
-        </div>    
+       </div>    
       
-       <div class="row"> 
+       <div class="row "> 
             <div class="col align-self-start justify-content-center px-0">
                 <div *ngIf="chairsInWork.length != 0"  class="card mt-2">
                     <!--<div class="card-header py-2 text-white bg-danger">
@@ -650,7 +650,7 @@
                     </div>
                 </div>  
             </div>    
-        </div>   
+       </div>   
 
     </div>
   </div>
