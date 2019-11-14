@@ -1,3 +1,4 @@
+import { ClockModule } from './../clock/clock.module';
 import { NgModule, InjectionToken } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BrowserModule }    from '@angular/platform-browser';
@@ -12,7 +13,8 @@ const DEFAULT_TIMEOUT = new InjectionToken<number>('DEFAULT_TIMEOUT');
   imports: [
     CommonModule,
     BrowserModule,
-    HttpClientModule
+    HttpClientModule,
+    ClockModule,
   ],
   providers : [RequestManagerService,
     SmsManagerService,

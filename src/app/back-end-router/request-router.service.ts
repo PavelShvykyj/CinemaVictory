@@ -1,3 +1,4 @@
+import { PermissionsService } from './../HallBrowser/permissions.service';
 import { SmsManagerService } from './../back-end-web/sms-manager.service';
 import { Injectable, Input } from '@angular/core';
 import { RequestManagerService as webManagerServise  } from '../back-end-web/request-manager.service';
@@ -42,7 +43,7 @@ export class RequestRouterService {
   @Input() currentBackEndName: string
 
 
-  constructor(private webServise: webManagerServise, private localServise: localManagerServise, private smsSevise : SmsManagerService) {
+  constructor(private webServise: webManagerServise, private localServise: localManagerServise, private smsSevise : SmsManagerService, private permissionServise : PermissionsService ) {
     this.backends.push(this.webServise);
     this.backends.push(this.localServise);
     this.changeHallState$ = Observable.merge(this.webServise.changeHallState$, this.localServise.changeHallState$);
@@ -473,6 +474,7 @@ export class RequestRouterService {
     this.localServise.SMS_PASSWORD = parametrs.SMS_PASSWORD;
     this.smsSevise.SMS_LOGIN = parametrs.SMS_LOGIN;
     this.smsSevise.SMS_PASSWORD = parametrs.SMS_PASSWORD;
+    this.permissionServise.userPermissions = JSON.parse(parametrs.PERMISSIONS) ;
 
   }
 

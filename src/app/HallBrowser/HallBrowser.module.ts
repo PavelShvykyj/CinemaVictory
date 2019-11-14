@@ -1,3 +1,4 @@
+import { ClockModule } from './../clock/clock.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HallComponent } from './hall/hall.component';
@@ -12,15 +13,18 @@ import { ReservingOperationsComponent } from './reserving-operations/reserving-o
 import { CancelOperationComponent } from './cancel-operation/cancel-operation.component';
 import { MessagesComponent } from './messages/messages.component';
 import { SearchingOperationsComponent } from './searching-operations/searching-operations.component'
+import { PermissionsService } from "./permissions.service";
 
 @NgModule({
   imports: [
     CommonModule,
     AngularFontAwesomeModule,
     FormsModule, 
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    ClockModule
   ],
   declarations: [HallComponent, HallChairComponent, MovieSelectorComponent, MovieComponent, MoviePriceComponent, TicketPrintWievComponent, ReservingOperationsComponent, CancelOperationComponent, MessagesComponent, SearchingOperationsComponent],
-  exports: [HallComponent,MessagesComponent]
+  exports: [HallComponent,MessagesComponent],
+  providers : [PermissionsService]
 })
 export class HallBrowserModule { }

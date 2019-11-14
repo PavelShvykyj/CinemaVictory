@@ -30,7 +30,12 @@
 
 .indicator-danger {
     background-color: red;
-    color: red;
+    color: red; 
+}
+
+.indicator-danger:hover {
+    color: white;
+    font-style: italic;
 }
 
 .indicator-good {
@@ -38,9 +43,20 @@
     color: ForestGreen;
 }
 
+.indicator-good:hover {
+    color: white;
+    font-style: italic;
+}
+
 .indicator-warning {
     background-color: Gold;
     color: Gold;
+    
+}
+
+.indicator-warning:hover {
+    color: white;
+    font-style: italic;
 }
 
 #loggDataText {
@@ -59,4 +75,5 @@
 
 #messageText {
     margin-right: 20px; 
+    margin-left: 20px; 
 }
