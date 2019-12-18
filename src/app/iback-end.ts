@@ -130,7 +130,8 @@ export interface IChairStatus
     isSelected   : boolean,            
     iniciator    : number,            
     iniciatorFirst?    : number,            
-    idTicketCategory : number            
+    reserveFirst?      : boolean,
+    idTicketCategory   : number            
 }
 
 export interface IChairStateViewModelInternal

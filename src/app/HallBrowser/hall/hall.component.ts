@@ -164,7 +164,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
     
     this.mouseStatusCoverByChair = {};
     
-    if (hallchair.chairStateInternal.s.isFree  ||  !(this.showStatus == this.showHallStatus.Search || this.showStatus == this.showHallStatus.Reserving)) {
+    if (hallchair.chairStateInternal.s.isFree ||  !(this.showStatus == this.showHallStatus.Search || this.showStatus == this.showHallStatus.Reserving)) {
       return;
     }
     this.mouseStatusCoverByChair[id] = true;
@@ -646,11 +646,13 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.chairsInWork.forEach(element => {
       element.s.inReserving = false;
-      element.s.iniciatorFirst = element.s.iniciator
+      element.s.iniciatorFirst = element.s.iniciator;
+      element.s.reserveFirst = true;
       element.s.iniciator = this.GLOBAL_PARAMETRS.CASH_DESK_ID;
       element.s.isFree = false;
       element.s.isSoled = true;
       element.s.isReserved = false;
+
     })
 
     console.log('start pay', this.chairsInWork);
