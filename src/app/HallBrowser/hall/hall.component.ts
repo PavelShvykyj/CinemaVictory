@@ -310,8 +310,8 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
       toPrint = this.chairsInWork;
     }
 
-    toPrint = _.filter(toPrint, element => { return element.s.isSoled || element.s.inReserving || element.s.isReserved });
-
+    //toPrint = _.filter(toPrint, element => { return element.s.isSoled || element.s.inReserving || element.s.isReserved });
+    toPrint = _.filter(toPrint, element => { return element.s.isSoled  });
     if (toPrint.length == 0) {
       console.log('nothing to print');
       return;
