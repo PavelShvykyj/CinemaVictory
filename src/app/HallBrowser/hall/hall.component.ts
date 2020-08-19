@@ -1155,6 +1155,16 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
     ($('.popover') as any).remove();
   }
 
+  isChairAvailable(r,c) : boolean {
+    
+    if (this.hallInfo == undefined || this.hallInfo == null) {
+       return false;
+     }
+     let chairsCategoty = this.hallInfo.chairsCateoryInfo;
+     let chairCategory = _.find(chairsCategoty.chairs, element => { return element.r == r && element.c == c });
+    return chairCategory.isVisible
+  }
+
   GetContentTemplate(parametr : IChairStateViewModelInternal) : string {
     return `
     <div class="card p-0 m-0">

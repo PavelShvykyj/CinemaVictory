@@ -1,5 +1,6 @@
 
-<div class = "cell" [ngClass]="{'is-selected': (chairStateInternal.s.isSelected) || (chairStateInternal.s.isSelected && (chairStateInternal.s.isSoled || chairStateInternal.s.isReserved || chairStateInternal.s.inReserving)),
+<div class = "cell" [ngClass]="{'is-disabled': !isAvailable,
+                                'is-selected': (chairStateInternal.s.isSelected) || (chairStateInternal.s.isSelected && (chairStateInternal.s.isSoled || chairStateInternal.s.isReserved || chairStateInternal.s.inReserving)),
                                 'is-reserved': chairStateInternal.s.isReserved && !chairStateInternal.s.isSelected,
                                 'is-unavailable': !(chairStateInternal.s.isSelected) && (chairStateInternal.s.isSoled || chairStateInternal.s.inReserving) && (!chairStateInternal.s.isSelected)}"
      (click)='OnClick()'

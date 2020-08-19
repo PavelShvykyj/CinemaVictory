@@ -17,6 +17,7 @@ export interface IChairCategoryViewModel {
     r : number; 			
     c : number; 			
     idSeatCategory : number;
+    isVisible? : boolean;
 }
 
 export interface IGetHallResponseViewModel
