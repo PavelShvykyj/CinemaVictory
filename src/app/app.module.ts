@@ -16,11 +16,12 @@ import { LogginComponent } from './logg-in/loggin/loggin.component';
 import { LoggModule } from './logg/logg.module'
 import { LoggBrowserComponent } from './logg/logg-browser/logg-browser.component'
 import { BackEndLocalModule } from './back-end-local/back-end-local.module'
+import { HallResolver } from './HallBrowser/hall/hall.resolver';
 
 const routes = [
     {path : '' , component : LogginComponent},
     {path : 'Log' , component : LoggBrowserComponent},       
-    {path : 'Hall' , component : HallComponent},       
+    {path : 'Hall' , component : HallComponent ,  resolve : {halldata : HallResolver}},       
 ];
 
 @NgModule({

@@ -31,6 +31,7 @@ import { HallShowStatus, MessageSate, TicketOperations, LoggMessageTypes } from 
 
 import 'jquery';
 import { PermissionsService, Action } from "../permissions.service";
+import { ActivatedRoute } from '@angular/router';
 
 
 @Component({
@@ -88,6 +89,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
     };
 
   hallInfo: IHallInfo;
+  chairsInfo: {[key:string] : boolean} = {};
   hallState$: Observable<IChairsStatusInSessionInfo>;
   hallStateSubscription;
   hallStateLastSnapshot = [];
@@ -103,7 +105,18 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
 
   GLOBAL_PARAMETRS;
 
-  constructor(private apiServis: RequestRouterService, private changeDetector: ChangeDetectorRef, private permissionServise : PermissionsService) {
+  constructor(private apiServis: RequestRouterService,
+              private changeDetector: ChangeDetectorRef,
+              private permissionServise : PermissionsService,
+              private route: ActivatedRoute
+              ) {
+    
+    
+      this.chairsInfo = this.route.snapshot.data.halldata.chairsInfo;
+      this.hallInfo   = this.route.snapshot.data.halldata.hallInfo;
+      console.log('chairsInfo',this.chairsInfo);                
+                 
+
     this.hallState$ = apiServis.changeHallState$;
     this.hallStateSubscription = this.hallState$.subscribe(resoult => {
       //console.log('signal starts ',resoult.chairsData.starts);
@@ -159,7 +172,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
 
   OnmouseoverHallChair(hallchair) {
 
-
+    
     let id: string =  ''+hallchair.chairID +'r'+ hallchair.rowID;
     
     this.mouseStatusCoverByChair = {};
@@ -170,6 +183,8 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
     this.mouseStatusCoverByChair[id] = true;
     let popoverdata : IdataObject = {title : `Ряд : ${hallchair.chairStateInternal.c.r} Место : ${hallchair.chairStateInternal.c.c}`,
                                      content : this.GetContentTemplate(hallchair.chairStateInternal)}
+    
+    
     setTimeout(() => {
       this.ShowPopMessage(popoverdata, id);
     }, 500);
@@ -862,12 +877,22 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   UpdateHallInfo() {
-
-    this.apiServis.RoutGetHallInfo().then(resoult => { this.hallInfo = resoult; })
+    if (this.hallInfo == null || this.hallInfo == undefined) {
+      this.apiServis.RoutGetHallInfo()
+      .then(resoult => { this.hallInfo = resoult; 
+        this.hallInfo.chairsCateoryInfo.chairs.forEach(chair => {
+          let key : string = chair.c.toString()+'r'+chair.r.toString();
+          
+          this.chairsInfo[key] = chair.isVisible;
+          
+      })
+      
+      })
       .catch(error => {
         this.AddFormateMessage('UpdateHallInfo ' + error.status, this.messageSate.Error);
         this.hallInfo = null
       })
+    }
   }
 
   UpdateHallState(StateInfo: ISyncTicketsResponseViewModelInternal, isSgnalRData?: boolean) {
@@ -1123,7 +1148,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ShowPopMessage( popoverdata : IdataObject, Id : string) {
-    
+      
       if(! this.mouseStatusCoverByChair[Id]) {
         return
       }
@@ -1155,15 +1180,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
     ($('.popover') as any).remove();
   }
 
-  isChairAvailable(r,c) : boolean {
-    
-    if (this.hallInfo == undefined || this.hallInfo == null) {
-       return false;
-     }
-     let chairsCategoty = this.hallInfo.chairsCateoryInfo;
-     let chairCategory = _.find(chairsCategoty.chairs, element => { return element.r == r && element.c == c });
-    return chairCategory.isVisible
-  }
+
 
   GetContentTemplate(parametr : IChairStateViewModelInternal) : string {
     return `

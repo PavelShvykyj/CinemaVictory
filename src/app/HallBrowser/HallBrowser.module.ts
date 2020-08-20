@@ -14,6 +14,7 @@ import { CancelOperationComponent } from './cancel-operation/cancel-operation.co
 import { MessagesComponent } from './messages/messages.component';
 import { SearchingOperationsComponent } from './searching-operations/searching-operations.component'
 import { PermissionsService } from "./permissions.service";
+import { HallResolver } from './hall/hall.resolver';
 
 @NgModule({
   imports: [
@@ -25,6 +26,6 @@ import { PermissionsService } from "./permissions.service";
   ],
   declarations: [HallComponent, HallChairComponent, MovieSelectorComponent, MovieComponent, MoviePriceComponent, TicketPrintWievComponent, ReservingOperationsComponent, CancelOperationComponent, MessagesComponent, SearchingOperationsComponent],
   exports: [HallComponent,MessagesComponent],
-  providers : [PermissionsService]
+  providers : [PermissionsService,HallResolver]
 })
 export class HallBrowserModule { }

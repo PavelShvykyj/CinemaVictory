@@ -169,7 +169,7 @@ export class RequestRouterService {
       /// теоритически может возникнуть ситуация что вернулась связь 
       /// и со старым токеном прошел запрос при отображенном состоянии
       /// EmitBackEndName("1C") Не меняем его - пусть перелогинятся так надежнее
-      console.log(resoult);
+      console.log('GetHallInfo',resoult);
       this.localServise.SetHallInfo(resoult);
       this.EmitBackEndName("WEB");
       this.EmitLoginName(this.webServise.userData.userName);
