@@ -43,6 +43,7 @@ export class HallChairComponent implements OnInit, OnChanges {
   ngOnChanges(){}
 
   OnClick(){
+    console.log('chair data',this.rowID,this.chairID,this.isAvailable);
     if (!this.isAvailable) {
       return
     }
