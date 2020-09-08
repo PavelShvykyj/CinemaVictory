@@ -295,7 +295,7 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
           this.PrintSelected()
   
         }
-        
+        this.SetLoggMessageMetod('UpdateHallState in FinishAction',[]);
         this.UpdateHallState(resoult);
         this.ClearSelected();
         return true;
@@ -659,7 +659,10 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
     //  return;
     //}
 
+    
+
     this.chairsInWork.forEach(element => {
+      
       element.s.inReserving = false;
       element.s.iniciatorFirst = element.s.iniciator;
       element.s.reserveFirst = true;
@@ -667,18 +670,23 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
       element.s.isFree = false;
       element.s.isSoled = true;
       element.s.isReserved = false;
-
+      
     })
+    
+    
+    this.SetLoggMessageMetod('OnReserveActionPayIniciatorTest',[{name:"chairsInWork", body:{"chairsInWork":JSON.stringify(this.chairsInWork)}}]);
 
     console.log('start pay', this.chairsInWork);
     /// предварительно блокировать при оплате ранее забронированных не нужно
 
+    this.PrintSelected();
     this.FinishAction(TicketOperations.SaleReserve).then(resoult => {
       if (resoult) {
+        this.SetLoggMessageMetod('Osucsesful pay.',[]);
         console.log('sucsesful pay.')
       }
     });
-    this.PrintSelected();
+    
 
   }
 
@@ -955,7 +963,6 @@ export class HallComponent implements OnInit, OnDestroy, AfterViewInit {
 
   /// готовит объект для запроса SyncTickets и вызывает его возвращает промис результат
   SyncHallState(workChairList: Array<IChairStateViewModelInternal>, currentHallState: Array<IChairStateViewModelInternal>, operation: number): Promise<ISyncTicketsResponseViewModelInternal> | null {
-
     let request: ISyncTicketsRequestViewModel = {
       idHall: this.GLOBAL_PARAMETRS.HALL_ID,
       starts: this.sessionData.currentSession.starts, //"yyyy-MM-dd HH:mm:ss",		

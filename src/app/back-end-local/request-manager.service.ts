@@ -612,7 +612,12 @@ export class RequestManagerService implements IbackEnd {
 
   SetHallState(currentState: ISyncTicketsRequestViewModel, syncTickets: ISyncTicketsResponseViewModelInternal, inBufer?: Array<IdataObject>): Promise<IDataFrom1C> {
     
-    
+      this.SetLoggMessage({
+        message_name:"SetHallState",
+        message_date:new Date(),
+        message_type:LoggMessageTypes.Metod,
+        message_parametr:[{name:"currentState",body:{value:JSON.stringify(currentState)}}]
+      });
       if (this.LOCAL_SERVISE_BLOCED){
         let myPromise : Promise<IDataFrom1C>  = new Promise((resolve,reject) => {
           let resoult : IDataFrom1C = 

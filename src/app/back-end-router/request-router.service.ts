@@ -19,7 +19,7 @@ import {
   IDataFrom1C
 } from '../iback-end'
 import { LoggMessageTypes } from '../global_enums'
-import { IloggObject } from '../ilogg';
+import { IloggObject, IloggParametr } from '../ilogg';
 
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
@@ -289,11 +289,19 @@ export class RequestRouterService {
 
   private SyncTickets(currentState: ISyncTicketsRequestViewModel): Promise<ISyncTicketsResponseViewModelInternal> | null {
     // this.LogginCheck();
+    const CurrentStateCopy : ISyncTicketsRequestViewModel = {...currentState}; 
+    CurrentStateCopy.hallState=[];
+    currentState.hallState.forEach(el=> {CurrentStateCopy.hallState.push(el)});
+    const CurrentStateCopyString : string  = JSON.stringify(CurrentStateCopy);
+    this.SetLoggMessageMetod("SyncTickets",[{name:"CurrentStateCopy",body:{value:CurrentStateCopyString} }]);
+    //[{name:"CurrentStateCopy",bod{"CurrentStateCopy":JSON.stringify(CurrentStateCopy)}}];
+
     return this.webServise.SyncTickets(currentState)
       .then(resoult => {
         //console.log('ok in rout servise',resoult)
         let buferData = [];
-        this.localServise.SetHallState(currentState, resoult, buferData);
+        this.SetLoggMessageMetod("SyncTicketsThen",[{name:"CurrentStateCopy",body:{value:CurrentStateCopyString} }]);    
+        this.localServise.SetHallState(JSON.parse(CurrentStateCopyString), resoult, buferData);
         this.EmitBackEndName("WEB");
         this.EmitLoginName(this.webServise.userData.userName);
         return resoult;
@@ -317,7 +325,7 @@ export class RequestRouterService {
           if (errorHallState != undefined) {
             console.log(' hallState in rout error ', errorHallState);
             //let buferData = [];
-            this.localServise.SetHallState(currentState, errorHallState);
+            this.localServise.SetHallState(CurrentStateCopy, errorHallState);
           }
           throw error
         }
@@ -549,6 +557,15 @@ export class RequestRouterService {
     this.RoutSetLoggMessage(logMessage)
   }
 
+  SetLoggMessageMetod(metodName : string, metodParams : Array<IloggParametr>) {
+    let logMessage: IloggObject = {
+      message_date : new Date(),
+      message_type : LoggMessageTypes.Metod,
+      message_name : metodName,
+      message_parametr : metodParams
+    }
+    this.RoutSetLoggMessage(logMessage)
+  }
 
   RoutTakeLoggFiles(takeLogFiles,skipLogFiles){
     this.localServise.TakeLoggFiles(takeLogFiles,skipLogFiles);

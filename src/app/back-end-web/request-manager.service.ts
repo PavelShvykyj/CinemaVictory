@@ -1,3 +1,4 @@
+
 import { Injectable } from '@angular/core';
 import {  IbackEnd, 
           ILoggInData,
@@ -603,6 +604,24 @@ export class RequestManagerService implements IbackEnd {
       });
       return myPromise;
     }
+    
+    let getStackTrace = function() {
+      let obj:IdataObject = {};
+      Error.captureStackTrace(obj, getStackTrace);
+      return obj.stack;
+    };
+    
+    let message : IloggObject = {
+      message_type  : LoggMessageTypes.Metod,
+      message_name  : 'SyncTicketsTrase',
+      message_parametr : [{name : 'SyncTicketsTrase' ,body : {data :  getStackTrace()}  }],
+      message_date :  new Date()
+    }
+    this.SetLoggMessage(message);
+
+    //console.log('getStackTrace',getStackTrace());
+    
+    
     let headers = new HttpHeaders().append('Authorization','Bearer '+this._token).append('Content-Type','text/json')
     let connection = this.BASE_URL+"/tickets/sync";  
     this.SetBodySyncTicketsLogMessage(currentState.blockSeats,currentState.hallState,LoggMessageTypes.RequestBody);
@@ -626,6 +645,16 @@ export class RequestManagerService implements IbackEnd {
                     {
                       console.log('ok in web serveice',response);
                       let resoult : ISyncTicketsResponseViewModelInternal  =  this.ConvertSisionDataToSisionDataInternal(response);
+                      
+                      
+                      // currentState.hallState.forEach(copyel=> {const reselement = resoult.hallState.find(el => el.c.c==copyel.c.r && el.c.c==copyel.c.r);
+                      //   let newel = {...reselement}; 
+                      //   if (copyel.s.iniciatorFirst) {
+                      //     newel.s.reserveFirst = copyel.s.reserveFirst;  newel.s.iniciatorFirst = copyel.s.iniciatorFirst;   
+                      //   }
+                      //   return newel 
+                      // })
+                      
                       this.SetBodySyncTicketsLogMessage([],resoult.hallState,LoggMessageTypes.ResponseBody);
                       return resoult;
                     })
